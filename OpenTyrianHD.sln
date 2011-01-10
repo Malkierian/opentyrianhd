@@ -39,6 +39,8 @@ Global
 		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Release|OpenZDK (ARMV4I).Build.0 = Release|OpenZDK (ARMV4I)
 		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Release|OpenZDK (ARMV4I).Deploy.0 = Release|OpenZDK (ARMV4I)
 		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Release|Zune.ActiveCfg = Release|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Release|Zune.Build.0 = Release|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Release|Zune.Deploy.0 = Release|OpenZDK (ARMV4I)
 		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Debug|Mixed Platforms.ActiveCfg = Debug|Zune
 		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Debug|Mixed Platforms.Build.0 = Debug|Zune
 		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Debug|Mixed Platforms.Deploy.0 = Debug|Zune

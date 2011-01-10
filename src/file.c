@@ -29,10 +29,7 @@ const char *data_dir( void )
 {
 	const char *dirs[] =
 	{
-		"\\gametitle\\584E07D1\\Content\\tyrian"
-		"data",
-		".\tyrian",
-		"\gametitle\584E07D1\Content\tyrian",
+		"\\Flash2\\Tyrian",
 	};
 	
 	static const char *dir = NULL;
