@@ -48,6 +48,7 @@
 
 #include "SDL.h"
 
+#include <altcecrt.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -233,7 +234,7 @@ void opentyrian_menu( void )
 
 int main( int argc, char *argv[] )
 {
-	mt_srand(1033754889432);
+	mt_srand((unsigned int)_time64(NULL));
 
 	printf("\nWelcome to... >> %s %s <<\n\n", opentyrian_str, opentyrian_version);
 
