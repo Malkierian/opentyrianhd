@@ -116,11 +116,13 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;"
+				AdditionalIncludeDirectories="&quot;C:\zune\sdl\include&quot;"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_WINDOWS;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				MinimalRebuild="true"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -133,9 +135,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				LinkIncremental="2"
+				AdditionalOptions="/LTCG"
+				AdditionalDependencies="coredll.lib corelibc.lib mmtimer.lib sdl_main.lib sdl_net.lib sdl.lib sdl_image.lib sdl_mixer.lib sdl_ttf.lib $(NOINHERIT)"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="&quot;C:\zune\sdl\lib&quot;"
 				GenerateDebugInformation="true"
-				SubSystem="2"
+				SubSystem="8"
 				TargetMachine="0"
 			/>
 			<Tool
@@ -158,7 +163,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory=""
+				RemoteDirectory="\Flash2\debug\$(SolutionName)\$(ProjectName)\"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>
@@ -562,6 +567,14 @@
 				RelativePath=".\src\animlib.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -573,6 +586,14 @@
 			<File
 				RelativePath=".\src\arg_parse.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -586,6 +607,14 @@
 				RelativePath=".\src\backgrnd.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -597,6 +626,14 @@
 			<File
 				RelativePath=".\src\cJSON.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -610,6 +647,14 @@
 				RelativePath=".\src\config.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -621,6 +666,14 @@
 			<File
 				RelativePath=".\src\destruct.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -634,6 +687,14 @@
 				RelativePath=".\src\editship.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -645,6 +706,14 @@
 			<File
 				RelativePath=".\src\episodes.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -658,6 +727,14 @@
 				RelativePath=".\src\file.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -669,6 +746,14 @@
 			<File
 				RelativePath=".\src\fm_synth.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -682,6 +767,14 @@
 				RelativePath=".\src\fmopl.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -693,6 +786,14 @@
 			<File
 				RelativePath=".\src\font.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -706,6 +807,14 @@
 				RelativePath=".\src\fonthand.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -717,6 +826,14 @@
 			<File
 				RelativePath=".\src\game_menu.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -730,6 +847,14 @@
 				RelativePath=".\src\helptext.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -741,6 +866,14 @@
 			<File
 				RelativePath=".\src\joystick.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -754,6 +887,14 @@
 				RelativePath=".\src\jukebox.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -765,6 +906,14 @@
 			<File
 				RelativePath=".\src\keyboard.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -778,6 +927,14 @@
 				RelativePath=".\src\lds_play.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -789,6 +946,14 @@
 			<File
 				RelativePath=".\src\loudness.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -802,6 +967,14 @@
 				RelativePath=".\src\lvllib.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -813,6 +986,14 @@
 			<File
 				RelativePath=".\src\lvlmast.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -826,6 +1007,14 @@
 				RelativePath=".\src\mainint.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -837,6 +1026,14 @@
 			<File
 				RelativePath=".\src\menus.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -850,6 +1047,14 @@
 				RelativePath=".\src\mingw_fixes.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -861,6 +1066,14 @@
 			<File
 				RelativePath=".\src\mouse.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -874,6 +1087,14 @@
 				RelativePath=".\src\mtrand.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -885,6 +1106,14 @@
 			<File
 				RelativePath=".\src\musmast.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -898,6 +1127,14 @@
 				RelativePath=".\src\network.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -909,6 +1146,14 @@
 			<File
 				RelativePath=".\src\nortsong.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -922,6 +1167,14 @@
 				RelativePath=".\src\nortvars.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -933,6 +1186,14 @@
 			<File
 				RelativePath=".\src\opentyr.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -946,6 +1207,14 @@
 				RelativePath=".\src\palette.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -957,6 +1226,14 @@
 			<File
 				RelativePath=".\src\params.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -970,6 +1247,14 @@
 				RelativePath=".\src\pcxload.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -981,6 +1266,14 @@
 			<File
 				RelativePath=".\src\pcxmast.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -994,6 +1287,14 @@
 				RelativePath=".\src\picload.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -1005,6 +1306,14 @@
 			<File
 				RelativePath=".\src\player.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -1018,6 +1327,14 @@
 				RelativePath=".\src\scroller.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -1029,6 +1346,14 @@
 			<File
 				RelativePath=".\src\setup.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -1042,6 +1367,14 @@
 				RelativePath=".\src\sizebuf.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -1053,6 +1386,14 @@
 			<File
 				RelativePath=".\src\sndmast.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -1066,6 +1407,14 @@
 				RelativePath=".\src\sprite.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -1077,6 +1426,14 @@
 			<File
 				RelativePath=".\src\starlib.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -1090,6 +1447,14 @@
 				RelativePath=".\src\tyrian2.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -1101,6 +1466,14 @@
 			<File
 				RelativePath=".\src\varz.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -1114,6 +1487,14 @@
 				RelativePath=".\src\vga256d.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -1125,6 +1506,14 @@
 			<File
 				RelativePath=".\src\vga_palette.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -1138,6 +1527,14 @@
 				RelativePath=".\src\video.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -1149,6 +1546,14 @@
 			<File
 				RelativePath=".\src\video_scale.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
@@ -1162,6 +1567,14 @@
 				RelativePath=".\src\video_scale_hqNx.c"
 				>
 				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
 					<Tool
@@ -1173,6 +1586,14 @@
 			<File
 				RelativePath=".\src\xmas.c"
 				>
+				<FileConfiguration
+					Name="Debug|OpenZDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="2"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|OpenZDK (ARMV4I)"
 					>
