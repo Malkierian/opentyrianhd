@@ -445,6 +445,7 @@ long weapon_upgrade_cost( long base_cost, unsigned int power )
 ulong JE_getCost( JE_byte itemType, JE_word itemNum )
 {
 	long cost = 0;
+	uint port, item_power;
 
 	switch (itemType)
 	{
@@ -455,8 +456,8 @@ ulong JE_getCost( JE_byte itemType, JE_word itemNum )
 	case 4:
 		cost = weaponPort[itemNum].cost;
 
-		const uint port = itemType - 3,
-		           item_power = player[0].items.weapon[port].power - 1;
+		port = itemType - 3;
+		item_power = player[0].items.weapon[port].power - 1;
 
 		downgradeCost = weapon_upgrade_cost(cost, item_power);
 		upgradeCost = weapon_upgrade_cost(cost, item_power + 1);
@@ -583,19 +584,19 @@ void JE_loadScreen( void )
 					{
 						free(tempstr);
 					}
-					tempstr = malloc(7);
+					tempstr = (char *)malloc(7);
 					mal_str = true;
 					strcpy(tempstr, "-----"); /* Unused save slot */
 				} else {
 					tempstr = saveFiles[x - 1].levelName;
-					tempstr2 = malloc(5 + strlen(miscTextB[2-1]));
+					tempstr2 = (char *)malloc(5 + strlen(miscTextB[2-1]));
 					sprintf(tempstr2, "%s %d", miscTextB[2-1], saveFiles[x - 1].episode);
 					JE_textShade(VGAScreen, 250, tempY, tempstr2, 5, (temp2 % 16) - 8, FULL_SHADE);
 					free(tempstr2);
 				}
 
 				len = strlen(miscTextB[3-1]) + 2 + strlen(tempstr);
-				tempstr2 = malloc(len);
+				tempstr2 = (char *)malloc(len);
 				sprintf(tempstr2, "%s %s", miscTextB[3 - 1], tempstr);
 				JE_textShade(VGAScreen, 120, tempY, tempstr2, 5, (temp2 % 16) - 8, FULL_SHADE);
 				free(tempstr2);
@@ -698,7 +699,8 @@ ulong JE_totalScore( const Player *this_player )
 
 JE_longint JE_getValue( JE_byte itemType, JE_word itemNum )
 {
-	long value = 0;
+	long value = 0, base_value;
+	uint port, item_power;
 
 	switch (itemType)
 	{
@@ -707,11 +709,11 @@ JE_longint JE_getValue( JE_byte itemType, JE_word itemNum )
 		break;
 	case 3:
 	case 4:;
-		const long base_value = weaponPort[itemNum].cost;
+		base_value = weaponPort[itemNum].cost;
 
 		// if two-player, use first player's front and second player's rear weapon
-		const uint port = itemType - 3;
-		const uint item_power = player[twoPlayerMode ? port : 0].items.weapon[port].power - 1;
+		port = itemType - 3;
+		item_power = player[twoPlayerMode ? port : 0].items.weapon[port].power - 1;
 
 		value = base_value;
 		for (unsigned int i = 1; i <= item_power; ++i)
@@ -1004,7 +1006,7 @@ void JE_highScoreScreen( void )
 
 void JE_gammaCorrect_func( JE_byte *col, JE_real r )
 {
-	int temp = roundf(*col * r);
+	int temp = ot_round(*col * r);
 	if (temp > 255)
 	{
 		temp = 255;
@@ -1714,7 +1716,7 @@ void adjust_difficulty( void )
 	assert(initialDifficulty > 0 && initialDifficulty < 10);
 
 	const ulong score = twoPlayerMode ? (player[0].cash + player[1].cash) : JE_totalScore(&player[0]),
-	            adjusted_score = roundf(score * score_multiplier[initialDifficulty]);
+	            adjusted_score = ot_round(score * score_multiplier[initialDifficulty]);
 
 	uint new_difficulty = 0;
 
@@ -1770,7 +1772,7 @@ bool load_next_demo( void )
 		demo_num = 1;
 
 	char demo_filename[9];
-	snprintf(demo_filename, sizeof(demo_filename), "demo.%d", demo_num);
+	sprintf(demo_filename, "demo.%d", demo_num);
 	demo_file = dir_fopen_die(data_dir(), demo_filename, "rb"); // TODO: only play demos from existing file (instead of dying)
 
 	difficultyLevel = 2;
@@ -2199,7 +2201,7 @@ void JE_endLevelAni( void )
 	{
 		for (uint i = 0; i < 2; ++i)
 		{
-			snprintf(tempStr, sizeof(tempStr), "%s %lu", miscText[40 + i], player[i].cash);
+			sprintf(tempStr, "%s %lu", miscText[40 + i], player[i].cash);
 			JE_outTextGlow(VGAScreenSeg, 30, 50 + 20 * i, tempStr);
 		}
 	}
@@ -2209,7 +2211,7 @@ void JE_endLevelAni( void )
 		JE_outTextGlow(VGAScreenSeg, 30, 50, tempStr);
 	}
 
-	temp = (totalEnemy == 0) ? 0 : roundf(enemyKilled * 100 / totalEnemy);
+	temp = (totalEnemy == 0) ? 0 : ot_round(enemyKilled * 100 / totalEnemy);
 	sprintf(tempStr, "%s %d%%", miscText[63-1], temp);
 	JE_outTextGlow(VGAScreenSeg, 40, 90, tempStr);
 
@@ -2489,7 +2491,7 @@ void JE_inGameDisplays( void )
 
 	for (uint i = 0; i < ((twoPlayerMode && !galagaMode) ? 2 : 1); ++i)
 	{
-		snprintf(tempstr, sizeof(tempstr), "%lu", player[i].cash);
+		sprintf(tempstr, "%lu", player[i].cash);
 		JE_textShade(VGAScreen, 30 + 200 * i, 175, tempstr, 2, 4, FULL_SHADE);
 	}
 
@@ -3505,11 +3507,11 @@ redo:
 
 			// turret direction marker/shield
 			shotMultiPos[SHOT_MISC] = 0;
-			JE_initPlayerShot(0, SHOT_MISC, this_player->x + 1 + roundf(sinf(linkGunDirec + 0.2f) * 26), this_player->y + roundf(cosf(linkGunDirec + 0.2f) * 26), *mouseX_, *mouseY_, 148, playerNum_);
+			JE_initPlayerShot(0, SHOT_MISC, this_player->x + 1 + ot_round(sin(linkGunDirec + 0.2f) * 26), this_player->y + ot_round(cos(linkGunDirec + 0.2f) * 26), *mouseX_, *mouseY_, 148, playerNum_);
 			shotMultiPos[SHOT_MISC] = 0;
-			JE_initPlayerShot(0, SHOT_MISC, this_player->x + 1 + roundf(sinf(linkGunDirec - 0.2f) * 26), this_player->y + roundf(cosf(linkGunDirec - 0.2f) * 26), *mouseX_, *mouseY_, 148, playerNum_);
+			JE_initPlayerShot(0, SHOT_MISC, this_player->x + 1 + ot_round(sin(linkGunDirec - 0.2f) * 26), this_player->y + ot_round(cos(linkGunDirec - 0.2f) * 26), *mouseX_, *mouseY_, 148, playerNum_);
 			shotMultiPos[SHOT_MISC] = 0;
-			JE_initPlayerShot(0, SHOT_MISC, this_player->x + 1 + roundf(sinf(linkGunDirec) * 26), this_player->y + roundf(cosf(linkGunDirec) * 26), *mouseX_, *mouseY_, 147, playerNum_);
+			JE_initPlayerShot(0, SHOT_MISC, this_player->x + 1 + ot_round(sin(linkGunDirec) * 26), this_player->y + ot_round(cos(linkGunDirec) * 26), *mouseX_, *mouseY_, 147, playerNum_);
 
 			if (shotRepeat[SHOT_REAR] > 0)
 			{
@@ -3518,22 +3520,22 @@ redo:
 			else if (button[1-1])
 			{
 				shotMultiPos[SHOT_REAR] = 0;
-				JE_initPlayerShot(0, SHOT_REAR, this_player->x + 1 + roundf(sinf(linkGunDirec) * 20), this_player->y + roundf(cosf(linkGunDirec) * 20), *mouseX_, *mouseY_, linkGunWeapons[this_player->items.weapon[REAR_WEAPON].id-1], playerNum_);
-				playerShotData[b].shotXM = -roundf(sinf(linkGunDirec) * playerShotData[b].shotYM);
-				playerShotData[b].shotYM = -roundf(cosf(linkGunDirec) * playerShotData[b].shotYM);
+				JE_initPlayerShot(0, SHOT_REAR, this_player->x + 1 + ot_round(sin(linkGunDirec) * 20), this_player->y + ot_round(cos(linkGunDirec) * 20), *mouseX_, *mouseY_, linkGunWeapons[this_player->items.weapon[REAR_WEAPON].id-1], playerNum_);
+				playerShotData[b].shotXM = -ot_round(sin(linkGunDirec) * playerShotData[b].shotYM);
+				playerShotData[b].shotYM = -ot_round(cos(linkGunDirec) * playerShotData[b].shotYM);
 
 				switch (this_player->items.weapon[REAR_WEAPON].id)
 				{
 				case 27:
 				case 32:
 				case 10:
-					temp = roundf(linkGunDirec * (16 / (2 * M_PI)));  /*16 directions*/
+					temp = ot_round(linkGunDirec * (16 / (2 * M_PI)));  /*16 directions*/
 					playerShotData[b].shotGr = linkMultiGr[temp];
 					break;
 				case 28:
 				case 33:
 				case 11:
-					temp = roundf(linkGunDirec * (16 / (2 * M_PI)));  /*16 directions*/
+					temp = ot_round(linkGunDirec * (16 / (2 * M_PI)));  /*16 directions*/
 					playerShotData[b].shotGr = linkSonicGr[temp];
 					break;
 				case 30:
@@ -3546,7 +3548,7 @@ redo:
 					break;
 				case 38:
 				case 22:
-					temp = roundf(linkGunDirec * (16 / (2 * M_PI)));  /*16 directions*/
+					temp = ot_round(linkGunDirec * (16 / (2 * M_PI)));  /*16 directions*/
 					playerShotData[b].shotGr = linkMult2Gr[temp];
 					break;
 				}
@@ -3894,16 +3896,16 @@ redo:
 					this_player->sidekick[LEFT_SIDEKICK].y = MAX(10, this_player->y - 20);
 					break;
 				case 4:  // orbitting
-					this_player->sidekick[LEFT_SIDEKICK].x = this_player->x + roundf(sinf(optionSatelliteRotate) * 20);
-					this_player->sidekick[LEFT_SIDEKICK].y = this_player->y + roundf(cosf(optionSatelliteRotate) * 20);
+					this_player->sidekick[LEFT_SIDEKICK].x = this_player->x + ot_round(sin(optionSatelliteRotate) * 20);
+					this_player->sidekick[LEFT_SIDEKICK].y = this_player->y + ot_round(cos(optionSatelliteRotate) * 20);
 					break;
 				}
 
 				switch (this_player->sidekick[RIGHT_SIDEKICK].style)
 				{
 				case 4:  // orbitting
-					this_player->sidekick[RIGHT_SIDEKICK].x = this_player->x - roundf(sinf(optionSatelliteRotate) * 20);
-					this_player->sidekick[RIGHT_SIDEKICK].y = this_player->y - roundf(cosf(optionSatelliteRotate) * 20);
+					this_player->sidekick[RIGHT_SIDEKICK].x = this_player->x - ot_round(sin(optionSatelliteRotate) * 20);
+					this_player->sidekick[RIGHT_SIDEKICK].y = this_player->y - ot_round(cos(optionSatelliteRotate) * 20);
 					break;
 				case 1:  // trailing
 				case 3:

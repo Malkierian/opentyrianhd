@@ -390,7 +390,7 @@ enum de_unit_t string_to_unit_enum(const char * str) {
 	{ "UNIT_TANK", "UNIT_NUKE", "UNIT_DIRT", "UNIT_SATELLITE",
       "UNIT_MAGNET", "UNIT_LASER", "UNIT_JUMPER", "UNIT_HELI" };
 
-	for (i = UNIT_FIRST; i < MAX_UNITS; i++) {
+	for (i = UNIT_FIRST; i < MAX_UNITS; i = (de_unit_t)(i+1)) {
 		if(strcmp(unit_names[i], str) == 0) { return(i); }
 	}
 
@@ -616,7 +616,7 @@ void load_destruct_config( void ) {
 		}
 
 		//player configuration
-		for(i = PLAYER_LEFT; i < MAX_PLAYERS; i++) {
+		for(i = PLAYER_LEFT; i < MAX_PLAYERS; i = (de_player_t)(i+1)) {
 			sprintf(buffer, "player%i", i+1);
 			level2 = cJSON_GetObjectItem(level1, buffer);
 			if (level2 != NULL)
@@ -658,7 +658,7 @@ void load_destruct_config( void ) {
 		}
 
 		//player configuration
-		for(i = PLAYER_LEFT; i < MAX_PLAYERS; i++) {
+		for(i = PLAYER_LEFT; i < MAX_PLAYERS; i = (de_player_t)(i+1)) {
 			sprintf(buffer, "player%i", i+1);
 			level2 = cJSON_GetObjectItem(level1, buffer);
 			if (level2 != NULL)
@@ -694,16 +694,16 @@ void JE_destructGame( void )
 	load_destruct_config();
 
 	//malloc things that have customizable sizes
-	shotRec  = malloc(sizeof(struct destruct_shot_s)  * config.max_shots);
-	exploRec = malloc(sizeof(struct destruct_explo_s) * config.max_explosions);
-	world.mapWalls = malloc(sizeof(struct destruct_wall_s) * config.max_walls);
+	shotRec  = (destruct_shot_s *)malloc(sizeof(struct destruct_shot_s)  * config.max_shots);
+	exploRec = (destruct_explo_s *)malloc(sizeof(struct destruct_explo_s) * config.max_explosions);
+	world.mapWalls = (destruct_wall_s *)malloc(sizeof(struct destruct_wall_s) * config.max_walls);
 
 	//Malloc enough structures to cover all of this session's possible needs.
 	for(i = 0; i < 10; i++) {
 		config.max_installations = MAX(config.max_installations, basetypes[i][0]);
 	}
-	player[PLAYER_LEFT ].unit = malloc(sizeof(struct destruct_unit_s) * config.max_installations);
-	player[PLAYER_RIGHT].unit = malloc(sizeof(struct destruct_unit_s) * config.max_installations);
+	player[PLAYER_LEFT ].unit = (destruct_unit_s *)malloc(sizeof(struct destruct_unit_s) * config.max_installations);
+	player[PLAYER_RIGHT].unit = (destruct_unit_s *)malloc(sizeof(struct destruct_unit_s) * config.max_installations);
 
 	destructTempScreen = game_screen;
 	world.VGAScreen = VGAScreen;
@@ -847,10 +847,10 @@ enum de_mode_t JE_modeSelect( void )
 				{
 					mode = MODE_LAST;
 				} else {
-					mode = MODE_LAST-1;
+					mode = (de_mode_t)(MODE_LAST-1);
 				}
 			} else {
-				mode--;
+				mode = (de_mode_t)(mode-1);
 			}
 		}
 		if (keysactive[SDLK_DOWN])
@@ -859,12 +859,12 @@ enum de_mode_t JE_modeSelect( void )
 			{
 				if (config.allow_custom == true && mode == MODE_LAST-1)
 				{
-					mode++;
+					mode = (de_mode_t)(mode+1);
 				} else {
 					mode = MODE_FIRST;
 				}
 			} else {
-				mode++;
+				mode = (de_mode_t)(mode+1);
 			}
 		}
 	}
@@ -964,8 +964,8 @@ void DE_generateBaseTerrain( unsigned int mapFlags, unsigned int * baseWorld)
 	/* Now compute a height for each of our lines. */
 	for (i = 1; i <= 318; i++)
 	{
-		newheight = roundf(sinf(sinewave   * i) * HeightMul + sinf(sinewave2   * i) * 15 +
-		                   cosf(cosinewave * i) * 10        + sinf(cosinewave2 * i) * 15) + 130;
+		newheight = ot_round(sin(sinewave   * i) * HeightMul + sin(sinewave2   * i) * 15 +
+		                   cos(cosinewave * i) * 10        + sin(cosinewave2 * i) * 15) + 130;
 
 		/* Bind it; we have mins and maxs */
 		if (newheight < 40)
@@ -1013,7 +1013,7 @@ void DE_generateUnits( unsigned int * baseWorld )
 			}
 
 			player[i].unit[j].unitY = JE_placementPosition(player[i].unit[j].unitX - 1, 14, baseWorld);
-			player[i].unit[j].unitType = basetypes[baseLookup[i][world.destructMode]][(mt_rand() % 10) + 1];
+			player[i].unit[j].unitType = (de_unit_t)basetypes[baseLookup[i][world.destructMode]][(mt_rand() % 10) + 1];
 
 			/* Sats are special cases since they are useless.  They don't count
 			 * as active units and we can't have a team of all sats */
@@ -1045,7 +1045,7 @@ void DE_generateUnits( unsigned int * baseWorld )
 			player[i].unit[j].isYInAir = false;
 			player[i].unit[j].angle = 0;
 			player[i].unit[j].power = (player[i].unit[j].unitType == UNIT_LASER) ? 6 : 3;
-			player[i].unit[j].shotType = defaultWeapon[player[i].unit[j].unitType];
+			player[i].unit[j].shotType = (de_shot_t)defaultWeapon[player[i].unit[j].unitType];
 			player[i].unit[j].health = baseDamage[player[i].unit[j].unitType];
 			player[i].unit[j].ani_frame = 0;
 		}
@@ -1143,8 +1143,8 @@ void DE_generateRings( SDL_Surface * screen, Uint8 pixel )
 		for (j = 1; j <= tempSize * tempSize * 2; j++)
 		{
 			tempRadian = mt_rand_lt1() * (2 * M_PI);
-			tempPosY2 = tempPosY1 + roundf(cosf(tempRadian) * (mt_rand_lt1() * 0.1f + 0.9f) * tempSize);
-			tempPosX2 = tempPosX1 + roundf(sinf(tempRadian) * (mt_rand_lt1() * 0.1f + 0.9f) * tempSize);
+			tempPosY2 = tempPosY1 + ot_round(cos(tempRadian) * (mt_rand_lt1() * 0.1f + 0.9f) * tempSize);
+			tempPosX2 = tempPosX1 + ot_round(sin(tempRadian) * (mt_rand_lt1() * 0.1f + 0.9f) * tempSize);
 			if ((tempPosY2 > 12) && (tempPosY2 < 200)
 			 && (tempPosX2 > 0) && (tempPosX2 < 319))
 			{
@@ -1189,7 +1189,7 @@ void JE_aliasDirt( SDL_Surface * screen )
 
 	/* This is a pointer to a screen.  If you don't like pointer arithmetic,
 	 * you won't like this function. */
-	Uint8 *s = screen->pixels;
+	Uint8 *s = (Uint8 *)screen->pixels;
 	s += 12 * screen->pitch;
 
 	for (y = 12; y < (unsigned)screen->h; y++) {
@@ -1237,7 +1237,7 @@ bool JE_stabilityCheck( unsigned int x, unsigned int y )
 
 
 	numDirtPixels = 0;
-	s = destructTempScreen->pixels;
+	s = (Uint8 *)destructTempScreen->pixels;
 	s += x + (y * destructTempScreen->pitch) - 1;
 
 	/* Check the 12 pixels on the bottom border of our object */
@@ -1255,10 +1255,10 @@ bool JE_stabilityCheck( unsigned int x, unsigned int y )
 
 void JE_tempScreenChecking( void ) /*and copy to vgascreen*/
 {
-	Uint8 *s = VGAScreen->pixels;
+	Uint8 *s = (Uint8 *)VGAScreen->pixels;
 	s += 12 * VGAScreen->pitch;
 
-	Uint8 *temps = destructTempScreen->pixels;
+	Uint8 *temps = (Uint8 *)destructTempScreen->pixels;
 	temps += 12 * destructTempScreen->pitch;
 
 	for (int y = 12; y < VGAScreen->h; y++)
@@ -1331,7 +1331,7 @@ void JE_makeExplosion( unsigned int tempPosX, unsigned int tempPosY, enum de_sho
 
 		exploRec[i].explomax  = tempExploSize;
 		exploRec[i].explofill = exploDensity[shottype];
-		exploRec[i].exploType = shotDirt[shottype];
+		exploRec[i].exploType = (de_expl_t)shotDirt[shottype];
 	}
 	else
 	{
@@ -1380,7 +1380,7 @@ void JE_superPixel( unsigned int tempPosX, unsigned int tempPosY )
 	maxY = destructTempScreen->h;
 
 	rowLen = destructTempScreen->pitch;
-	s = destructTempScreen->pixels;
+	s = (Uint8 *)destructTempScreen->pixels;
 	s += (rowLen * (tempPosY - 2)) + (tempPosX - 2);
 
 	for (y = 0; y < 5; y++, s += rowLen - 5)
@@ -1548,9 +1548,9 @@ void DE_ResetAI( void )
 			ptr->power = (ptr->unitType == UNIT_LASER) ? 6 : 4;
 
 			if (world.mapFlags & MAP_WALLS)
-				ptr->shotType = defaultCpuWeaponB[ptr->unitType];
+				ptr->shotType = (de_shot_t)defaultCpuWeaponB[ptr->unitType];
 			else
-				ptr->shotType = defaultCpuWeapon[ptr->unitType];
+				ptr->shotType = (de_shot_t)defaultCpuWeapon[ptr->unitType];
 		}
 	}
 }
@@ -1724,7 +1724,7 @@ void DE_RunTickGravity( void )
 			}
 
 		/* Draw the unit. */
-		DE_GravityDrawUnit(i, unit);
+		DE_GravityDrawUnit((de_player_t)i, unit);
 		}
 	}
 }
@@ -1747,7 +1747,7 @@ void DE_GravityDrawUnit( enum de_player_t team, struct destruct_unit_s * unit )
 		anim_index += floorf(unit->angle * 9.99f / M_PI);
 	}
 
-	blit_sprite2(VGAScreen, unit->unitX, roundf(unit->unitY) - 13, eShapes1, anim_index);
+	blit_sprite2(VGAScreen, unit->unitX, ot_round(unit->unitY) - 13, eShapes1, anim_index);
 }
 void DE_GravityLowerUnit( struct destruct_unit_s * unit )
 {
@@ -1760,7 +1760,7 @@ void DE_GravityLowerUnit( struct destruct_unit_s * unit )
 	 * quickly.
 	 */
 	if(unit->unitY < 199) { /* checking takes time, don't check if it's at the bottom */
-		if (JE_stabilityCheck(unit->unitX, roundf(unit->unitY)))
+		if (JE_stabilityCheck(unit->unitX, ot_round(unit->unitY)))
 		{
 			switch(unit->unitType)
 			{
@@ -1801,7 +1801,7 @@ void DE_GravityFlyUnit( struct destruct_unit_s * unit )
 	else
 		unit->unitYMov += 0.03f;
 
-	if (!JE_stabilityCheck(unit->unitX, roundf(unit->unitY)))
+	if (!JE_stabilityCheck(unit->unitX, ot_round(unit->unitY)))
 	{
 		unit->unitYMov = 0;
 		unit->isYInAir = false;
@@ -1860,8 +1860,8 @@ void DE_RunTickExplosions( void )
 			/* An explosion is comprised of multiple 'flares' that fan out.
 			   Calculate where this 'flare' will end up */
 			tempRadian = mt_rand_lt1() * (2 * M_PI);
-			tempPosY = exploRec[i].y + roundf(cosf(tempRadian) * mt_rand_lt1() * exploRec[i].explowidth);
-			tempPosX = exploRec[i].x + roundf(sinf(tempRadian) * mt_rand_lt1() * exploRec[i].explowidth);
+			tempPosY = exploRec[i].y + ot_round(cos(tempRadian) * mt_rand_lt1() * exploRec[i].explowidth);
+			tempPosX = exploRec[i].x + ot_round(sin(tempRadian) * mt_rand_lt1() * exploRec[i].explowidth);
 
 			/* Our game allows explosions to wrap around.  This looks to have
 			 * originally been a bug that was left in as being fun, but we are
@@ -1919,7 +1919,7 @@ void DE_TestExplosionCollision( unsigned int PosX, unsigned int PosY)
 				unit->health--;
 				if (unit->health <= 0)
 				{
-					DE_DestroyUnit(i, unit);
+					DE_DestroyUnit((de_player_t)i, unit);
 				}
 			}
 		}
@@ -1930,7 +1930,7 @@ void DE_DestroyUnit( enum de_player_t playerID, struct destruct_unit_s * unit )
 	/* This function call was an evil evil piece of brilliance before.  Go on.
 	 * Look at the older revisions.  It passed the result of a comparison.
 	 * MULTIPLIED.  This is at least a little clearer... */
-	JE_makeExplosion(unit->unitX + 5, roundf(unit->unitY) - 5, (unit->unitType == UNIT_HELI) ? SHOT_SMALL : SHOT_INVALID); /* Helicopters explode like small shots do.  Invalids are their own special case. */
+	JE_makeExplosion(unit->unitX + 5, ot_round(unit->unitY) - 5, (unit->unitType == UNIT_HELI) ? SHOT_SMALL : SHOT_INVALID); /* Helicopters explode like small shots do.  Invalids are their own special case. */
 
 	if (unit->unitType != UNIT_SATELLITE) /* increment score */
 	{ /* todo: change when teams are created. Hacky kludge for now.*/
@@ -1999,8 +1999,8 @@ void DE_RunTickShots( void )
 		if (shotRec[i].y <= 14)
 			continue;
 
-		tempPosX = roundf(shotRec[i].x);
-		tempPosY = roundf(shotRec[i].y);
+		tempPosX = ot_round(shotRec[i].x);
+		tempPosY = ot_round(shotRec[i].y);
 
 		/*Check building hits*/
 		for(j = 0; j < MAX_PLAYERS; j++)
@@ -2015,7 +2015,7 @@ void DE_RunTickShots( void )
 				 && tempPosY < unit->unitY && tempPosY > unit->unitY - 13)
 				{
 					shotRec[i].isAvailable = true;
-					JE_makeExplosion(tempPosX, tempPosY, shotRec[i].shottype);
+					JE_makeExplosion(tempPosX, tempPosY, (de_shot_t)shotRec[i].shottype);
 				}
 			}
 		}
@@ -2048,7 +2048,7 @@ void DE_RunTickShots( void )
 					/* Blow up the wall and remove the shot. */
 					world.mapWalls[j].wallExist = false;
 					shotRec[i].isAvailable = true;
-					JE_makeExplosion(tempPosX, tempPosY, shotRec[i].shottype);
+					JE_makeExplosion(tempPosX, tempPosY, (de_shot_t)shotRec[i].shottype);
 					continue;
 				}
 				else
@@ -2068,8 +2068,8 @@ void DE_RunTickShots( void )
 							shotRec[i].ymov = -shotRec[i].ymov * 0.8f;
 					}
 
-					tempPosX = roundf(shotRec[i].x);
-					tempPosY = roundf(shotRec[i].y);
+					tempPosX = ot_round(shotRec[i].x);
+					tempPosY = ot_round(shotRec[i].y);
 				}
 			}
 		}
@@ -2078,7 +2078,7 @@ void DE_RunTickShots( void )
 		if((((Uint8 *)destructTempScreen->pixels)[tempPosX + tempPosY * destructTempScreen->pitch]) == PIXEL_DIRT)
 		{
 			shotRec[i].isAvailable = true;
-			JE_makeExplosion(tempPosX, tempPosY, shotRec[i].shottype);
+			JE_makeExplosion(tempPosX, tempPosY, (de_shot_t)shotRec[i].shottype);
 			continue;
 		}
 	}
@@ -2097,8 +2097,8 @@ void DE_DrawTrails( struct destruct_shot_s * shot, unsigned int count, unsigned 
 
 		if (i == 0) /* The first trail we create. */
 		{
-			shot->trailx[i] = roundf(shot->x);
-			shot->traily[i] = roundf(shot->y);
+			shot->trailx[i] = ot_round(shot->x);
+			shot->traily[i] = ot_round(shot->y);
 			shot->trailc[i] = startColor;
 		}
 		else /* The newer trails decay into the older trails.*/
@@ -2228,7 +2228,7 @@ void DE_RunTickAI( void )
 			}
 			if (ptrCurUnit->unitType != UNIT_HELI || ptrCurUnit->lastMove > 3 || (ptrCurUnit->unitX > 160 && ptrCurUnit->lastMove > -3))
 			{
-				if (mt_rand() % (int)roundf(ptrCurUnit->unitY) < 150 && ptrCurUnit->unitYMov < 0.01f && (ptrCurUnit->unitX < 160 || ptrCurUnit->lastMove < 2))
+				if (mt_rand() % (int)ot_round(ptrCurUnit->unitY) < 150 && ptrCurUnit->unitYMov < 0.01f && (ptrCurUnit->unitX < 160 || ptrCurUnit->lastMove < 2))
 				{
 					ptrPlayer->moves.actions[MOVE_FIRE] = true;
 				}
@@ -2331,11 +2331,11 @@ void DE_RunTickDrawCrosshairs( void )
 
 		if (curUnit->unitType == UNIT_HELI)
 		{
-			tempPosX = curUnit->unitX + roundf(0.1f * curUnit->lastMove * curUnit->lastMove * curUnit->lastMove) + 5;
-			tempPosY = roundf(curUnit->unitY) + 1;
+			tempPosX = curUnit->unitX + ot_round(0.1f * curUnit->lastMove * curUnit->lastMove * curUnit->lastMove) + 5;
+			tempPosY = ot_round(curUnit->unitY) + 1;
 		} else {
-			tempPosX = roundf(curUnit->unitX + 6 - cosf(curUnit->angle) * (curUnit->power * 8 + 7) * direction);
-			tempPosY = roundf(curUnit->unitY - 7 - sinf(curUnit->angle) * (curUnit->power * 8 + 7));
+			tempPosX = ot_round(curUnit->unitX + 6 - cos(curUnit->angle) * (curUnit->power * 8 + 7) * direction);
+			tempPosY = ot_round(curUnit->unitY - 7 - sin(curUnit->angle) * (curUnit->power * 8 + 7));
 		}
 
 		/* Draw it.  Clip away from the HUD though. */
@@ -2452,28 +2452,28 @@ void DE_ProcessInput( void )
 			}
 		} else if (curUnit->unitType == UNIT_HELI) {
 			if (player[player_index].moves.actions[MOVE_LEFT] == true && curUnit->unitX > 5)
-				if (JE_stabilityCheck(curUnit->unitX - 5, roundf(curUnit->unitY)))
+				if (JE_stabilityCheck(curUnit->unitX - 5, ot_round(curUnit->unitY)))
 				{
 					if (curUnit->lastMove > -5)
 					{
 						curUnit->lastMove--;
 					}
 					curUnit->unitX--;
-					if (JE_stabilityCheck(curUnit->unitX, roundf(curUnit->unitY)))
+					if (JE_stabilityCheck(curUnit->unitX, ot_round(curUnit->unitY)))
 					{
 						curUnit->isYInAir = true;
 					}
 				}
 			if (player[player_index].moves.actions[MOVE_RIGHT] == true && curUnit->unitX < 305)
 			{
-				if (JE_stabilityCheck(curUnit->unitX + 5, roundf(curUnit->unitY)))
+				if (JE_stabilityCheck(curUnit->unitX + 5, ot_round(curUnit->unitY)))
 				{
 					if (curUnit->lastMove < 5)
 					{
 						curUnit->lastMove++;
 					}
 					curUnit->unitX++;
-					if (JE_stabilityCheck(curUnit->unitX, roundf(curUnit->unitY)))
+					if (JE_stabilityCheck(curUnit->unitX, ot_round(curUnit->unitY)))
 					{
 						curUnit->isYInAir = true;
 					}
@@ -2549,12 +2549,12 @@ void DE_ProcessInput( void )
 					break;
 
 				case EXPL_MAGNET:
-					DE_RunMagnet(player_index, curUnit);
+					DE_RunMagnet((de_player_t)player_index, curUnit);
 					break;
 
 				case EXPL_DIRT:
 				case EXPL_NORMAL:
-					DE_MakeShot(player_index, curUnit, direction);
+					DE_MakeShot((de_player_t)player_index, curUnit, direction);
 					break;
 
 				default:
@@ -2568,7 +2568,7 @@ void DE_CycleWeaponUp( struct destruct_unit_s * unit )
 {
 	do
 	{
-		unit->shotType++;
+		unit->shotType = (de_shot_t)(unit->shotType + 1);
 		if (unit->shotType > SHOT_LAST)
 		{
 			unit->shotType = SHOT_FIRST;
@@ -2579,7 +2579,7 @@ void DE_CycleWeaponDown( struct destruct_unit_s * unit )
 {
 	do
 	{
-		unit->shotType--;
+		unit->shotType = (de_shot_t)(unit->shotType - 1);
 		if (unit->shotType < SHOT_FIRST)
 		{
 			unit->shotType = SHOT_LAST;
@@ -2652,17 +2652,17 @@ void DE_MakeShot( enum de_player_t curPlayer, const struct destruct_unit_s * cur
 				 * but that's more confusing to people who aren't used
 				 * to that quirk of switch. */
 
-				shotRec[shotIndex].x    = curUnit->unitX + 6 - cosf(curUnit->angle) * 10 * direction;
-				shotRec[shotIndex].y    = curUnit->unitY - 7 - sinf(curUnit->angle) * 10;
-				shotRec[shotIndex].xmov = -cosf(curUnit->angle) * curUnit->power * direction;
-				shotRec[shotIndex].ymov = -sinf(curUnit->angle) * curUnit->power;
+				shotRec[shotIndex].x    = curUnit->unitX + 6 - cos(curUnit->angle) * 10 * direction;
+				shotRec[shotIndex].y    = curUnit->unitY - 7 - sin(curUnit->angle) * 10;
+				shotRec[shotIndex].xmov = -cos(curUnit->angle) * curUnit->power * direction;
+				shotRec[shotIndex].ymov = -sin(curUnit->angle) * curUnit->power;
 			}
 			else
 			{
 				/* This is not identical to the default case. */
 
 				shotRec[shotIndex].x = curUnit->unitX + 2;
-				shotRec[shotIndex].xmov = -cosf(curUnit->angle) * curUnit->power * direction;
+				shotRec[shotIndex].xmov = -cos(curUnit->angle) * curUnit->power * direction;
 
 				if (curUnit->isYInAir == true)
 				{
@@ -2677,10 +2677,10 @@ void DE_MakeShot( enum de_player_t curPlayer, const struct destruct_unit_s * cur
 
 		default:
 
-			shotRec[shotIndex].x    = curUnit->unitX + 6 - cosf(curUnit->angle) * 10 * direction;
-			shotRec[shotIndex].y    = curUnit->unitY - 7 - sinf(curUnit->angle) * 10;
-			shotRec[shotIndex].xmov = -cosf(curUnit->angle) * curUnit->power * direction;
-			shotRec[shotIndex].ymov = -sinf(curUnit->angle) * curUnit->power;
+			shotRec[shotIndex].x    = curUnit->unitX + 6 - cos(curUnit->angle) * 10 * direction;
+			shotRec[shotIndex].y    = curUnit->unitY - 7 - sin(curUnit->angle) * 10;
+			shotRec[shotIndex].xmov = -cos(curUnit->angle) * curUnit->power * direction;
+			shotRec[shotIndex].ymov = -sin(curUnit->angle) * curUnit->power;
 			break;
 	}
 

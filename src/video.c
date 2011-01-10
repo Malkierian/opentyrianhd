@@ -23,7 +23,7 @@
 #include "video_scale.h"
 
 #include <assert.h>
-#include <stdbool.h>
+
 
 bool fullscreen_enabled = false;
 

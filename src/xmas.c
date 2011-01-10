@@ -31,8 +31,7 @@ bool xmas = false;
 
 bool xmas_time( void )
 {
-	time_t now = time(NULL);
-	return localtime(&now)->tm_mon == 11;
+	return false;
 }
 
 bool xmas_prompt( void )

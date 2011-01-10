@@ -402,7 +402,7 @@ JE_word JE_SGr( JE_word ship, Sprite2_array **ptr )
 
 	JE_word tempW = extraShips[(ship - 1) * 15];
 	if (tempW > 7)
-		*ptr = extraShapes;
+		*ptr = (Sprite2_array *)extraShapes;
 
 	return GR[tempW-1];
 }
@@ -1329,7 +1329,7 @@ void JE_drawShield( void )
 	if (twoPlayerMode && !galagaMode)
 	{
 		for (uint i = 0; i < COUNTOF(player); ++i)
-			JE_dBar3(VGAScreen, 270, 60 + 134 * i, roundf(player[i].shield * 0.8f), 144);
+			JE_dBar3(VGAScreen, 270, 60 + 134 * i, ot_round(player[i].shield * 0.8f), 144);
 	}
 	else
 	{
@@ -1351,7 +1351,7 @@ void JE_drawArmor( void )
 	if (twoPlayerMode && !galagaMode)
 	{
 		for (uint i = 0; i < COUNTOF(player); ++i)
-			JE_dBar3(VGAScreen, 307, 60 + 134 * i, roundf(player[i].armor * 0.8f), 224);
+			JE_dBar3(VGAScreen, 307, 60 + 134 * i, ot_round(player[i].armor * 0.8f), 224);
 	}
 	else
 	{
@@ -1364,8 +1364,8 @@ void JE_doSP( JE_word x, JE_word y, JE_word num, JE_byte explowidth, JE_byte col
 	for (temp = 0; temp < num; temp++)
 	{
 		JE_real tempr = mt_rand_lt1() * (2 * M_PI);
-		signed int tempy = roundf(cosf(tempr) * mt_rand_1() * explowidth);
-		signed int tempx = roundf(sinf(tempr) * mt_rand_1() * explowidth);
+		signed int tempy = ot_round(cos(tempr) * mt_rand_1() * explowidth);
+		signed int tempx = ot_round(sin(tempr) * mt_rand_1() * explowidth);
 
 		if (++last_superpixel >= MAX_SUPERPIXELS)
 			last_superpixel = 0;

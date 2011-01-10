@@ -1,0 +1,78 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenTyrianHD", "OpenTyrianHD.vcproj", "{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTyrianHDzune", "exploiter\OpenTyrianHDzune.csproj", "{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|OpenZDK (ARMV4I) = Debug|OpenZDK (ARMV4I)
+		Debug|Zune = Debug|Zune
+		FullRelease|Mixed Platforms = FullRelease|Mixed Platforms
+		FullRelease|OpenZDK (ARMV4I) = FullRelease|OpenZDK (ARMV4I)
+		FullRelease|Zune = FullRelease|Zune
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|OpenZDK (ARMV4I) = Release|OpenZDK (ARMV4I)
+		Release|Zune = Release|Zune
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Debug|Mixed Platforms.ActiveCfg = Debug|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Debug|Mixed Platforms.Build.0 = Debug|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Debug|Mixed Platforms.Deploy.0 = Debug|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Debug|OpenZDK (ARMV4I).ActiveCfg = Debug|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Debug|OpenZDK (ARMV4I).Build.0 = Debug|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Debug|OpenZDK (ARMV4I).Deploy.0 = Debug|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Debug|Zune.ActiveCfg = Debug|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.FullRelease|Mixed Platforms.ActiveCfg = Release|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.FullRelease|Mixed Platforms.Build.0 = Release|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.FullRelease|Mixed Platforms.Deploy.0 = Release|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.FullRelease|OpenZDK (ARMV4I).ActiveCfg = Release|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.FullRelease|OpenZDK (ARMV4I).Build.0 = Release|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.FullRelease|OpenZDK (ARMV4I).Deploy.0 = Release|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.FullRelease|Zune.ActiveCfg = Release|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Release|Mixed Platforms.ActiveCfg = Release|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Release|Mixed Platforms.Build.0 = Release|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Release|Mixed Platforms.Deploy.0 = Release|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Release|OpenZDK (ARMV4I).ActiveCfg = Release|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Release|OpenZDK (ARMV4I).Build.0 = Release|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Release|OpenZDK (ARMV4I).Deploy.0 = Release|OpenZDK (ARMV4I)
+		{C3FC7019-D59E-4E5E-A9C4-70AA6916005D}.Release|Zune.ActiveCfg = Release|OpenZDK (ARMV4I)
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Debug|Mixed Platforms.ActiveCfg = Debug|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Debug|Mixed Platforms.Build.0 = Debug|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Debug|Mixed Platforms.Deploy.0 = Debug|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Debug|OpenZDK (ARMV4I).ActiveCfg = Debug|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Debug|Zune.ActiveCfg = Debug|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Debug|Zune.Build.0 = Debug|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Debug|Zune.Deploy.0 = Debug|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.FullRelease|Mixed Platforms.ActiveCfg = FullRelease|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.FullRelease|Mixed Platforms.Build.0 = FullRelease|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.FullRelease|Mixed Platforms.Deploy.0 = FullRelease|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.FullRelease|OpenZDK (ARMV4I).ActiveCfg = FullRelease|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.FullRelease|Zune.ActiveCfg = FullRelease|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.FullRelease|Zune.Build.0 = FullRelease|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.FullRelease|Zune.Deploy.0 = FullRelease|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Release|Mixed Platforms.ActiveCfg = Release|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Release|Mixed Platforms.Build.0 = Release|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Release|Mixed Platforms.Deploy.0 = Release|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Release|OpenZDK (ARMV4I).ActiveCfg = Release|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Release|OpenZDK (ARMV4I).Build.0 = Release|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Release|OpenZDK (ARMV4I).Deploy.0 = Release|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Release|Zune.ActiveCfg = Release|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Release|Zune.Build.0 = Release|Zune
+		{24DFDC0C-9A84-4DFB-894E-ED44FDD37EE8}.Release|Zune.Deploy.0 = Release|Zune
+		{D1F098E8-CCD5-4EF7-AF0A-63DBCBE37105}.Debug|Mixed Platforms.ActiveCfg = Debug|Zune
+		{D1F098E8-CCD5-4EF7-AF0A-63DBCBE37105}.Debug|OpenZDK (ARMV4I).ActiveCfg = Debug|Zune
+		{D1F098E8-CCD5-4EF7-AF0A-63DBCBE37105}.Debug|Zune.ActiveCfg = Debug|Zune
+		{D1F098E8-CCD5-4EF7-AF0A-63DBCBE37105}.FullRelease|Mixed Platforms.ActiveCfg = FullRelease|Zune
+		{D1F098E8-CCD5-4EF7-AF0A-63DBCBE37105}.FullRelease|OpenZDK (ARMV4I).ActiveCfg = FullRelease|Zune
+		{D1F098E8-CCD5-4EF7-AF0A-63DBCBE37105}.FullRelease|Zune.ActiveCfg = FullRelease|Zune
+		{D1F098E8-CCD5-4EF7-AF0A-63DBCBE37105}.Release|Mixed Platforms.ActiveCfg = Release|Zune
+		{D1F098E8-CCD5-4EF7-AF0A-63DBCBE37105}.Release|OpenZDK (ARMV4I).ActiveCfg = Release|Zune
+		{D1F098E8-CCD5-4EF7-AF0A-63DBCBE37105}.Release|Zune.ActiveCfg = Release|Zune
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

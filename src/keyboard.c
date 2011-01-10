@@ -85,7 +85,7 @@ void wait_noinput( JE_boolean keyboard, JE_boolean mouse, JE_boolean joystick )
 
 void init_keyboard( void )
 {
-	keysactive = SDL_GetKeyState(&numkeys);
+	keysactive = SDL_GetKeyboardState(&numkeys);
 	SDL_EnableKeyRepeat(500, 60);
 
 	newkey = newmouse = false;
@@ -193,7 +193,7 @@ void service_SDL_events( JE_boolean clear_new )
 				
 				newkey = true;
 				lastkey_sym = ev.key.keysym.sym;
-				lastkey_mod = ev.key.keysym.mod;
+				lastkey_mod = (SDLMod)ev.key.keysym.mod;
 				lastkey_char = ev.key.keysym.unicode;
 				keydown = true;
 				return;

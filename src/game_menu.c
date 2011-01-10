@@ -366,7 +366,7 @@ void JE_itemScreen( void )
 
 						strcpy(tempStr, saveFiles[x-2].levelName);
 
-						snprintf(buf, sizeof buf, "%s%d", miscTextB[1-1], saveFiles[x-2].episode);
+						sprintf(buf, "%s%d", miscTextB[1-1], saveFiles[x-2].episode);
 						JE_textShade(VGAScreen, 297, tempY, buf, temp2 / 16, temp2 % 16 - 8, DARKEN);
 					}
 
@@ -541,7 +541,7 @@ void JE_itemScreen( void )
 					case 1: /* ship */
 						if (temp > 90)
 						{
-							snprintf(tempStr, sizeof(tempStr), "Custom Ship %d", temp - 90);
+							sprintf(tempStr, "Custom Ship %d", temp - 90);
 						} else {
 							strcpy(tempStr, ships[temp].name);
 						}
@@ -602,7 +602,7 @@ void JE_itemScreen( void )
 				{
 					char buf[20];
 
-					snprintf(buf, sizeof buf, "Cost: %d", temp_cost);
+					sprintf(buf, "Cost: %d", temp_cost);
 					JE_textShade(VGAScreen, 187, tempY+10, buf, temp2 / 16, temp2 % 16 - 8 - temp4, DARKEN);
 				}
 			}
@@ -616,7 +616,7 @@ void JE_itemScreen( void )
 			{
 				char buf[20];
 
-				snprintf(buf, sizeof buf, "%lu", player[0].cash);
+				sprintf(buf, "%lu", player[0].cash);
 				JE_textShade(VGAScreen, 65, 173, buf, 1, 6, DARKEN);
 			}
 			JE_barDrawShadow(VGAScreen, 42, 152, 3, 14, player[0].armor, 2, 13);
@@ -632,7 +632,7 @@ void JE_itemScreen( void )
 
 				for (uint i = 0; i < 2; ++i)
 				{
-					snprintf(buf, sizeof(buf), "%s %lu", miscText[40 + i], player[i].cash);
+					sprintf(buf, "%s %lu", miscText[40 + i], player[i].cash);
 					JE_textShade(VGAScreen, 25, 50 + 10 * i, buf, 15, 0, FULL_SHADE);
 				}
 			}
@@ -853,7 +853,7 @@ void JE_itemScreen( void )
 					                   : (yLoc * 100) / ((cube[currentCube].last_line - 9) * 12);
 
 					char buf[20];
-					snprintf(buf, sizeof(buf), "%s %d%%", miscText[11], percent_read);
+					sprintf(buf, "%s %d%%", miscText[11], percent_read);
 					JE_outTextAndDarken(VGAScreen, 176, 160, buf, 14, 1, TINY_FONT);
 
 					JE_dString(VGAScreen, 260, 160, miscText[12], SMALL_FONT_SHAPES);
@@ -1925,7 +1925,7 @@ void JE_drawMenuChoices( void )
 			tempY -= 16;
 		}
 
-		str = malloc(strlen(menuInt[curMenu + 1][x-1])+2);
+		str = (char *)malloc(strlen(menuInt[curMenu + 1][x-1])+2);
 		if (curSel[curMenu] == x)
 		{
 			str[0] = '~';
@@ -1953,8 +1953,8 @@ void JE_updateNavScreen( void )
 	   yellowish planet below Tyrian isn't visible for as many frames as in the
 	   original. */
 
-	tempNavX = roundf(navX);
-	tempNavY = roundf(navY);
+	tempNavX = ot_round(navX);
+	tempNavY = ot_round(navY);
 	fill_rectangle_xy(VGAScreen, 19, 16, 135, 169, 2);
 	JE_drawNavLines(true);
 	JE_drawNavLines(false);
@@ -2185,7 +2185,7 @@ void JE_scaleBitmap( SDL_Surface *dst_bitmap, const SDL_Surface *src_bitmap,  in
 
 
 	//Okay, it's time to loop through and add bits of A to a rectangle in B
-	Uint8 *dst = dst_bitmap->pixels;  /* 8-bit specific */
+	Uint8 *dst = (Uint8 *)dst_bitmap->pixels;  /* 8-bit specific */
 	const Uint8 *src, *src_w;  /* 8-bit specific */
 
 	dst += y1 * dst_bitmap->pitch + x1;
@@ -2252,7 +2252,7 @@ void JE_computeDots( void )
 
 		if (tempX != 0)
 		{
-			planetDots[x] = roundf(sqrtf(sqrtf((distX * distX) + (distY * distY)))) - 1;
+			planetDots[x] = ot_round(sqrtf(sqrtf((distX * distX) + (distY * distY)))) - 1;
 		} else {
 			planetDots[x] = 0;
 		}
@@ -2499,7 +2499,7 @@ void JE_scaleInPicture( SDL_Surface *dst, const SDL_Surface *src )
 	{
 		if (JE_anyButton()) { break; }
 
-		JE_scaleBitmap(dst, src, 160 - i, 0, 160 + i - 1, 100 + roundf(i * 0.625f) - 1);
+		JE_scaleBitmap(dst, src, 160 - i, 0, 160 + i - 1, 100 + ot_round(i * 0.625f) - 1);
 		JE_showVGA();
 
 		SDL_Delay(1);
@@ -2527,6 +2527,7 @@ void JE_menuFunction( JE_byte select )
 	JE_playSampleNum(S_CLICK);
 
 	curSelect = curSel[curMenu];
+	int temp;
 
 	switch (curMenu)
 	{
@@ -2776,7 +2777,7 @@ void JE_menuFunction( JE_byte select )
 		case 4:
 			JE_playSampleNum(S_CURSOR);
 
-			int temp = curSel[curMenu] - 3;
+			temp = curSel[curMenu] - 3;
 			do {
 				if (joysticks == 0)
 				{
@@ -3029,8 +3030,8 @@ void JE_drawShipSpecs( SDL_Surface * screen, SDL_Surface * temp_screen  )
 	 * We can't work in place.  In fact we'll need to overlay the result
 	 * To avoid our temp screen dependence this has been rewritten to
 	 * only write one line at a time.*/
-	dst = screen->pixels;
-	src = temp_screen->pixels;
+	dst = (Uint8 *)screen->pixels;
+	src = (Uint8 *)temp_screen->pixels;
 	for (int y = 0; y < screen->h; y++)
 	{
 		for (int x = 0; x < screen->pitch; x++)

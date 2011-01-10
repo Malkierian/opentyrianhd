@@ -51,7 +51,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
+
 
 inline static void blit_enemy( SDL_Surface *surface, unsigned int i, signed int x_offset, signed int y_offset, signed int sprite_offset );
 
@@ -81,9 +81,9 @@ void JE_starShowVGA( void )
 	if (!playerEndLevel && !skipStarShowVGA)
 	{
 
-		s = VGAScreenSeg->pixels;
+		s = (Uint8 *)VGAScreenSeg->pixels;
 
-		src = game_screen->pixels;
+		src = (JE_byte *)game_screen->pixels;
 		src += 24;
 
 		if (smoothScroll != 0 /*&& thisPlayerNum != 2*/)
@@ -368,7 +368,8 @@ enemy_still_exists:
 
 						if (galagaMode && (enemy[i].eyc == 0 || (mt_rand() % 400) >= galagaShotFreq))
 							goto draw_enemy_end;
-
+						
+						int attractivity;
 						switch (temp3)
 						{
 						case 252: /* Savara Boss DualMissile */
@@ -379,7 +380,7 @@ enemy_still_exists:
 							}
 							break;
 						case 251:; /* Suck-O-Magnet */
-							const int attractivity = 4 - (abs(player[0].x - tempX) + abs(player[0].y - tempY)) / 100;
+							attractivity = 4 - (abs(player[0].x - tempX) + abs(player[0].y - tempY)) / 100;
 							player[0].x_velocity += (player[0].x > tempX) ? -attractivity : attractivity;
 							break;
 						case 253: /* Left ShortRange Magnet */
@@ -529,8 +530,8 @@ enemy_still_exists:
 										tempI3 = abs(tempI);
 									else
 										tempI3 = abs(tempI2);
-									enemyShot[b].sxm = roundf(((float)tempI / tempI3) * temp4);
-									enemyShot[b].sym = roundf(((float)tempI2 / tempI3) * temp4);
+									enemyShot[b].sxm = ot_round(((float)tempI / tempI3) * temp4);
+									enemyShot[b].sym = ot_round(((float)tempI2 / tempI3) * temp4);
 								}
 							}
 							break;
@@ -592,8 +593,8 @@ enemy_still_exists:
 									tempI3 = abs(tempI4);
 								else
 									tempI3 = abs(tempI5);
-								enemy[b-1].exc = roundf(((float)tempI4 / tempI3) * enemy[b-1].launchtype);
-								enemy[b-1].eyc = roundf(((float)tempI5 / tempI3) * enemy[b-1].launchtype);
+								enemy[b-1].exc = ot_round(((float)tempI4 / tempI3) * enemy[b-1].launchtype);
+								enemy[b-1].eyc = ot_round(((float)tempI5 / tempI3) * enemy[b-1].launchtype);
 							}
 						}
 
@@ -2268,7 +2269,7 @@ draw_player_shot_loop_end:
 
 		debugHist = debugHist + abs((JE_longint)debugTime - (JE_longint)lastDebugTime);
 		debugHistCount++;
-		sprintf(tempStr, "%2.3f", 1000.0f / roundf(debugHist / debugHistCount));
+		sprintf(tempStr, "%2.3f", 1000.0f / ot_round(debugHist / debugHistCount));
 		sprintf(buffer, "X:%d Y:%-5d  %s FPS  %d %d %d %d", (mapX - 1) * 12 + player[0].x, curLoc, tempStr, player[0].x_velocity, player[0].y_velocity, player[0].x, player[0].y);
 		JE_outText(VGAScreen, 45, 175, buffer, 15, 3);
 		lastDebugTime = debugTime;
@@ -2809,7 +2810,7 @@ new_game:
 						if (twoPlayerMode)
 						{
 							for (uint i = 0; i < 2; ++i)
-								snprintf(levelWarningText[i], sizeof(*levelWarningText), "%s %lu", miscText[40], player[i].cash);
+								sprintf(levelWarningText[i], "%s %lu", miscText[40], player[i].cash);
 							strcpy(levelWarningText[2], "");
 							levelWarningLines = 3;
 						}
@@ -2943,8 +2944,8 @@ new_game:
 							{
 								if (!newkey)
 								{
-									vga = VGAScreen->pixels;
-									vga2 = VGAScreen2->pixels;
+									vga = (Uint8 *)VGAScreen->pixels;
+									vga2 = (Uint8 *)VGAScreen2->pixels;
 									pic = pic_buffer + (199 - z) * 320;
 
 									setjasondelay(1); /* attempting to emulate JE_waitRetrace();*/
@@ -2994,8 +2995,8 @@ new_game:
 							{
 								if (!newkey)
 								{
-									vga = VGAScreen->pixels;
-									vga2 = VGAScreen2->pixels;
+									vga = (Uint8 *)VGAScreen->pixels;
+									vga2 = (Uint8 *)VGAScreen2->pixels;
 									pic = pic_buffer;
 
 									setjasondelay(1); /* attempting to emulate JE_waitRetrace();*/
@@ -3046,8 +3047,8 @@ new_game:
 							{
 								if (!newkey)
 								{
-									vga = VGAScreen->pixels;
-									vga2 = VGAScreen2->pixels;
+									vga = (Uint8 *)VGAScreen->pixels;
+									vga2 = (Uint8 *)VGAScreen2->pixels;
 									pic = pic_buffer;
 
 									setjasondelay(1); /* attempting to emulate JE_waitRetrace();*/
@@ -3597,7 +3598,7 @@ bool JE_titleScreen( JE_boolean animate )
 						JE_outText(VGAScreen, 10, 60, "Prepare to play...", 15, 4);
 
 						char buf[10+1+15+1];
-						snprintf(buf, sizeof(buf), "%s %s", miscTextB[4], pName[0]);
+						sprintf(buf, "%s %s", miscTextB[4], pName[0]);
 						JE_dString(VGAScreen, JE_fontCenter(buf, FONT_SHAPES), 110, buf, FONT_SHAPES);
 
 						play_song(16);
@@ -4288,6 +4289,7 @@ JE_boolean JE_searchFor/*enemy*/( JE_byte PLType )
 
 void JE_eventSystem( void )
 {
+	bool temp_no_clue;
 	switch (eventRec[eventLoc-1].eventtype)
 	{
 	case 1:
@@ -4661,7 +4663,7 @@ void JE_eventSystem( void )
 			if (eventRec[eventLoc-1].eventdat4 == 0 || enemy[temp].linknum == eventRec[eventLoc-1].eventdat4)
 			{
 				if (galagaMode)
-					enemy[temp].armorleft = roundf(eventRec[eventLoc-1].eventdat * (difficultyLevel / 2));
+					enemy[temp].armorleft = ot_round(eventRec[eventLoc-1].eventdat * (difficultyLevel / 2));
 				else
 					enemy[temp].armorleft = eventRec[eventLoc-1].eventdat;
 			}
@@ -5078,7 +5080,7 @@ void JE_eventSystem( void )
 		break;
 
 	case 75:;
-		bool temp_no_clue = false; // TODO: figure out what this is doing
+		temp_no_clue = false; // TODO: figure out what this is doing
 
 		for (temp = 0; temp < 100; temp++)
 		{
@@ -5183,8 +5185,8 @@ void JE_whoa( void )
 	 * way to get vgascreen as one of the temp buffers), but it's only called
 	 * once so don't worry about it. */
 
-	TempScreen1  = game_screen->pixels;
-	TempScreen2  = VGAScreen2->pixels;
+	TempScreen1  = (Uint8 *)game_screen->pixels;
+	TempScreen2  = (Uint8 *)VGAScreen2->pixels;
 
 	screenSize   = VGAScreenSeg->h * VGAScreenSeg->pitch;
 	topBorder    = VGAScreenSeg->pitch * 4; /* Seems an arbitrary number of lines */

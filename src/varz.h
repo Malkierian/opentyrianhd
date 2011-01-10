@@ -24,7 +24,7 @@
 #include "player.h"
 #include "sprite.h"
 
-#include <stdbool.h>
+
 
 #define SA 7
 

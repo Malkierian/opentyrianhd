@@ -20,7 +20,7 @@
 #define FILE_H
 
 #include "SDL_endian.h"
-#include <stdbool.h>
+
 #include <stdio.h>
 
 extern const char *custom_data_dir;

@@ -102,7 +102,7 @@ void opentyrian_menu( void )
 
 			if (i == 2) /* Scaler */
 			{
-				snprintf(buffer, sizeof(buffer), "Scaler: %s", scalers[temp_scaler].name);
+				sprintf(buffer, "Scaler: %s", scalers[temp_scaler].name);
 				text = buffer;
 			}
 
@@ -233,7 +233,7 @@ void opentyrian_menu( void )
 
 int main( int argc, char *argv[] )
 {
-	mt_srand(time(NULL));
+	mt_srand(1033754889432);
 
 	printf("\nWelcome to... >> %s %s <<\n\n", opentyrian_str, opentyrian_version);
 

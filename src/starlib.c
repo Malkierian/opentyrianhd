@@ -79,7 +79,7 @@ void JE_starlib_main( void )
 	for(stars = star, i = starlib_MAX_STARS; i > 0; stars++, i--)
 	{
 		/* Make a pointer to the screen... */
-		surf = VGAScreen->pixels;
+		surf = (Uint8 *)VGAScreen->pixels;
 
 		/* Calculate the offset to where we wish to draw */
 		off = (stars->lastX)+(stars->lastY)*320;
@@ -333,40 +333,40 @@ void JE_newStar( void )
 		switch (setup)
 		{
 			case 1:
-				tempX = (int)(sinf(nsp / 30) * 20000);
+				tempX = (int)(sin(nsp / 30) * 20000);
 				tempY = (mt_rand() % 40000) - 20000;
 				break;
 			case 2:
-				tempX = (int)(cosf(nsp) * 20000);
-				tempY = (int)(sinf(nsp) * 20000);
+				tempX = (int)(cos(nsp) * 20000);
+				tempY = (int)(sin(nsp) * 20000);
 				break;
 			case 3:
-				tempX = (int)(cosf(nsp * 15) * 100) * ((int)(nsp / 6) % 200);
-				tempY = (int)(sinf(nsp * 15) * 100) * ((int)(nsp / 6) % 200);
+				tempX = (int)(cos(nsp * 15) * 100) * ((int)(nsp / 6) % 200);
+				tempY = (int)(sin(nsp * 15) * 100) * ((int)(nsp / 6) % 200);
 				break;
 			case 4:
-				tempX = (int)(sinf(nsp / 60) * 20000);
-				tempY = (int)(cosf(nsp) * (int)(sinf(nsp / 200) * 300) * 100);
+				tempX = (int)(sin(nsp / 60) * 20000);
+				tempY = (int)(cos(nsp) * (int)(sin(nsp / 200) * 300) * 100);
 				break;
 			case 5:
-				tempX = (int)(sinf(nsp / 2) * 20000);
-				tempY = (int)(cosf(nsp) * (int)(sinf(nsp / 200) * 300) * 100);
+				tempX = (int)(sin(nsp / 2) * 20000);
+				tempY = (int)(cos(nsp) * (int)(sin(nsp / 200) * 300) * 100);
 				break;
 			case 6:
-				tempX = (int)(sinf(nsp) * 40000);
-				tempY = (int)(cosf(nsp) * 20000);
+				tempX = (int)(sin(nsp) * 40000);
+				tempY = (int)(cos(nsp) * 20000);
 				break;
 			case 8:
-				tempX = (int)(sinf(nsp / 2) * 40000);
-				tempY = (int)(cosf(nsp) * 20000);
+				tempX = (int)(sin(nsp / 2) * 40000);
+				tempY = (int)(cos(nsp) * 20000);
 				break;
 			case 7:
 				tempX = mt_rand() % 65535;
 				if ((mt_rand() % 2) == 0)
 				{
-					tempY = (int)(cosf(nsp / 80) * 10000) + 15000;
+					tempY = (int)(cos(nsp / 80) * 10000) + 15000;
 				} else {
-					tempY = 50000 - (int)(cosf(nsp / 80) * 13000);
+					tempY = 50000 - (int)(cos(nsp / 80) * 13000);
 				}
 				break;
 			case 9:
@@ -375,8 +375,8 @@ void JE_newStar( void )
 				{
 					nspVar2Inc = -nspVar2Inc;
 				}
-				tempX = (int)(cosf(sinf(nsp2 / 10.0f) + (nsp / 500)) * 32000);
-				tempY = (int)(sinf(cosf(nsp2 / 10.0f) + (nsp / 500)) * 30000);
+				tempX = (int)(cos(sin(nsp2 / 10.0f) + (nsp / 500)) * 32000);
+				tempY = (int)(sin(cos(nsp2 / 10.0f) + (nsp / 500)) * 30000);
 				break;
 			case 10:
 				nsp2 += nspVar2Inc;
@@ -384,8 +384,8 @@ void JE_newStar( void )
 				{
 					nspVar2Inc = -nspVar2Inc;
 				}
-				tempX = (int)(cosf(sinf(nsp2 / 5.0f) + (nsp / 100)) * 32000);
-				tempY = (int)(sinf(cosf(nsp2 / 5.0f) + (nsp / 100)) * 30000);
+				tempX = (int)(cos(sin(nsp2 / 5.0f) + (nsp / 100)) * 32000);
+				tempY = (int)(sin(cos(nsp2 / 5.0f) + (nsp / 100)) * 30000);
 				break;;
 			case 11:
 				nsp2 += nspVar2Inc;
@@ -393,8 +393,8 @@ void JE_newStar( void )
 				{
 					nspVar2Inc = -nspVar2Inc;
 				}
-				tempX = (int)(cosf(sinf(nsp2 / 1000.0f) + (nsp / 2)) * 32000);
-				tempY = (int)(sinf(cosf(nsp2 / 1000.0f) + (nsp / 2)) * 30000);
+				tempX = (int)(cos(sin(nsp2 / 1000.0f) + (nsp / 2)) * 32000);
+				tempY = (int)(sin(cos(nsp2 / 1000.0f) + (nsp / 2)) * 30000);
 				break;
 			case 12:
 				if (nsp != 0)
@@ -404,8 +404,8 @@ void JE_newStar( void )
 					{
 						nspVar2Inc = -nspVar2Inc;
 					}
-					tempX = (int)(cosf(sinf(nsp2 / 2.0f) / (sqrtf(fabsf(nsp)) / 10.0f + 1) + (nsp2 / 100.0f)) * 32000);
-					tempY = (int)(sinf(cosf(nsp2 / 2.0f) / (sqrtf(fabsf(nsp)) / 10.0f + 1) + (nsp2 / 100.0f)) * 30000);
+					tempX = (int)(cos(sin(nsp2 / 2.0f) / (sqrtf(fabsf(nsp)) / 10.0f + 1) + (nsp2 / 100.0f)) * 32000);
+					tempY = (int)(sin(cos(nsp2 / 2.0f) / (sqrtf(fabsf(nsp)) / 10.0f + 1) + (nsp2 / 100.0f)) * 30000);
 				}
 				break;
 			case 13:
@@ -416,14 +416,14 @@ void JE_newStar( void )
 					{
 						nspVar2Inc = -nspVar2Inc;
 					}
-					tempX = (int)(cosf(sinf(nsp2 / 10.0f) / 2 + (nsp / 20)) * 32000);
-					tempY = (int)(sinf(sinf(nsp2 / 11.0f) / 2 + (nsp / 20)) * 30000);
+					tempX = (int)(cos(sin(nsp2 / 10.0f) / 2 + (nsp / 20)) * 32000);
+					tempY = (int)(sin(sin(nsp2 / 11.0f) / 2 + (nsp / 20)) * 30000);
 				}
 				break;
 			case 14:
 				nsp2 += nspVar2Inc;
-				tempX = (int)((sinf(nsp) + cosf(nsp2 / 1000.0f) * 3) * 12000);
-				tempY = (int)(cosf(nsp) * 10000) + nsp2;
+				tempX = (int)((sin(nsp) + cos(nsp2 / 1000.0f) * 3) * 12000);
+				tempY = (int)(cos(nsp) * 10000) + nsp2;
 				break;
 		}
 	}

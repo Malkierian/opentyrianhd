@@ -85,7 +85,7 @@ bool joystick_analog_angle( int j, float *angle )
 	
 	if (x != 0)
 	{
-		*angle += atanf(-y / x);
+		*angle += atan(-y / x);
 		*angle += (x < 0) ? -M_PI_2 : M_PI_2;
 		return true;
 	}
@@ -272,7 +272,7 @@ void init_joysticks( void )
 	SDL_JoystickEventState(SDL_IGNORE);
 	
 	joysticks = SDL_NumJoysticks();
-	joystick = malloc(joysticks * sizeof(*joystick));
+	joystick = (Joystick *)malloc(joysticks * sizeof(*joystick));
 	
 	for (int j = 0; j < joysticks; j++)
 	{
@@ -461,7 +461,7 @@ void joystick_assignments_to_string( char *buffer, size_t buffer_len, const Joys
 		if (assignments[i].type == NONE)
 			continue;
 		
-		size_t len = snprintf(buffer, buffer_len, "%s%s",
+		size_t len = sprintf(buffer, "%s%s",
 		                      comma ? ", " : "",
 		                      assignment_to_code(&assignments[i]));
 		buffer += len;
@@ -510,18 +510,18 @@ const char *assignment_to_code( const Joystick_assignment *assignment )
 		break;
 		
 	case AXIS:
-		snprintf(name, sizeof(name), "AX %d%c",
+		sprintf(name, "AX %d%c",
 		         assignment->num + 1,
 		         assignment->negative_axis ? '-' : '+');
 		break;
 		
 	case BUTTON:
-		snprintf(name, sizeof(name), "BTN %d",
+		sprintf(name, "BTN %d",
 		         assignment->num + 1);
 		break;
 		
 	case HAT:
-		snprintf(name, sizeof(name), "H %d%c%c",
+		sprintf(name, "H %d%c%c",
 		         assignment->num + 1,
 		         assignment->x_axis ? 'X' : 'Y',
 		         assignment->negative_axis ? '-' : '+');
@@ -539,17 +539,17 @@ bool detect_joystick_assignment( int j, Joystick_assignment *assignment )
 	// get initial joystick state to compare against to see if anything was pressed
 	
 	const int axes = SDL_JoystickNumAxes(joystick[j].handle);
-	Sint16 *axis = malloc(axes * sizeof(*axis));
+	Sint16 *axis = (Sint16 *)malloc(axes * sizeof(*axis));
 	for (int i = 0; i < axes; i++)
 		axis[i] = SDL_JoystickGetAxis(joystick[j].handle, i);
 	
 	const int buttons = SDL_JoystickNumButtons(joystick[j].handle);
-	Uint8 *button = malloc(buttons * sizeof(*button));
+	Uint8 *button = (Uint8 *)malloc(buttons * sizeof(*button));
 	for (int i = 0; i < buttons; i++)
 		button[i] = SDL_JoystickGetButton(joystick[j].handle, i);
 	
 	const int hats = SDL_JoystickNumHats(joystick[j].handle);
-	Uint8 *hat = malloc(hats * sizeof(*hat));
+	Uint8 *hat = (Uint8 *)malloc(hats * sizeof(*hat));
 	for (int i = 0; i < hats; i++)
 		hat[i] = SDL_JoystickGetHat(joystick[j].handle, i);
 	

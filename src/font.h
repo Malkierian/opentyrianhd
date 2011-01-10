@@ -20,7 +20,7 @@
 #define FONT_H
 
 #include "SDL.h"
-#include <stdbool.h>
+
 
 typedef enum
 {

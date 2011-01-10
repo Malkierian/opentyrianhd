@@ -95,9 +95,9 @@ void jukebox( void )
 			char buffer[60];
 			
 			if (fx)
-				snprintf(buffer, sizeof(buffer), "%d %s", fx_num + 1, soundTitle[fx_num]);
+				sprintf(buffer, "%d %s", fx_num + 1, soundTitle[fx_num]);
 			else
-				snprintf(buffer, sizeof(buffer), "%d %s", song_playing + 1, musicTitle[song_playing]);
+				sprintf(buffer, "%d %s", song_playing + 1, musicTitle[song_playing]);
 			
 			const int x = VGAScreen->w / 2;
 			
