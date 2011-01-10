@@ -21,7 +21,7 @@
 
 #include "SDL_types.h"
 #include <math.h>
-#include <stdbool.h>
+
 
 #define COUNTOF(x) ((unsigned)(sizeof(x) / sizeof *(x)))  // use only on arrays!
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -55,6 +55,8 @@ char *strnztcpy( char *to, const char *from, size_t count );
 extern const char *opentyrian_str, *opentyrian_version;
 
 void opentyrian_menu( void );
+
+inline float ot_round(float x) { return (float)((long)(x + .5f)); };
 
 #endif /* OPENTYR_H */
 

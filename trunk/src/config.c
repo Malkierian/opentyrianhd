@@ -30,9 +30,6 @@
 #include "video.h"
 #include "video_scale.h"
 
-#include <unistd.h>
-#include <sys/stat.h>
-
 
 /* Configuration Load/Save handler */
 
@@ -227,7 +224,7 @@ cJSON *load_json( const char *filename )
 		return NULL;
 	
 	size_t buffer_len = ftell_eof(f);
-	char *buffer = malloc(buffer_len + 1);
+	char *buffer = (char *)malloc(buffer_len + 1);
 	
 	fread(buffer, 1, buffer_len, f);
 	buffer[buffer_len] = '\0';
@@ -501,11 +498,11 @@ void JE_initProcessorType( void )
 	/* SYN: Originally this proc looked at your hardware specs and chose appropriate options. We don't care, so I'll just set
 	   decent defaults here. */
 
-	wild = false;
+	wild = true;
 	superWild = false;
 	smoothScroll = true;
 	explosionTransparent = true;
-	filtrationAvail = false;
+	filtrationAvail = true;
 	background2 = true;
 	displayScore = true;
 
@@ -517,13 +514,13 @@ void JE_initProcessorType( void )
 			explosionTransparent = false;
 			break;
 		case 2: /* 486 - Default */
+			wild = false;
+			filtrationAvail = false;
 			break;
 		case 3: /* High Detail */
 			smoothScroll = false;
 			break;
 		case 4: /* Pentium */
-			wild = true;
-			filtrationAvail = true;
 			break;
 		case 5: /* Nonstandard VGA */
 			smoothScroll = false;
@@ -725,17 +722,18 @@ void JE_decryptSaveTemp( void )
 #ifndef TARGET_MACOSX
 const char *get_user_directory( void )
 {
-	static char user_dir[500] = "";
+	static char user_dir[500];
+	sprintf(user_dir, "%s/userdata", data_dir());
 	
-	if (strlen(user_dir) == 0)
+	/*if (strlen(user_dir) == 0)
 	{
 #ifdef TARGET_UNIX
 		if (getenv("HOME"))
 			snprintf(user_dir, sizeof(user_dir), "%s/.opentyrian", getenv("HOME"));
 #else
-		strcpy(user_dir, ".");
+		strcpy(user_dir, "/tyrian/userdata");
 #endif // TARGET_UNIX
-	}
+	}*/
 	
 	return user_dir;
 }

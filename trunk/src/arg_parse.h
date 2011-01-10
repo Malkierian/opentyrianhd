@@ -19,7 +19,7 @@
 #ifndef ARG_PARSE_H
 #define ARG_PARSE_H
 
-#include <stdbool.h>
+
 
 // this is essentially a reimplementation of getopt_long()
 

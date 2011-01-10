@@ -29,17 +29,15 @@ const char *data_dir( void )
 {
 	const char *dirs[] =
 	{
-		custom_data_dir,
+		"\\gametitle\\584E07D1\\Content\\tyrian"
 		"data",
-#ifdef TARGET_MACOSX
-		tyrian_game_folder(),
-#endif
-		"/usr/share/opentyrian/data"
+		".\tyrian",
+		"\gametitle\584E07D1\Content\tyrian",
 	};
 	
 	static const char *dir = NULL;
 	
-	if (dir != NULL)
+	/*if (dir != NULL)
 		return dir;
 	
 	for (uint i = 0; i < COUNTOF(dirs); ++i)
@@ -55,7 +53,8 @@ const char *data_dir( void )
 	}
 	
 	if (dir == NULL) // data not found
-		dir = "";
+		dir = "";*/
+	dir = dirs[0];
 	
 	return dir;
 }
@@ -63,7 +62,7 @@ const char *data_dir( void )
 // prepend directory and fopen
 FILE *dir_fopen( const char *dir, const char *file, const char *mode )
 {
-	char *path = malloc(strlen(dir) + 1 + strlen(file) + 1);
+	char *path = (char *)malloc(strlen(dir) + 1 + strlen(file) + 1);
 	sprintf(path, "%s/%s", dir, file);
 	
 	FILE *f = fopen(path, mode);
@@ -76,12 +75,10 @@ FILE *dir_fopen( const char *dir, const char *file, const char *mode )
 // warn when dir_fopen fails
 FILE *dir_fopen_warn(  const char *dir, const char *file, const char *mode )
 {
-	errno = 0;
-	
 	FILE *f = dir_fopen(dir, file, mode);
 	
 	if (!f)
-		fprintf(stderr, "warning: failed to open '%s': %s\n", file, strerror(errno));
+		fprintf(stderr, "warning: failed to open '%s'.\n", file);
 	
 	return f;
 }
@@ -89,13 +86,11 @@ FILE *dir_fopen_warn(  const char *dir, const char *file, const char *mode )
 // die when dir_fopen fails
 FILE *dir_fopen_die( const char *dir, const char *file, const char *mode )
 {
-	errno = 0;
-	
 	FILE *f = dir_fopen(dir, file, mode);
 	
 	if (f == NULL)
 	{
-		fprintf(stderr, "error: failed to open '%s': %s\n", file, strerror(errno));
+		fprintf(stderr, "error: failed to open '%s'.\n", file);
 		fprintf(stderr, "error: One or more of the required Tyrian 2.1 data files could not be found.\n"
 		                "       Please read the README file.\n");
 		exit(1);

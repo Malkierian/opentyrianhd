@@ -19,7 +19,7 @@
 #ifndef XMAS_H
 #define XMAS_H
 
-#include <stdbool.h>
+
 
 extern bool xmas;
 

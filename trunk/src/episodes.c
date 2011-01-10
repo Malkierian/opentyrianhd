@@ -233,7 +233,7 @@ void JE_scanForEpisodes( void )
 	for (int i = 0; i < EPISODE_MAX; ++i)
 	{
 		char ep_file[20];
-		snprintf(ep_file, sizeof(ep_file), "tyrian%d.lvl", i + 1);
+		sprintf(ep_file, "tyrian%d.lvl", i + 1);
 		episodeAvail[i] = dir_file_exists(data_dir(), ep_file);
 	}
 }

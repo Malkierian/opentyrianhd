@@ -280,7 +280,7 @@ static const char *parse_number( cJSON *item, const char *in )
 static char *print_number( cJSON *item )
 {
 	char *str = (char *)cJSON_malloc(DBL_DIG + 10);
-	snprintf(str, DBL_DIG + 10, "%.*g", DBL_DIG, item->valuedouble);
+	sprintf(str, "%.*g", DBL_DIG, item->valuedouble);
 	return str;
 }
 

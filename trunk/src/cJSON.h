@@ -29,7 +29,7 @@ extern "C"
 {
 #endif
 
-#include <stdbool.h>
+
 #include <stdlib.h>
 
 typedef enum
