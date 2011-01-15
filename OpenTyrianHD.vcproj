@@ -136,11 +136,17 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/LTCG"
-				AdditionalDependencies="coredll.lib corelibc.lib mmtimer.lib sdl_main.lib sdl_net.lib sdl.lib sdl_image.lib sdl_mixer.lib sdl_ttf.lib $(NOINHERIT)"
+				AdditionalDependencies="zdksystem.lib coredll.lib corelibc.lib mmtimer.lib sdl_main.lib sdl_net.lib sdl.lib sdl_image.lib sdl_mixer.lib sdl_ttf.lib $(NOINHERIT)"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;C:\zune\sdl\lib&quot;"
+				DelayLoadDLLs="$(NOINHERIT)"
 				GenerateDebugInformation="true"
 				SubSystem="8"
+				StackReserveSize="65536"
+				StackCommitSize="4096"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				OptimizeForWindows98="2"
 				TargetMachine="0"
 			/>
 			<Tool
@@ -265,6 +271,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
+				AdditionalOptions="/QRarch6 /QRfpe-"
 				Optimization="2"
 				FavorSizeOrSpeed="0"
 				WholeProgramOptimization="true"
@@ -287,7 +294,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/LTCG"
-				AdditionalDependencies="coredll.lib corelibc.lib mmtimer.lib sdl_main.lib sdl_net.lib sdl.lib sdl_image.lib sdl_mixer.lib sdl_ttf.lib $(NOINHERIT)"
+				AdditionalDependencies="zdksystem.lib coredll.lib corelibc.lib mmtimer.lib sdl_main.lib sdl_net.lib sdl.lib sdl_image.lib sdl_mixer.lib sdl_ttf.lib $(NOINHERIT)"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;C:\zune\sdl\lib&quot;"
 				DelayLoadDLLs="$(NOINHERIT)"
@@ -297,6 +304,7 @@
 				StackCommitSize="4096"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				OptimizeForWindows98="0"
 				TargetMachine="0"
 			/>
 			<Tool
@@ -319,7 +327,7 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory=""
+				RemoteDirectory="\Flash2\debug\$(SolutionName)\$(ProjectName)\"
 				RegisterOutput="0"
 				AdditionalFiles=""
 			/>

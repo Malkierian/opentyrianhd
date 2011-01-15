@@ -54,15 +54,17 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include <windows.h>
+#include <zdksystem.h>
+
 const char *opentyrian_str = "OpenTyrian",
            *opentyrian_version = "Classic (" HG_REV ")";
 const char *opentyrian_menu_items[] =
 {
 	"About OpenTyrian",
-	"Toggle Fullscreen",
-	"Scaler: None",
 	/* "Play Destruct", */
 	"Jukebox",
+	"Rich Mode: Off",
 	"Return to Main Menu"
 };
 
@@ -102,8 +104,7 @@ void opentyrian_menu( void )
 			char buffer[100];
 
 			if (i == 2) /* Scaler */
-			{
-				sprintf(buffer, "Scaler: %s", scalers[temp_scaler].name);
+			{sprintf(buffer, "Rich Mode: %s", richMode ? "On" : "Off");
 				text = buffer;
 			}
 
@@ -145,27 +146,13 @@ void opentyrian_menu( void )
 				case SDLK_LEFT:
 					if (sel == 2)
 					{
-						do
-						{
-							if (temp_scaler == 0)
-								temp_scaler = scalers_count;
-							temp_scaler--;
-						}
-						while (!can_init_scaler(temp_scaler, fullscreen_enabled));
-						JE_playSampleNum(S_CURSOR);
+						richMode ^= 1;
 					}
 					break;
 				case SDLK_RIGHT:
 					if (sel == 2)
 					{
-						do
-						{
-							temp_scaler++;
-							if (temp_scaler == scalers_count)
-								temp_scaler = 0;
-						}
-						while (!can_init_scaler(temp_scaler, fullscreen_enabled));
-						JE_playSampleNum(S_CURSOR);
+						richMode ^= 1;
 					}
 					break;
 				case SDLK_RETURN:
@@ -180,32 +167,7 @@ void opentyrian_menu( void )
 							JE_showVGA();
 							fade_in = true;
 							break;
-						case 1: /* Fullscreen */
-							JE_playSampleNum(S_SELECT);
-
-							if (!init_scaler(scaler, !fullscreen_enabled) && // try new fullscreen state
-							    !init_any_scaler(!fullscreen_enabled) &&     // try any scaler in new fullscreen state
-							    !init_scaler(scaler, fullscreen_enabled))    // revert on fail
-							{
-								exit(EXIT_FAILURE);
-							}
-							set_palette(colors, 0, 255); // for switching between 8 bpp scalers
-							break;
-						case 2: /* Scaler */
-							JE_playSampleNum(S_SELECT);
-
-							if (scaler != temp_scaler)
-							{
-								if (!init_scaler(temp_scaler, fullscreen_enabled) &&   // try new scaler
-								    !init_scaler(temp_scaler, !fullscreen_enabled) &&  // try other fullscreen state
-								    !init_scaler(scaler, fullscreen_enabled))          // revert on fail
-								{
-									exit(EXIT_FAILURE);
-								}
-								set_palette(colors, 0, 255); // for switching between 8 bpp scalers
-							}
-							break;
-						case 3: /* Jukebox */
+						case 1: /* Jukebox */
 							JE_playSampleNum(S_SELECT);
 
 							fade_black(10);
@@ -213,7 +175,9 @@ void opentyrian_menu( void )
 
 							memcpy(VGAScreen->pixels, VGAScreen2->pixels, VGAScreen->pitch * VGAScreen->h);
 							JE_showVGA();
-							fade_in = true;
+							fade_in = true;-
+							break;
+						case 2:
 							break;
 						default: /* Return to main menu */
 							quit = true;
@@ -261,6 +225,7 @@ int main( int argc, char *argv[] )
 	init_video();
 	init_keyboard();
 	init_joysticks();
+	ZDKSystem_SetOrientation((ZDK_ORIENTATION)2);
 	printf("assuming mouse detected\n"); // SDL can't tell us if there isn't one
 
 	if (xmas && (!dir_file_exists(data_dir(), "tyrianc.shp") || !dir_file_exists(data_dir(), "voicesc.snd")))
