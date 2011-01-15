@@ -29,12 +29,12 @@ const char *data_dir( void )
 {
 	const char *dirs[] =
 	{
-		"\\Flash2\\Tyrian",
+		"\\Flash2\\Tyrian"
 	};
 	
 	static const char *dir = NULL;
 	
-	/*if (dir != NULL)
+	if (dir != NULL)
 		return dir;
 	
 	for (uint i = 0; i < COUNTOF(dirs); ++i)
@@ -50,8 +50,7 @@ const char *data_dir( void )
 	}
 	
 	if (dir == NULL) // data not found
-		dir = "";*/
-	dir = dirs[0];
+		dir = "";
 	
 	return dir;
 }
