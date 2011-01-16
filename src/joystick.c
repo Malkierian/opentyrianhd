@@ -236,7 +236,25 @@ void push_joysticks_as_keyboard( void )
 	const SDLKey confirm = SDLK_RETURN, cancel = SDLK_ESCAPE;
 	const SDLKey direction[4] = { SDLK_UP, SDLK_RIGHT, SDLK_DOWN, SDLK_LEFT };
 	
-	poll_joysticks();
+	poll_joysticks();	
+
+	stickX += JE_axisPoll(0);
+	if((stickX < 500) && (stickX > -500))
+	{
+		stickX = 0;
+	}
+	if (stickX > 15000)
+	{
+		//newkey = true;
+		push_key(SDLK_UP);
+		stickX = 0;
+	}
+	if (stickX < -15000)
+	{
+		//newkey = true;
+		push_key(SDLK_DOWN);
+		stickX = 0;
+	}
 	
 	for (int j = 0; j < joysticks; j++)
 	{

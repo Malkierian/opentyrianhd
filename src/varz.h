@@ -216,6 +216,8 @@ typedef struct {
 	Uint8 color;
 } superpixel_type;
 
+extern Sint16 stickX, stickY, stickZ;
+
 extern JE_integer tempDat, tempDat2, tempDat3;
 extern const JE_byte SANextShip[SA + 2];
 extern const JE_word SASpecialWeapon[SA];
@@ -378,6 +380,8 @@ void JE_doSP( JE_word x, JE_word y, JE_word num, JE_byte explowidth, JE_byte col
 void JE_drawSP( void );
 
 void JE_drawOptionLevel( void );
+
+void JE_cleanup( void );
 
 
 #endif /* VARZ_H */
