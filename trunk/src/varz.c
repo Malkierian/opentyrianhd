@@ -36,6 +36,8 @@
 
 JE_integer tempDat, tempDat2, tempDat3;
 
+Sint16 stickX = 0, stickY = 0, stickZ = 0;
+
 const JE_byte SANextShip[SA + 2] /* [0..SA + 1] */ = { 3, 9, 6, 2, 5, 1, 4, 3, 7 }; // 0 -> 3 -> 2 -> 6 -> 4 -> 5 -> 1 -> 9 -> 7
 const JE_word SASpecialWeapon[SA] /* [1..SA] */  = { 7, 8, 9, 10, 11, 12, 13 };
 const JE_word SASpecialWeaponB[SA] /* [1..SA] */ = {37, 6, 15, 40, 16, 14, 41 };
@@ -458,7 +460,7 @@ void JE_drawOptionLevel( void )
 	}
 }
 
-void JE_tyrianHalt( JE_byte code )
+void JE_cleanup( void )
 {
 	deinit_audio();
 	deinit_video();
@@ -474,24 +476,16 @@ void JE_tyrianHalt( JE_byte code )
 	{
 		free(digiFx[i]);
 	}
+	/*
+	TODO?
+	JE_drawANSI("exitmsg.bin");
+	JE_gotoXY(1,22);*/
 
-	if (code != 9)
-	{
-		/*
-		TODO?
-		JE_drawANSI("exitmsg.bin");
-		JE_gotoXY(1,22);*/
+	JE_saveConfiguration();
+}
 
-		JE_saveConfiguration();
-	}
-
-	/* endkeyboard; */
-
-	if (code == 9)
-	{
-		/* OutputString('call=file0002.EXE' + #0'); TODO? */
-	}
-
+void JE_tyrianHalt( JE_byte code )
+{
 	if (code == 5)
 	{
 		code = 0;
