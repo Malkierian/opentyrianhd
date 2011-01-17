@@ -214,6 +214,9 @@ int main( int argc, char *argv[] )
 		return -1;
 	}
 
+	CreateDirectory(L"\\Flash2\\Tyrian", NULL);
+	CreateDirectory(L"\\Flash2\\Tyrian\\userdata", NULL);
+
 	JE_loadConfiguration();
 
 	xmas = xmas_time();  // arg handler may override
@@ -315,37 +318,6 @@ int main( int argc, char *argv[] )
 Sint16 JE_axisPoll( int axis )
 {
 	Sint16 poll = SDL_JoystickGetAxis(joystick[0].handle, axis);
-	/*if (stickX > 0)
-	{
-		if (menu == 0)
-			menu = menunum-1;
-		else
-			menu--;
-		JE_playSampleNum(S_CURSOR);
-	}
-	else if (stickX < 0)
-	{
-		if (menu == menunum-1)
-			menu = 0;
-		else
-			menu++;
-		JE_playSampleNum(S_CURSOR);
-		break;
-	}*/
-	switch(axis)
-	{
-	case 0:
-		printf("X Axis = %d\n",poll);
-		break;
-	case 1:
-		printf("Y Axis = %d\n",poll);
-		break;
-	case 2:
-		printf("Z Axis = %d\n",poll);
-		break;
-	default:
-		break;
-	}
 	return(poll);
 }
 
