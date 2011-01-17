@@ -506,8 +506,9 @@ void JE_tyrianHalt( JE_byte code )
 		       "You'll need the 2.1 patch, though!\n"
 		       "\n");
 	}
+	
+	JE_cleanup();
 
-	SDL_Quit();
 	exit(code);
 }
 

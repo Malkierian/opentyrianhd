@@ -719,25 +719,13 @@ void JE_decryptSaveTemp( void )
 	memcpy(&saveTemp, &s2, sizeof(s2));
 }
 
-#ifndef TARGET_MACOSX
 const char *get_user_directory( void )
 {
 	static char user_dir[500];
-	sprintf(user_dir, "%s/userdata", data_dir());
-	
-	/*if (strlen(user_dir) == 0)
-	{
-#ifdef TARGET_UNIX
-		if (getenv("HOME"))
-			snprintf(user_dir, sizeof(user_dir), "%s/.opentyrian", getenv("HOME"));
-#else
-		strcpy(user_dir, "/tyrian/userdata");
-#endif // TARGET_UNIX
-	}*/
+	sprintf(user_dir, "\\Flash2\\Tyrian\\userdata");
 	
 	return user_dir;
 }
-#endif // TARGET_MACOSX
 
 // for compatibility
 Uint8 joyButtonAssign[4] = {1, 4, 5, 5};

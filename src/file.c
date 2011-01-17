@@ -29,6 +29,7 @@ const char *data_dir( void )
 {
 	const char *dirs[] =
 	{
+		"\\gametitle\\584E07D1\\Content\\Tyrian",
 		"\\Flash2\\Tyrian"
 	};
 	
@@ -59,7 +60,7 @@ const char *data_dir( void )
 FILE *dir_fopen( const char *dir, const char *file, const char *mode )
 {
 	char *path = (char *)malloc(strlen(dir) + 1 + strlen(file) + 1);
-	sprintf(path, "%s/%s", dir, file);
+	sprintf(path, "%s\\%s", dir, file);
 	
 	FILE *f = fopen(path, mode);
 	
