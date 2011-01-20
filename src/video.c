@@ -23,13 +23,20 @@
 #include "video_scale.h"
 
 #include <assert.h>
+#include <zdkdisplay.h>
+#include <zdkgl.h>
 
 
 bool fullscreen_enabled = false;
 
 SDL_Surface *VGAScreen, *VGAScreenSeg;
 SDL_Surface *VGAScreen2;
-SDL_Surface *game_screen;
+SDL_Surface *game_screen, *scale_surface, *display_surface;
+int scaleFlipCounter;
+
+ZDK_SPRITE dispSprite;
+HTEXTURE zdkDisplay;
+char buffer[100];
 
 static ScalerFunction scaler_function;
 
@@ -43,15 +50,49 @@ void init_video( void )
 		fprintf(stderr, "error: failed to initialize SDL video: %s\n", SDL_GetError());
 		exit(1);
 	}
+	HRESULT hr;
+	hr = ZDKDisplay_Initialize();
+	if(FAILED(hr))
+		printf("Initialize failed: %08x\n",scaleFlipCounter,hr);
 
-	SDL_WM_SetCaption("OpenTyrian", NULL);
+	hr = ZDKDisplay_CreateTexture(320,200,&zdkDisplay);
+	if(FAILED(hr))
+		printf("CreateTexture failed: %08x\n",scaleFlipCounter,hr);
 
 	VGAScreen = VGAScreenSeg = SDL_CreateRGBSurface(SDL_SWSURFACE, vga_width, vga_height, 8, 0, 0, 0, 0);
 	VGAScreen2 = SDL_CreateRGBSurface(SDL_SWSURFACE, vga_width, vga_height, 8, 0, 0, 0, 0);
 	game_screen = SDL_CreateRGBSurface(SDL_SWSURFACE, vga_width, vga_height, 8, 0, 0, 0, 0);
+	
+	scale_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 200, 32, 0, 0, 0, 0);
 
+	display_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 200, 32, 0, 0, 0, 0);
+
+	dispSprite.Color = 0xFFFFFFFF;
+
+	dispSprite.Vertices[0].X = 0;
+	dispSprite.Vertices[0].Y = 0;
+	dispSprite.Vertices[0].U = 0;
+	dispSprite.Vertices[0].V = 1;
+	
+	dispSprite.Vertices[1].X = 272;
+	dispSprite.Vertices[1].Y = 0;
+	dispSprite.Vertices[1].U = 0;
+	dispSprite.Vertices[1].V = 0;
+	
+	dispSprite.Vertices[2].X = 272;
+	dispSprite.Vertices[2].Y = 480;
+	dispSprite.Vertices[2].U = 1;
+	dispSprite.Vertices[2].V = 0;
+	
+	dispSprite.Vertices[3].X = 0;
+	dispSprite.Vertices[3].Y = 480;
+	dispSprite.Vertices[3].U = 1;
+	dispSprite.Vertices[3].V = 1;
+
+	printf("Filling rectangle...\n");
 	SDL_FillRect(VGAScreen, NULL, 0);
 
+	printf("Initializing scaler...\n");
 	if (!init_scaler(scaler, fullscreen_enabled) &&  // try desired scaler and desired fullscreen state
 	    !init_any_scaler(fullscreen_enabled) &&      // try any scaler in desired fullscreen state
 	    !init_any_scaler(!fullscreen_enabled))       // try any scaler in other fullscreen state
@@ -62,99 +103,23 @@ void init_video( void )
 
 int can_init_scaler( unsigned int new_scaler, bool fullscreen )
 {
-	if (new_scaler >= scalers_count)
-		return false;
-	
-	int w = scalers[new_scaler].width,
-	    h = scalers[new_scaler].height;
-	int flags = SDL_SWSURFACE | SDL_HWPALETTE | (fullscreen ? SDL_FULLSCREEN : 0);
-	
-	// test each bitdepth
-	for (uint bpp = 32; bpp > 0; bpp -= 8)
-	{
-		uint temp_bpp = SDL_VideoModeOK(w, h, bpp, flags);
-		
-		if ((temp_bpp == 32 && scalers[new_scaler].scaler32) ||
-		    (temp_bpp == 16 && scalers[new_scaler].scaler16) ||
-		    (temp_bpp == 8  && scalers[new_scaler].scaler8 ))
-		{
-			return temp_bpp;
-		}
-		else if (temp_bpp == 24 && scalers[new_scaler].scaler32)
-		{
-			// scalers don't support 24 bpp because it's a pain
-			// so let SDL handle the conversion
-			return 32;
-		}
-	}
-	
-	return 0;
+	return 32;
 }
 
 bool init_scaler( unsigned int new_scaler, bool fullscreen )
 {
-	int w = scalers[new_scaler].width,
-	    h = scalers[new_scaler].height;
-	int bpp = can_init_scaler(new_scaler, fullscreen);
-	int flags = SDL_SWSURFACE | SDL_HWPALETTE | (fullscreen ? SDL_FULLSCREEN : 0);
-	
-	if (bpp == 0)
-		return false;
-	
-	SDL_Surface *const surface = SDL_SetVideoMode(w, h, bpp, flags);
-	
-	if (surface == NULL)
-	{
-		fprintf(stderr, "error: failed to initialize video mode %dx%dx%d: %s\n", w, h, bpp, SDL_GetError());
-		return false;
-	}
-	
-	w = surface->w;
-	h = surface->h;
-	bpp = surface->format->BitsPerPixel;
-	
-	printf("initialized video: %dx%dx%d\n", w, h, bpp);
-	
-	scaler = new_scaler;
-	fullscreen_enabled = fullscreen;
-	
-	switch (bpp)
-	{
-	case 32:
-		scaler_function = scalers[scaler].scaler32;
-		break;
-	case 16:
-		scaler_function = scalers[scaler].scaler16;
-		break;
-	case 8:
-		scaler_function = scalers[scaler].scaler8;
-		break;
-	default:
-		scaler_function = NULL;
-		break;
-	}
-	
-	if (scaler_function == NULL)
-	{
-		assert(false);
-		return false;
-	}
+	scaler_function = scalers[0].scaler32;
+	fullscreen_enabled = false;
 	
 	input_grab();
 	
 	JE_showVGA();
-	
 	return true;
 }
 
 bool init_any_scaler( bool fullscreen )
 {
-	// attempts all scalers from last to first
-	for (int i = scalers_count - 1; i >= 0; --i)
-		if (init_scaler(i, fullscreen))
-			return true;
-	
-	return false;
+	return true;
 }
 
 void deinit_video( void )
@@ -162,8 +127,13 @@ void deinit_video( void )
 	SDL_FreeSurface(VGAScreenSeg);
 	SDL_FreeSurface(VGAScreen2);
 	SDL_FreeSurface(game_screen);
+	SDL_FreeSurface(display_surface);
+	SDL_FreeSurface(scale_surface);
 	
-	SDL_QuitSubSystem(SDL_INIT_VIDEO);
+	HRESULT hr = ZDKDisplay_FreeTexture(zdkDisplay);
+	if(FAILED(hr))
+		printf("FreeTexture failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
+	ZDKDisplay_Cleanup();
 }
 
 void JE_clr256( SDL_Surface * screen)
@@ -174,14 +144,53 @@ void JE_showVGA( void ) { scale_and_flip(VGAScreen); }
 
 void scale_and_flip( SDL_Surface *src_surface )
 {
+	HRESULT hr;
 	assert(src_surface->format->BitsPerPixel == 8);
-	
-	SDL_Surface *dst_surface = SDL_GetVideoSurface();
+
+	hr = ZDKDisplay_Clear(0);
 	
 	assert(scaler_function != NULL);
-	scaler_function(src_surface, dst_surface);
-	
-	SDL_Flip(dst_surface);
+	scaler_function(src_surface, scale_surface);
+	ZDK_RECT dispRect;
+	dispRect.Left = 0;
+	dispRect.Top = 0;
+	dispRect.Right = 320;
+	dispRect.Bottom = 200;
+	Uint32 *dispSrc = (Uint32 *)scale_surface->pixels, srcA, srcB, srcG, srcR,
+		*dispDest = (Uint32 *)display_surface->pixels;
+	for(int i = 0; i < 320 * 200; i++)
+	{
+		srcA = *dispSrc;
+		srcA ^= 0xFF000000;
+		*dispDest = srcA;
+		dispDest ++;
+		dispSrc ++;
+	}
+
+	hr = ZDKDisplay_BeginScene();
+	if(FAILED(hr))
+		printf("BeginScene failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
+
+	hr = ZDKDisplay_SetTextureData(zdkDisplay, &dispRect, display_surface->pixels, 4*320*200);
+	if(FAILED(hr))
+		printf("SetTextureData failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
+
+	hr = ZDKDisplay_SetTexture(zdkDisplay);
+	if(FAILED(hr))
+		printf("SetTexture failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
+
+	hr = ZDKDisplay_DrawSprites(&dispSprite, 1);
+	if(FAILED(hr))
+		printf("DrawSprites failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
+
+	hr = ZDKDisplay_EndScene();
+	if(FAILED(hr))
+		printf("EndScene failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
+
+	hr = ZDKDisplay_Present();
+	if(FAILED(hr))
+		printf("Present failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
+	scaleFlipCounter++;
 }
 
 // kate: tab-width 4; vim: set noet:

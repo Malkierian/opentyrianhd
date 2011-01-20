@@ -290,7 +290,6 @@ int main( int argc, char *argv[] )
 	if (!isNetworkGame)
 		intro_logos();
 #endif
-
 	for (; ; )
 	{
 		JE_initPlayerData();

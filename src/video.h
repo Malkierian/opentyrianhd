@@ -29,7 +29,7 @@
 extern bool fullscreen_enabled;
 
 extern SDL_Surface *VGAScreen, *VGAScreenSeg;
-extern SDL_Surface *game_screen;
+extern SDL_Surface *game_screen, *display_surface;
 extern SDL_Surface *VGAScreen2;
 
 void init_video( void );
