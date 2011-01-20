@@ -104,7 +104,8 @@ void opentyrian_menu( void )
 			char buffer[100];
 
 			if (i == 2) /* Scaler */
-			{sprintf(buffer, "Rich Mode: %s", richMode ? "On" : "Off");
+			{
+				sprintf(buffer, "Rich Mode: %s", richMode ? "On" : "Off");
 				text = buffer;
 			}
 

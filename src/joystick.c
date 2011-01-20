@@ -209,6 +209,41 @@ void poll_joysticks( void )
 	
 	for (int j = 0; j < joysticks; j++)
 		poll_joystick(j);
+
+	stickX += JE_axisPoll(0);
+	stickY += JE_axisPoll(1);
+	if((stickX < 1000) && (stickX > -1000))
+	{
+		stickX = 0;
+	}
+	if((stickY < 1000) && (stickY > -1000))
+	{
+		stickY = 0;
+	}
+	if (stickX > 20000)
+	{
+		//newkey = true;
+		push_key(SDLK_UP);
+		stickX = 0;
+	}
+	if (stickX < -20000)
+	{
+		//newkey = true;
+		push_key(SDLK_DOWN);
+		stickX = 0;
+	}
+	if (stickY > 20000)
+	{
+		//newkey = true;
+		push_key(SDLK_RIGHT);
+		stickY = 0;
+	}
+	if (stickY < -20000)
+	{
+		//newkey = true;
+		push_key(SDLK_LEFT);
+		stickY = 0;
+	}
 }
 
 // sends SDL KEYDOWN and KEYUP events for a key
@@ -236,25 +271,7 @@ void push_joysticks_as_keyboard( void )
 	const SDLKey confirm = SDLK_RETURN, cancel = SDLK_ESCAPE;
 	const SDLKey direction[4] = { SDLK_UP, SDLK_RIGHT, SDLK_DOWN, SDLK_LEFT };
 	
-	poll_joysticks();	
-
-	stickX += JE_axisPoll(0);
-	if((stickX < 800) && (stickX > -800))
-	{
-		stickX = 0;
-	}
-	if (stickX > 15000)
-	{
-		//newkey = true;
-		push_key(SDLK_UP);
-		stickX = 0;
-	}
-	if (stickX < -15000)
-	{
-		//newkey = true;
-		push_key(SDLK_DOWN);
-		stickX = 0;
-	}
+	poll_joysticks();
 	
 	for (int j = 0; j < joysticks; j++)
 	{
