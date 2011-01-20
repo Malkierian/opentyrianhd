@@ -239,7 +239,7 @@ void push_joysticks_as_keyboard( void )
 	poll_joysticks();	
 
 	stickX += JE_axisPoll(0);
-	if((stickX < 500) && (stickX > -500))
+	if((stickX < 800) && (stickX > -800))
 	{
 		stickX = 0;
 	}

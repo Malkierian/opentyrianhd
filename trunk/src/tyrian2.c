@@ -3536,6 +3536,7 @@ bool JE_titleScreen( JE_boolean animate )
 			}
 
 			waitForDemo = 2000;
+			printf("WaitForDemo set.\n");
 			JE_textMenuWait(&waitForDemo, false);
 
 			if (waitForDemo == 1)
