@@ -156,13 +156,11 @@ void scale_and_flip( SDL_Surface *src_surface )
 	dispRect.Top = 0;
 	dispRect.Right = 320;
 	dispRect.Bottom = 200;
-	Uint32 *dispSrc = (Uint32 *)scale_surface->pixels, srcA, srcB, srcG, srcR,
+	Uint32 *dispSrc = (Uint32 *)scale_surface->pixels, srcA,
 		*dispDest = (Uint32 *)display_surface->pixels;
 	for(int i = 0; i < 320 * 200; i++)
 	{
-		srcA = *dispSrc;
-		srcA ^= 0xFF000000;
-		*dispDest = srcA;
+		*dispDest = *dispSrc | 0xFF000000;
 		dispDest ++;
 		dispSrc ++;
 	}

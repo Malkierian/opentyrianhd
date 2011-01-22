@@ -56,18 +56,18 @@ void JE_loadPals( void )
 
 void set_palette( Palette colors, unsigned int first_color, unsigned int last_color )
 {
-	SDL_Surface *const surface = SDL_GetVideoSurface();
-	const uint bpp = surface->format->BitsPerPixel;
+	//SDL_Surface *const surface = SDL_GetVideoSurface();
+	//const uint bpp = surface->format->BitsPerPixel;
 	
 	for (uint i = first_color; i <= last_color; ++i)
 	{
 		palette[i] = colors[i];
 		
-		if (bpp != 8)
-		{
-			rgb_palette[i] = SDL_MapRGB(surface->format, palette[i].r, palette[i].g, palette[i].b);
-			yuv_palette[i] = rgb_to_yuv(palette[i].r, palette[i].g, palette[i].b);
-		}
+		//if (bpp != 8)
+		//{
+		rgb_palette[i] = SDL_MapRGB(display_surface->format, palette[i].r, palette[i].g, palette[i].b);
+		yuv_palette[i] = rgb_to_yuv(palette[i].r, palette[i].g, palette[i].b);
+		//}
 	}
 	
 	//if (bpp == 8)

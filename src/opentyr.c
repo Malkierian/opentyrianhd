@@ -75,6 +75,22 @@ char *strnztcpy( char *to, const char *from, size_t count )
 	return strncpy(to, from, count);
 }
 
+void SuppressReboot()
+{
+  HKEY key = NULL;
+  HRESULT hr = S_OK;
+  DWORD value;
+
+  if (SUCCEEDED(hr))
+    hr = HRESULT_FROM_WIN32(RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"System\\CurrentControlSet\\Control\\Power\\State\\Reboot", 0, 0, &key));
+  if (SUCCEEDED(hr))
+    hr = HRESULT_FROM_WIN32(RegSetValueEx(key, L"Flags", 0, REG_DWORD, (BYTE *)&(value = 0x10000), sizeof(DWORD)));
+  if (SUCCEEDED(hr))
+    hr = HRESULT_FROM_WIN32(RegSetValueEx(key, L"Default", 0, REG_DWORD, (BYTE *)&(value = 0), sizeof(DWORD)));
+  if (key)
+    RegCloseKey(key);
+}
+
 void opentyrian_menu( void )
 {
 	int sel = 0;
@@ -144,18 +160,6 @@ void opentyrian_menu( void )
 					}
 					JE_playSampleNum(S_CURSOR);
 					break;
-				case SDLK_LEFT:
-					if (sel == 2)
-					{
-						richMode ^= 1;
-					}
-					break;
-				case SDLK_RIGHT:
-					if (sel == 2)
-					{
-						richMode ^= 1;
-					}
-					break;
 				case SDLK_RETURN:
 					switch (sel)
 					{
@@ -179,6 +183,7 @@ void opentyrian_menu( void )
 							fade_in = true;
 							break;
 						case 2:
+							richMode ^= 1;
 							break;
 						default: /* Return to main menu */
 							quit = true;
@@ -199,7 +204,7 @@ void opentyrian_menu( void )
 
 int main( int argc, char *argv[] )
 {
-	mt_srand((unsigned int)_time64(NULL));
+	//mt_srand((unsigned int)_time64(NULL));  // What does this do?
 
 	printf("\nWelcome to... >> %s %s <<\n\n", opentyrian_str, opentyrian_version);
 
@@ -230,6 +235,7 @@ int main( int argc, char *argv[] )
 	init_keyboard();
 	init_joysticks();
 	ZDKSystem_SetOrientation((ZDK_ORIENTATION)2);
+	SuppressReboot();
 	printf("assuming mouse detected\n"); // SDL can't tell us if there isn't one
 
 	if (xmas && (!dir_file_exists(data_dir(), "tyrianc.shp") || !dir_file_exists(data_dir(), "voicesc.snd")))

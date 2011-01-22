@@ -637,6 +637,7 @@ void JE_main( void )
 	/* ----------- GAME ROUTINES ------------------------------------- */
 	/* We need to jump to the beginning to make space for the routines */
 	/* --------------------------------------------------------------- */
+
 	goto start_level_first;
 
 
@@ -730,7 +731,9 @@ start_level_first:
 	extraGame = false;
 
 	doNotSaveBackup = false;
+	printf("JE_loadmap starting\n");
 	JE_loadMap();
+	printf("JE_loadmap finished.  continuing...\n");
 
 	if (mainLevel == 0)  // if quit itemscreen
 		return;          // back to titlescreen
