@@ -31,7 +31,7 @@ bool fullscreen_enabled = false;
 
 SDL_Surface *VGAScreen, *VGAScreenSeg;
 SDL_Surface *VGAScreen2;
-SDL_Surface *game_screen, *scale_surface, *display_surface;
+SDL_Surface *game_screen, *scale_surface;
 int scaleFlipCounter;
 
 ZDK_SPRITE dispSprite;
@@ -63,9 +63,7 @@ void init_video( void )
 	VGAScreen2 = SDL_CreateRGBSurface(SDL_SWSURFACE, vga_width, vga_height, 8, 0, 0, 0, 0);
 	game_screen = SDL_CreateRGBSurface(SDL_SWSURFACE, vga_width, vga_height, 8, 0, 0, 0, 0);
 	
-	scale_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 200, 32, 0, 0, 0, 0);
-
-	display_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 200, 32, 0, 0, 0, 0);
+	scale_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 200, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 
 	dispSprite.Color = 0xFFFFFFFF;
 
@@ -127,7 +125,6 @@ void deinit_video( void )
 	SDL_FreeSurface(VGAScreenSeg);
 	SDL_FreeSurface(VGAScreen2);
 	SDL_FreeSurface(game_screen);
-	SDL_FreeSurface(display_surface);
 	SDL_FreeSurface(scale_surface);
 	
 	HRESULT hr = ZDKDisplay_FreeTexture(zdkDisplay);
@@ -156,20 +153,12 @@ void scale_and_flip( SDL_Surface *src_surface )
 	dispRect.Top = 0;
 	dispRect.Right = 320;
 	dispRect.Bottom = 200;
-	Uint32 *dispSrc = (Uint32 *)scale_surface->pixels, srcA,
-		*dispDest = (Uint32 *)display_surface->pixels;
-	for(int i = 0; i < 320 * 200; i++)
-	{
-		*dispDest = *dispSrc | 0xFF000000;
-		dispDest ++;
-		dispSrc ++;
-	}
 
 	hr = ZDKDisplay_BeginScene();
 	if(FAILED(hr))
 		printf("BeginScene failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
 
-	hr = ZDKDisplay_SetTextureData(zdkDisplay, &dispRect, display_surface->pixels, 4*320*200);
+	hr = ZDKDisplay_SetTextureData(zdkDisplay, &dispRect, scale_surface->pixels, 4*320*200);
 	if(FAILED(hr))
 		printf("SetTextureData failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
 
