@@ -65,7 +65,7 @@ void set_palette( Palette colors, unsigned int first_color, unsigned int last_co
 		
 		//if (bpp != 8)
 		//{
-		rgb_palette[i] = SDL_MapRGB(display_surface->format, palette[i].r, palette[i].g, palette[i].b);
+		rgb_palette[i] = SDL_MapRGBA(scale_surface->format, palette[i].r, palette[i].g, palette[i].b, 0xFF);
 		yuv_palette[i] = rgb_to_yuv(palette[i].r, palette[i].g, palette[i].b);
 		//}
 	}
@@ -85,7 +85,7 @@ void set_colors( SDL_Color color, unsigned int first_color, unsigned int last_co
 		
 		//if (bpp != 8)
 		//{
-			rgb_palette[i] = SDL_MapRGB(display_surface->format, palette[i].r, palette[i].g, palette[i].b);
+			rgb_palette[i] = SDL_MapRGBA(scale_surface->format, palette[i].r, palette[i].g, palette[i].b, 0xFF);
 			yuv_palette[i] = rgb_to_yuv(palette[i].r, palette[i].g, palette[i].b);
 		//}
 	}
@@ -118,7 +118,7 @@ void step_fade_palette( int diff[256][3], int steps, unsigned int first_color, u
 {
 	assert(steps > 0);
 
-	//const uint bpp = display_surface->format->BitsPerPixel;
+	//const uint bpp = scale_surface->format->BitsPerPixel;
 	
 	for (unsigned int i = first_color; i <= last_color; i++)
 	{
@@ -134,7 +134,7 @@ void step_fade_palette( int diff[256][3], int steps, unsigned int first_color, u
 		
 		//if (bpp != 8)
 		//{
-			rgb_palette[i] = SDL_MapRGB(display_surface->format, palette[i].r, palette[i].g, palette[i].b);
+			rgb_palette[i] = SDL_MapRGBA(scale_surface->format, palette[i].r, palette[i].g, palette[i].b, 0xFF);
 			yuv_palette[i] = rgb_to_yuv(palette[i].r, palette[i].g, palette[i].b);
 		//}
 	}
