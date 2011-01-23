@@ -301,8 +301,8 @@
 				DelayLoadDLLs="$(NOINHERIT)"
 				GenerateDebugInformation="true"
 				SubSystem="8"
-				StackReserveSize="65536"
-				StackCommitSize="4096"
+				StackReserveSize="0"
+				StackCommitSize="0"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				OptimizeForWindows98="0"
@@ -1554,26 +1554,6 @@
 			</File>
 			<File
 				RelativePath=".\src\video_scale.c"
-				>
-				<FileConfiguration
-					Name="Debug|OpenZDK (ARMV4I)"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						CompileAs="2"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|OpenZDK (ARMV4I)"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						CompileAs="2"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\src\video_scale_hqNx.c"
 				>
 				<FileConfiguration
 					Name="Debug|OpenZDK (ARMV4I)"

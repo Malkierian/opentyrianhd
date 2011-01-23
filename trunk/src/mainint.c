@@ -3149,7 +3149,7 @@ redo:
 				}
 
 				/* keyboard input */
-				if ((inputDevice == 0 || inputDevice == 1) && !play_demo)
+				/*if ((inputDevice == 0 || inputDevice == 1) && !play_demo)
 				{
 					if (keysactive[keySettings[0]])
 						this_player->y -= CURRENT_KEY_SPEED;
@@ -3203,7 +3203,7 @@ redo:
 							demo_keys_wait = 0;
 						}
 					}
-				}
+				}*/
 
 				if (smoothies[9-1])
 				{
