@@ -23,6 +23,7 @@
 #include "font.h"
 #include "fonthand.h"
 #include "game_menu.h"
+#include "input.h"
 #include "joystick.h"
 #include "keyboard.h"
 #include "lds_play.h"
@@ -3354,12 +3355,12 @@ bool JE_titleScreen( JE_boolean animate )
 {
 	bool quit = false;
 
-	const int menunum = 7;
+	int menunum = 7;
 
 	unsigned int arcade_code_i[SA_ENGAGE] = { 0 };
 
 	JE_word waitForDemo;
-	JE_byte menu = 0;
+	int menu = 0;
 	JE_boolean redraw = true,
 	           fadeIn = false;
 
@@ -3544,30 +3545,7 @@ bool JE_titleScreen( JE_boolean animate )
 			if (waitForDemo == 1)
 				play_demo = true;
 
-			if (newkey)
-			{
-				switch (lastkey_sym)
-				{
-				case SDLK_UP:
-					if (menu == 0)
-						menu = menunum-1;
-					else
-						menu--;
-					JE_playSampleNum(S_CURSOR);
-					break;
-				case SDLK_DOWN:
-					if (menu == menunum-1)
-						menu = 0;
-					else
-						menu++;
-					JE_playSampleNum(S_CURSOR);
-					break;
-				default:
-					break;
-				}
-			}
-
-			for (unsigned int i = 0; i < SA_ENGAGE; i++)
+			/*for (unsigned int i = 0; i < SA_ENGAGE; i++)
 			{
 				if (toupper(lastkey_char) == specialName[i][arcade_code_i[i]])
 					arcade_code_i[i]++;
@@ -3582,7 +3560,7 @@ bool JE_titleScreen( JE_boolean animate )
 					}
 					else if (i+1 == SA_ENGAGE)
 					{
-						/* SuperTyrian */
+						// SuperTyrian 
 
 						JE_playSampleNum(V_DATA_CUBE);
 						JE_whoa();
@@ -3630,7 +3608,7 @@ bool JE_titleScreen( JE_boolean animate )
 						fade_black(10);
 						if (select_episode() && select_difficulty())
 						{
-							/* Start special mode! */
+							// Start special mode! 
 							fade_black(10);
 							JE_loadPic(VGAScreen, 1, false);
 							JE_clr256(VGAScreen);
@@ -3670,85 +3648,83 @@ bool JE_titleScreen( JE_boolean animate )
 					newkey = false;
 				}
 			}
-			lastkey_char = '\0';
+			lastkey_char = '\0';*/
 
-			if (newkey)
+			if (inputFound)
 			{
-				switch (lastkey_sym)
+				if(softPad.button_pressed)
 				{
-				case SDLK_ESCAPE:
-					quit = true;
-					break;
-				case SDLK_RETURN:
-					JE_playSampleNum(S_SELECT);
-					switch (menu)
+					if(softPad.select && !softPad.last_select)
 					{
-					case 0: /* New game */
-						fade_black(10);
-						if (select_gameplay() && select_episode() && select_difficulty())
+						JE_playSampleNum(S_SELECT);
+						switch (menu)
 						{
-							gameLoaded = true;
-
-							initialDifficulty = difficultyLevel;
-
-							if (onePlayerAction)
+						case 0: /* New game */
+							fade_black(10);
+							if (select_gameplay() && select_episode() && select_difficulty())
 							{
-								player[0].cash = 0;
+								gameLoaded = true;
 
-								player[0].items.ship = 8;
-							}
-							else if (twoPlayerMode)
-							{
-								for (uint i = 0; i < COUNTOF(player); ++i)
-									player[i].cash = 0;
+								initialDifficulty = difficultyLevel;
 
-								player[0].items.ship = 11;
-								difficultyLevel++;
-								inputDevice[0] = 1;
-								inputDevice[1] = 2;
-							}
-							else if (richMode)
-							{
-								player[0].cash = 1000000;
-							}
-							else
-							{
-								ulong initial_cash[] = { 10000, 15000, 20000, 30000 };
+								if (onePlayerAction)
+								{
+									player[0].cash = 0;
 
-								assert(episodeNum >= 1 && episodeNum <= 4);
-								player[0].cash = initial_cash[episodeNum-1];
+									player[0].items.ship = 8;
+								}
+								else if (twoPlayerMode)
+								{
+									for (uint i = 0; i < COUNTOF(player); ++i)
+										player[i].cash = 0;
+
+									player[0].items.ship = 11;
+									difficultyLevel++;
+									inputDevice[0] = 1;
+									inputDevice[1] = 2;
+								}
+								else if (richMode)
+								{
+									player[0].cash = 1000000;
+								}
+								else
+								{
+									ulong initial_cash[] = { 10000, 15000, 20000, 30000 };
+
+									assert(episodeNum >= 1 && episodeNum <= 4);
+									player[0].cash = initial_cash[episodeNum-1];
+								}
 							}
+							fadeIn = true;
+							break;
+						case 1: /* Load game */
+							JE_loadScreen();
+							fadeIn = true;
+							break;
+						case 2: /* High scores */
+							JE_highScoreScreen();
+							fadeIn = true;
+							break;
+						case 3: /* Instructions */
+							JE_helpSystem(1);
+							fadeIn = true;
+							break;
+						case 4: /* Ordering info, now OpenTyrian menu */
+							opentyrian_menu();
+							fadeIn = true;
+							break;
+						case 5: /* Demo */
+							play_demo = true;
+							break;
+						case 6: /* Quit */
+							quit = true;
+							break;
 						}
-						fadeIn = true;
-						break;
-					case 1: /* Load game */
-						JE_loadScreen();
-						fadeIn = true;
-						break;
-					case 2: /* High scores */
-						JE_highScoreScreen();
-						fadeIn = true;
-						break;
-					case 3: /* Instructions */
-						JE_helpSystem(1);
-						fadeIn = true;
-						break;
-					case 4: /* Ordering info, now OpenTyrian menu */
-						opentyrian_menu();
-						fadeIn = true;
-						break;
-					case 5: /* Demo */
-						play_demo = true;
-						break;
-					case 6: /* Quit */
-						quit = true;
-						break;
+						redraw = true;
 					}
-					redraw = true;
-					break;
-				default:
-					break;
 				}
+				else if(softPad.direction_pressed)
+					pos_from_input(NULL, &menu, true, 0, menunum);
 			}
 		}
 		while (!(quit || gameLoaded || jumpSection || play_demo || loadDestruct));

@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 #include "font.h"
+#include "input.h"
 #include "joystick.h"
 #include "jukebox.h"
 #include "keyboard.h"
@@ -43,6 +44,7 @@ void jukebox( void )
 
 	bool fx = false;
 	int fx_num = 0;
+	int song = 0;
 
 	int palette_fade_steps = 15;
 
@@ -87,9 +89,6 @@ void jukebox( void )
 		// starlib input needs to be rewritten
 		JE_starlib_main();
 
-		push_joysticks_as_keyboard();
-		service_SDL_events(true);
-
 		if (!hide_text)
 		{
 			char buffer[60];
@@ -112,22 +111,34 @@ void jukebox( void )
 		JE_showVGA();
 
 		wait_delay();
+		inputFound = update_input();
 
-		// quit on mouse click
-		Uint16 x, y;
-		if (JE_mousePosition(&x, &y) > 0)
-			trigger_quit = true;
-
-		if (newkey)
+		if (inputFound)
 		{
-			switch (lastkey_sym)
+			if(softPad.button_pressed)
 			{
-			case SDLK_ESCAPE: // quit jukebox
-			case SDLK_q:
-				trigger_quit = true;
-				break;
-
-			case SDLK_SPACE:
+				if(softPad.select && !softPad.last_select)
+				{
+					play_song((song_playing + 1) % MUSIC_NUM);
+					stopped = false;
+				}
+				if(softPad.escape && !softPad.last_escape)
+				{
+					trigger_quit = true;
+				}
+				if(softPad.mode && !softPad.last_mode)
+				{
+					fx = !fx;
+				}
+			}
+			else if(softPad.direction_pressed)
+			{
+				song = song_playing;
+				pos_from_input(NULL, &song, true, 0, MUSIC_NUM);
+				play_song(song);
+				stopped = false;
+			}
+			/*case SDLK_SPACE:
 				hide_text = !hide_text;
 				break;
 
@@ -136,28 +147,6 @@ void jukebox( void )
 				break;
 			case SDLK_n:
 				fade_looped_songs = !fade_looped_songs;
-				break;
-
-			case SDLK_SLASH: // switch to sfx mode
-				fx = !fx;
-				break;
-			case SDLK_COMMA:
-				if (fx && --fx_num < 0)
-					fx_num = SAMPLE_COUNT - 1;
-				break;
-			case SDLK_PERIOD:
-				if (fx && ++fx_num >= SAMPLE_COUNT)
-					fx_num = 0;
-				break;
-			case SDLK_SEMICOLON:
-				if (fx)
-					JE_playSampleNum(fx_num + 1);
-				break;
-
-			case SDLK_LEFT:
-			case SDLK_UP:
-				play_song((song_playing > 0 ? song_playing : MUSIC_NUM) - 1);
-				stopped = false;
 				break;
 			case SDLK_RETURN:
 			case SDLK_RIGHT:
@@ -176,7 +165,7 @@ void jukebox( void )
 
 			default:
 				break;
-			}
+			}*/
 		}
 		
 		// user wants to quit, start fade-out

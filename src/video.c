@@ -24,7 +24,6 @@
 
 #include <assert.h>
 #include <zdkdisplay.h>
-#include <zdkgl.h>
 
 
 bool fullscreen_enabled = false;
@@ -67,23 +66,23 @@ void init_video( void )
 
 	dispSprite.Color = 0xFFFFFFFF;
 
-	dispSprite.Vertices[0].X = 0;
-	dispSprite.Vertices[0].Y = 0;
+	dispSprite.Vertices[0].X = 35;
+	dispSprite.Vertices[0].Y = 109;
 	dispSprite.Vertices[0].U = 0;
 	dispSprite.Vertices[0].V = 1;
 	
-	dispSprite.Vertices[1].X = 272;
-	dispSprite.Vertices[1].Y = 0;
+	dispSprite.Vertices[1].X = 235;
+	dispSprite.Vertices[1].Y = 109;
 	dispSprite.Vertices[1].U = 0;
 	dispSprite.Vertices[1].V = 0;
 	
-	dispSprite.Vertices[2].X = 272;
-	dispSprite.Vertices[2].Y = 480;
+	dispSprite.Vertices[2].X = 235;
+	dispSprite.Vertices[2].Y = 429;
 	dispSprite.Vertices[2].U = 1;
 	dispSprite.Vertices[2].V = 0;
 	
-	dispSprite.Vertices[3].X = 0;
-	dispSprite.Vertices[3].Y = 480;
+	dispSprite.Vertices[3].X = 35;
+	dispSprite.Vertices[3].Y = 429;
 	dispSprite.Vertices[3].U = 1;
 	dispSprite.Vertices[3].V = 1;
 
