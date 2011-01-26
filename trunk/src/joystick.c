@@ -209,41 +209,6 @@ void poll_joysticks( void )
 	
 	for (int j = 0; j < joysticks; j++)
 		poll_joystick(j);
-
-	stickX += JE_axisPoll(0);
-	stickY += JE_axisPoll(1);
-	if((stickX < 1000) && (stickX > -1000))
-	{
-		stickX = 0;
-	}
-	if((stickY < 1000) && (stickY > -1000))
-	{
-		stickY = 0;
-	}
-	if (stickX > 20000)
-	{
-		//newkey = true;
-		push_key(SDLK_UP);
-		stickX = 0;
-	}
-	if (stickX < -20000)
-	{
-		//newkey = true;
-		push_key(SDLK_DOWN);
-		stickX = 0;
-	}
-	if (stickY > 20000)
-	{
-		//newkey = true;
-		push_key(SDLK_RIGHT);
-		stickY = 0;
-	}
-	if (stickY < -20000)
-	{
-		//newkey = true;
-		push_key(SDLK_LEFT);
-		stickY = 0;
-	}
 }
 
 // sends SDL KEYDOWN and KEYUP events for a key

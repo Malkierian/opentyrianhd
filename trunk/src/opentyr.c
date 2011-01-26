@@ -24,6 +24,7 @@
 #include "font.h"
 #include "helptext.h"
 #include "hg_revision.h"
+#include "input.h"
 #include "joystick.h"
 #include "jukebox.h"
 #include "keyboard.h"
@@ -134,33 +135,17 @@ void opentyrian_menu( void )
 		{
 			fade_in = false;
 			fade_palette(colors, 20, 0, 255);
-			wait_noinput(true, false, false);
 		}
 
 		tempW = 0;
 		JE_textMenuWait(&tempW, false);
 
-		if (newkey)
+		if (inputFound)
 		{
-			switch (lastkey_sym)
+			if(softPad.button_pressed)
 			{
-				case SDLK_UP:
-					sel--;
-					if (sel < 0)
-					{
-						sel = maxSel;
-					}
-					JE_playSampleNum(S_CURSOR);
-					break;
-				case SDLK_DOWN:
-					sel++;
-					if (sel > maxSel)
-					{
-						sel = 0;
-					}
-					JE_playSampleNum(S_CURSOR);
-					break;
-				case SDLK_RETURN:
+				if(softPad.select && !softPad.last_select)
+				{
 					switch (sel)
 					{
 						case 0: /* About */
@@ -190,14 +175,15 @@ void opentyrian_menu( void )
 							JE_playSampleNum(S_SPRING);
 							break;
 					}
-					break;
-				case SDLK_ESCAPE:
+				}
+				if(softPad.escape && !softPad.last_escape)
+				{
 					quit = true;
 					JE_playSampleNum(S_SPRING);
-					break;
-				default:
-					break;
+				}
 			}
+			else if(softPad.direction_pressed)
+				pos_from_input(NULL, &sel, true, 0, maxSel + 1);
 		}
 	} while (!quit);
 }
@@ -234,6 +220,7 @@ int main( int argc, char *argv[] )
 	init_video();
 	init_keyboard();
 	init_joysticks();
+	init_input();
 	ZDKSystem_SetOrientation((ZDK_ORIENTATION)2);
 	SuppressReboot();
 	printf("assuming mouse detected\n"); // SDL can't tell us if there isn't one

@@ -151,7 +151,7 @@ JE_word cubeList[4]; /* [1..4] */
 JE_boolean gameHasRepeated;  // can only get highscore on first play-through
 
 /* Difficulty */
-JE_shortint difficultyLevel, oldDifficultyLevel,
+int difficultyLevel, oldDifficultyLevel,
             initialDifficulty;  // can only get highscore on initial episode
 
 /* Player Stuff */
@@ -339,7 +339,7 @@ static void playeritems_to_pitems( JE_PItemsType pItems, PlayerItems *items, JE_
 	pItems[11] = items->ship;
 }
 
-static void pitems_to_playeritems( PlayerItems *items, JE_PItemsType pItems, JE_byte *initial_episode_num )
+static void pitems_to_playeritems( PlayerItems *items, JE_PItemsType pItems, int *initial_episode_num )
 {
 	items->weapon[FRONT_WEAPON].id  = pItems[0];
 	items->weapon[REAR_WEAPON].id   = pItems[1];
@@ -900,16 +900,7 @@ void JE_loadConfiguration( void )
 }
 
 void JE_saveConfiguration( void )
-{
-#ifdef TARGET_UNIX
-	if (getenv("HOME"))
-	{
-		char dir[1000];
-		snprintf(dir, sizeof(dir), "%s/.opentyrian", getenv("HOME"));
-		mkdir(dir, 0755);
-	}
-#endif /* HOME */
-	
+{	
 	FILE *f;
 	JE_byte *p;
 	int z;

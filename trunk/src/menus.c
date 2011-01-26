@@ -19,6 +19,7 @@
 #include "config.h"
 #include "episodes.h"
 #include "fonthand.h"
+#include "input.h"
 #include "keyboard.h"
 #include "menus.h"
 #include "nortsong.h"
@@ -37,7 +38,7 @@ bool select_gameplay( void )
 	JE_dString(VGAScreen, JE_fontCenter(gameplay_name[0], FONT_SHAPES), 20, gameplay_name[0], FONT_SHAPES);
 
 	int gameplay = 1,
-	    gameplay_max = 4;
+	    gameplay_max = 2;
 
 	bool fade_in = true;
 	for (; ; )
@@ -57,51 +58,26 @@ bool select_gameplay( void )
 		JE_word temp = 0;
 		JE_textMenuWait(&temp, false);
 
-		if (newkey)
+		if (inputFound)
 		{
-			switch (lastkey_sym)
+			if(softPad.button_pressed)
 			{
-			case SDLK_UP:
-				gameplay--;
-				if (gameplay < 1)
+				if(softPad.select && !softPad.last_select)
 				{
-					gameplay = gameplay_max;
+					JE_playSampleNum(S_SELECT);
+					fade_black(10);
+					onePlayerAction = (gameplay == 2);
+					return true;
 				}
-				JE_playSampleNum(S_CURSOR);
-				break;
-			case SDLK_DOWN:
-				gameplay++;
-				if (gameplay > gameplay_max)
-				{
-					gameplay = 1;
-				}
-				JE_playSampleNum(S_CURSOR);
-				break;
-
-			case SDLK_RETURN:
-				if (gameplay == 4)
+				if(softPad.escape && !softPad.last_escape)
 				{
 					JE_playSampleNum(S_SPRING);
-					/* TODO: NETWORK */
-					fprintf(stderr, "error: networking via menu not implemented\n");
-					break;
+					return false;
 				}
-				JE_playSampleNum(S_SELECT);
-				fade_black(10);
-
-				onePlayerAction = (gameplay == 2);
-				twoPlayerMode = (gameplay == 3);
-				return true;
-
-			case SDLK_ESCAPE:
-				JE_playSampleNum(S_SPRING);
-				/* fading handled elsewhere
-				fade_black(10); */
-
-				return false;
-
-			default:
-				break;
+			}
+			else if(softPad.direction_pressed)
+			{
+				pos_from_input(NULL, &gameplay, true, 1, gameplay_max + 1);
 			}
 		}
 	}
@@ -133,49 +109,33 @@ bool select_episode( void )
 		JE_word temp = 0;
 		JE_textMenuWait(&temp, false);
 
-		if (newkey)
+		if (inputFound)
 		{
-			switch (lastkey_sym)
+			if(softPad.button_pressed)
 			{
-			case SDLK_UP:
-				episode--;
-				if (episode < 1)
+				if(softPad.select && !softPad.last_select)
 				{
-					episode = episode_max;
-				}
-				JE_playSampleNum(S_CURSOR);
-				break;
-			case SDLK_DOWN:
-				episode++;
-				if (episode > episode_max)
-				{
-					episode = 1;
-				}
-				JE_playSampleNum(S_CURSOR);
-				break;
+					if (!episodeAvail[episode - 1])
+					{
+						JE_playSampleNum(S_SPRING);
+						break;
+					}
+					JE_playSampleNum(S_SELECT);
+					fade_black(10);
 
-			case SDLK_RETURN:
-				if (!episodeAvail[episode - 1])
+					JE_initEpisode(episode);
+					initial_episode_num = episodeNum;
+					return true;
+				}
+				if(softPad.escape && !softPad.last_escape)
 				{
 					JE_playSampleNum(S_SPRING);
-					break;
+					return false;
 				}
-				JE_playSampleNum(S_SELECT);
-				fade_black(10);
-
-				JE_initEpisode(episode);
-				initial_episode_num = episodeNum;
-				return true;
-
-			case SDLK_ESCAPE:
-				JE_playSampleNum(S_SPRING);
-				/* fading handled elsewhere
-				fade_black(10); */
-
-				return false;
-
-			default:
-				break;
+			}
+			else if(softPad.direction_pressed)
+			{
+				pos_from_input(NULL, &episode, true, 1, episode_max + 1);
 			}
 		}
 	}
@@ -187,7 +147,7 @@ bool select_difficulty( void )
 	JE_dString(VGAScreen, JE_fontCenter(difficulty_name[0], FONT_SHAPES), 20, difficulty_name[0], FONT_SHAPES);
 
 	difficultyLevel = 2;
-	int difficulty_max = 3;
+	int difficulty_max = 6;
 
 	bool fade_in = true;
 	for (; ; )
@@ -207,60 +167,31 @@ bool select_difficulty( void )
 		JE_word temp = 0;
 		JE_textMenuWait(&temp, false);
 
-		if (SDL_GetModState() & KMOD_SHIFT)
+		if (inputFound)
 		{
-			if ((difficulty_max < 4 && keysactive[SDLK_g]) ||
-			    (difficulty_max == 4 && keysactive[SDLK_RIGHTBRACKET]))
+			if(softPad.button_pressed)
 			{
-				difficulty_max++;
+				if(softPad.select && !softPad.last_select)
+				{
+					JE_playSampleNum(S_SELECT);
+
+					if (difficultyLevel == 6)
+					{
+						difficultyLevel = 8;
+					} else if (difficultyLevel == 5) {
+						difficultyLevel = 6;
+					}
+					return true;
+				}
+				if(softPad.escape && !softPad.last_escape)
+				{
+					JE_playSampleNum(S_SPRING);
+					return false;
+				}
 			}
-		} else if (difficulty_max == 5 && keysactive[SDLK_l] && keysactive[SDLK_o] && keysactive[SDLK_r] && keysactive[SDLK_d]) {
-			difficulty_max++;
-		}
-
-		if (newkey)
-		{
-			switch (lastkey_sym)
+			else if(softPad.direction_pressed)
 			{
-			case SDLK_UP:
-				difficultyLevel--;
-				if (difficultyLevel < 1)
-				{
-					difficultyLevel = difficulty_max;
-				}
-				JE_playSampleNum(S_CURSOR);
-				break;
-			case SDLK_DOWN:
-				difficultyLevel++;
-				if (difficultyLevel > difficulty_max)
-				{
-					difficultyLevel = 1;
-				}
-				JE_playSampleNum(S_CURSOR);
-				break;
-
-			case SDLK_RETURN:
-				JE_playSampleNum(S_SELECT);
-				/* fading handled elsewhere
-				fade_black(10); */
-
-				if (difficultyLevel == 6)
-				{
-					difficultyLevel = 8;
-				} else if (difficultyLevel == 5) {
-					difficultyLevel = 6;
-				}
-				return true;
-
-			case SDLK_ESCAPE:
-				JE_playSampleNum(S_SPRING);
-				/* fading handled elsewhere
-				fade_black(10); */
-
-				return false;
-
-			default:
-				break;
+				pos_from_input(NULL, &difficultyLevel, true, 1, difficulty_max + 1);
 			}
 		}
 	}
