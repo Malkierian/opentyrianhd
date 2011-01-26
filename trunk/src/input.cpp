@@ -153,7 +153,6 @@ bool update_input( void )
 		}
 		if(is_button_pressed(layout.buttons[1], touch.Locations[i])) // escape
 		{
-			printf("escape detected.\n");
 			softPad.button_pressed = true;
 			if(softPad.escape)
 				softPad.last_escape = true;

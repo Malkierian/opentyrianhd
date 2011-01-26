@@ -24,6 +24,7 @@
 #include "fonthand.h"
 #include "helptext.h"
 #include "helptext.h"
+#include "input.h"
 #include "joystick.h"
 #include "keyboard.h"
 #include "lds_play.h"
@@ -185,13 +186,14 @@ void JE_drawPortConfigButtons( void ) // rear weapon pattern indicator
 
 void JE_helpSystem( JE_byte startTopic )
 {
-	JE_integer page, lastPage = 0;
-	JE_byte menu;
+	int page, lastPage = 0;
+	int menu;
 
 	page = topicStart[startTopic-1];
 
 	fade_black(10);
 	JE_loadPic(VGAScreen, 2, false);
+	bool quit = true;
 
 	play_song(SONG_MAPVIEW);
 
@@ -264,31 +266,24 @@ void JE_helpSystem( JE_byte startTopic )
 
 					tempW = 0;
 					JE_textMenuWait(&tempW, false);
-					if (newkey)
+					if (inputFound)
 					{
-						switch (lastkey_sym)
+						if(softPad.button_pressed)
 						{
-							case SDLK_UP:
-								menu--;
-								if (menu < 2)
-								{
-									menu = TOPICS;
-								}
-								JE_playSampleNum(S_CURSOR);
-								break;
-							case SDLK_DOWN:
-								menu++;
-								if (menu > TOPICS)
-								{
-									menu = 2;
-								}
-								JE_playSampleNum(S_CURSOR);
-								break;
-							default:
-								break;
+							if(softPad.select && !softPad.last_select)
+								quit = true;
+							if(softPad.escape && !softPad.last_escape)
+								quit = true;
+						}
+						else if(softPad.direction_pressed)
+						{
+							pos_from_input(&menu, NULL, true, 2, TOPICS);
 						}
 					}
-				} while (!(lastkey_sym == SDLK_ESCAPE || lastkey_sym == SDLK_RETURN));
+
+				} while (!quit);
+
+				quit = false;
 
 				if (lastkey_sym == SDLK_RETURN)
 				{
@@ -357,75 +352,40 @@ void JE_helpSystem( JE_byte startTopic )
 			do {
 				setjasondelay(3);
 
-				push_joysticks_as_keyboard();
-				service_SDL_events(true);
+				inputFound = update_input();
 
 				JE_showVGA();
 
 				wait_delay();
-			} while (!newkey && !newmouse);
+			} while (!inputFound);
 
-			wait_noinput(false, true, false);
-
-			if (newmouse)
+			if (inputFound)
 			{
-				switch (lastmouse_but)
+				if(softPad.button_pressed)
 				{
-					case SDL_BUTTON_LEFT:
-						lastkey_sym = SDLK_RIGHT;
-						break;
-					case SDL_BUTTON_RIGHT:
-						lastkey_sym = SDLK_LEFT;
-						break;
-					case SDL_BUTTON_MIDDLE:
-						lastkey_sym = SDLK_ESCAPE;
-						break;
-				}
-				do
-				{
-					service_SDL_events(false);
-				} while (mousedown);
-				newkey = true;
-			}
-
-			if (newkey)
-			{
-				switch (lastkey_sym)
-				{
-					case SDLK_LEFT:
-					case SDLK_UP:
-					case SDLK_PAGEUP:
-						page--;
-						JE_playSampleNum(S_CURSOR);
-						break;
-					case SDLK_RIGHT:
-					case SDLK_DOWN:
-					case SDLK_PAGEDOWN:
-					case SDLK_RETURN:
-					case SDLK_SPACE:
+					if(softPad.select && !softPad.last_select)
+					{
 						if (page == MAX_PAGE)
 						{
-							page = 0;
-						} else {
-							page++;
+							quit = true;
 						}
-						JE_playSampleNum(S_CURSOR);
-						break;
-					case SDLK_F1:
-						page = 0;
-						JE_playSampleNum(S_CURSOR);
-						break;
-					default:
-						break;
+						else
+						{
+							page++;
+							JE_playSampleNum(S_CURSOR);
+						}
+					}
+					if(softPad.escape && !softPad.last_escape)
+					{
+						quit = true;
+						JE_playSampleNum(S_SPRING);
+					}
 				}
+				else if(softPad.direction_pressed)
+					pos_from_input(NULL, &page, true, 0, MAX_PAGE + 1);
 			}
 		}
-
-		if (page == 255)
-		{
-			lastkey_sym = SDLK_ESCAPE;
-		}
-	} while (lastkey_sym != SDLK_ESCAPE);
+	} while (!quit);
 }
 
 // cost to upgrade a weapon power from power-1 (where power == 0 indicates an unupgraded weapon)
@@ -480,7 +440,7 @@ ulong JE_getCost( JE_byte itemType, JE_word itemNum )
 void JE_loadScreen( void )
 {
 	JE_boolean quit;
-	JE_byte sel, screen, min = 0, max = 0;
+	int sel, screen, min = 0, max = 0;
 	char *tempstr;
 	char *tempstr2;
 	JE_boolean mal_str = false;
@@ -622,62 +582,40 @@ void JE_loadScreen( void )
 		JE_textMenuWait(&tempW, false);
 
 
-		if (newkey)
+		if (inputFound)
 		{
-			switch (lastkey_sym)
+			if(softPad.button_pressed)
 			{
-			case SDLK_UP:
-				sel--;
-				if (sel < min)
+				if(softPad.select && !softPad.last_select)
 				{
-					sel = max;
-				}
-				JE_playSampleNum(S_CURSOR);
-				break;
-			case SDLK_DOWN:
-				sel++;
-				if (sel > max)
-				{
-					sel = min;
-				}
-				JE_playSampleNum(S_CURSOR);
-				break;
-			case SDLK_LEFT:
-			case SDLK_RIGHT:
-				if (screen == 1)
-				{
-					screen = 2;
-					sel += 11;
-				} else {
-					screen = 1;
-					sel -= 11;
-				}
-				break;
-			case SDLK_RETURN:
-				if (sel < max)
-				{
-					if (saveFiles[sel - 1].level > 0)
+					if (sel < max)
 					{
-						JE_playSampleNum (S_SELECT);
-						performSave = false;
-						JE_operation(sel);
-						quit = true;
-					} else {
-						JE_playSampleNum (S_CLINK);
+						if (saveFiles[sel - 1].level > 0)
+						{
+							JE_playSampleNum (S_SELECT);
+							performSave = false;
+							JE_operation(sel);
+							quit = true;
+						}
+						else
+						{
+							JE_playSampleNum (S_CLINK);
+						}
 					}
-				} else {
+					else
+					{
+						quit = true;
+					}
+				}
+				if(softPad.select && !softPad.last_select)
+				{
 					quit = true;
 				}
-
-
-				break;
-			case SDLK_ESCAPE:
-				quit = true;
-				break;
-			default:
-				break;
 			}
-
+			else if(softPad.direction_pressed)
+			{
+				pos_from_input(NULL, &sel, true, 1, max + 1);
+			}
 		}
 	} while (!quit);
 }
@@ -961,42 +899,33 @@ void JE_highScoreScreen( void )
 
 			JE_showVGA();
 
-			tempW = 0;
-			JE_textMenuWait(&tempW, false);
+			
 
-			if (newkey)
-			{
-				switch (lastkey_sym)
-				{
-				case SDLK_LEFT:
-					x--;
-					chg = -1;
-					break;
-				case SDLK_RIGHT:
-					x++;
-					chg = 1;
-					break;
-				default:
-					break;
-				}
-			}
-
-		} else {
-			x += chg;
+		}
+		else
+		{
+			x = (x == max) ? x + chg : min;
 		}
 
-		x = ( x < min ) ? max : ( x > max ) ? min : x;
+		tempW = 0;
+		JE_textMenuWait(&tempW, false);
 
-		if (newkey)
+		if (inputFound)
 		{
-			switch (lastkey_sym)
+			if(softPad.button_pressed)
 			{
-			case SDLK_RETURN:
-			case SDLK_ESCAPE:
-				quit = true;
-				break;
-			default:
-				break;
+				if(softPad.select && !softPad.last_select)
+				{
+					quit = true;
+				}
+				if(softPad.escape && !softPad.last_escape)
+				{
+					quit = true;
+				}
+			}
+			else if(softPad.direction_pressed)
+			{
+				pos_from_input(&x, NULL, true, 1, max + 1);
 			}
 		}
 
