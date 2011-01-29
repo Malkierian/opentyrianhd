@@ -5,6 +5,7 @@
 #include "nortsong.h"
 #include "varz.h"
 
+#include <zdkext.h>
 #include <zdkinput.h>
 #include <zdkdisplay.h>
 
@@ -16,73 +17,75 @@ float analog_max = 60.0f;
 
 layout_struct layout;
 
-void pos_from_input(int *x, int *y, bool in_menu, int min_menu, int max_menu)
+void pos_from_input(int *x, int *y, bool in_menu, int min_menu, int max_menu, bool play_sound)
 {
 	if(in_menu)
 	{
-		if ((softPad.ax > 0 || softPad.dx > 0) && x != NULL)
+		if(x != NULL && abs(softPad.ax) > abs(softPad.ay))
 		{
-			stickX += softPad.analog ? softPad.ax : softPad.dx;
-			if(stickX > 300)
+			if (softPad.ax > 0)
 			{
-				stickX = 0;
-				if(*x == max_menu - 1)
-					*x = 0;
-				else
-					*x++;
-				JE_playSampleNum(S_CURSOR);
+				stickX += softPad.ax;
+				if(stickX > 40)
+				{
+					stickX = 0;
+					if(*x == max_menu - 1)
+						*x = 0;
+					else
+						*x++;
+					if(play_sound)
+						JE_playSampleNum(S_CURSOR);
+				}
+			}
+			else if (softPad.ax < 0 && x != NULL)
+			{
+				stickX += softPad.ax;
+				if(stickX < -40)
+				{
+					stickX = 0;
+					if(*x == 0)
+						*x = max_menu - 1;
+					else
+						*x--;
+					if(play_sound)
+						JE_playSampleNum(S_CURSOR);
+				}
 			}
 		}
-		else if ((softPad.ax < 0 || softPad.dx < 0) && x != NULL)
+		else if(y != NULL && abs(softPad.ay) > abs(softPad.ax))
 		{
-			stickX += softPad.analog ? softPad.ax : softPad.dx;
-			if(stickX < -300)
+			if (softPad.ay > 0 && y != NULL)
 			{
-				stickX = 0;
-				if(*x == 0)
-					*x = max_menu - 1;
-				else
-					*x--;
-				JE_playSampleNum(S_CURSOR);
+				stickY += softPad.ay;
+				if(stickY > 40)
+				{
+					stickY = 0;
+					*y += 1;
+					if(*y > max_menu - 1)
+						*y = min_menu;
+					if(play_sound)
+						JE_playSampleNum(S_CURSOR);
+				}
 			}
-		}
-		else if ((softPad.ay > 0 || softPad.dy > 0) && y != NULL)
-		{
-			stickY += softPad.analog ? softPad.ay : softPad.dy;
-			if(stickY > 300)
+			else if (softPad.ay < 0  && y != NULL)
 			{
-				stickY = 0;
-				*y += 1;
-				if(*y > max_menu - 1)
-					*y = min_menu;
-				JE_playSampleNum(S_CURSOR);
-			}
-		}
-		else if ((softPad.ay < 0 || softPad.dy < 0 ) && y != NULL)
-		{
-			stickY += softPad.analog ? softPad.ay : softPad.dy;
-			if(stickY < -300)
-			{
-				stickY = 0;
-				*y -= 1;
-				if(*y < min_menu)
-					*y = max_menu - 1;
-				JE_playSampleNum(S_CURSOR);
+				stickY +=softPad.ay;
+				if(stickY < -40)
+				{
+					stickY = 0;
+					*y -= 1;
+					if(*y < min_menu)
+						*y = max_menu - 1;
+					if(play_sound)
+						JE_playSampleNum(S_CURSOR);
+				}
 			}
 		}
 	}
 	else
 	{
-		if(softPad.analog)
-		{
-			*x += (softPad.ax/analog_max) * 5.4f;
-			*y -= (softPad.ay/analog_max) * 5.4f;
-		}
-		else
-		{
-			*x += softPad.dx * 5;
-			*y -= softPad.dy * 5;
-		}
+		*x += (softPad.ax/analog_max) * 5.4f;
+		*y -= (softPad.ay/analog_max) * 5.4f;
 	}
 }
 
@@ -94,16 +97,27 @@ bool is_button_pressed( layout_button_struct button, ZDK_TOUCH_LOCATION location
 	return false;
 }
 
-bool is_joypad_pressed( layout_joystick_struct joystick, ZDK_TOUCH_LOCATION location )
+bool is_trackpad_pressed( layout_trackpad_struct trackpad, ZDK_TOUCH_LOCATION location )
 {
-	if(joystick.sprite.Vertices[0].X < location.X && location.X < joystick.sprite.Vertices[1].X)
-		if(joystick.sprite.Vertices[0].Y < location.Y && location.Y < joystick.sprite.Vertices[2].Y)
+	if(trackpad.sprite.Vertices[0].X < location.X && location.X < trackpad.sprite.Vertices[1].X)
+	{
+		if(trackpad.sprite.Vertices[0].Y < location.Y && location.Y < trackpad.sprite.Vertices[2].Y)
+		{
+			trackpad.origin.x = location.X;
+			trackpad.origin.y = location.Y;
+			trackpad.location = location;
 			return true;
+		}
+	}
 	return false;
 }
 
 bool update_input( void )
 {
+	if(ZDKExt_ExitRequested())
+	{
+		JE_tyrianHalt(0);
+	}
 	ZDK_INPUT_STATE input;
 	ZDK_TOUCH_STATE touch;
 	ZDK_TOUCH_LOCATION curLoc;
@@ -119,33 +133,51 @@ bool update_input( void )
 	softPad.direction_pressed = false;
 
 	if(touchCount == 0)
+	{
+		if(softPad.mode)
+			softPad.mode = false;
+		else
+			softPad.mode_last = false;
+		
+		if(softPad.escape)
+			softPad.escape = false;
+		else
+			softPad.escape_last = false;
+		
+		if(softPad.select)
+			softPad.select = false;
+		else
+			softPad.select_last = false;
+		softPad.tracking = false;
+
 		return false;
+	}
 	padZones = 5;
 
 	for(int i = 0; i < touchCount; i++)
 	{
-		if(is_joypad_pressed(layout.joystick, touch.Locations[i]))
+		if(is_trackpad_pressed(layout.trackpad, touch.Locations[i]))
 		{
-			softPad.ax = touch.Locations[i].Y - layout.joystick.center.y; // this is where the conversion from Zune's x,y to
-			softPad.ay = layout.joystick.center.x - touch.Locations[i].X; // OT's x,y is made.
-			if(softPad.ax < 10.0f && softPad.ax > -10.0f)
+			if(softPad.tracking)
 			{
+				softPad.ax = touch.Locations[i].Y - softPad.trackpad_last_loc.Y; // this is where the conversion from Zune's x,y to
+				softPad.ay = softPad.trackpad_last_loc.X - touch.Locations[i].X; // OT's x,y is made.
+				softPad.direction_pressed = true;
+			}
+			else
+			{
+				softPad.tracking = true;
 				softPad.ax = 0.0f;
-				continue;
-			}
-			if(softPad.ay < 10.0f && softPad.ay > -10.0f)
-			{
 				softPad.ay = 0.0f;
-				continue;
 			}
-			softPad.direction_pressed = true;
+			softPad.trackpad_last_loc = touch.Locations[i];
 			continue;
 		}
 		if(is_button_pressed(layout.buttons[0], touch.Locations[i])) // mode
 		{
 			softPad.button_pressed = true;
 			if(softPad.mode)
-				softPad.last_mode = true;
+				softPad.mode_last = true;
 			else
 				softPad.mode = true;
 			pressed[0] = true;
@@ -155,7 +187,7 @@ bool update_input( void )
 		{
 			softPad.button_pressed = true;
 			if(softPad.escape)
-				softPad.last_escape = true;
+				softPad.escape_last = true;
 			else
 				softPad.escape = true;
 			pressed[1] = true;
@@ -165,7 +197,7 @@ bool update_input( void )
 		{
 			softPad.button_pressed = true;
 			if(softPad.select)
-				softPad.last_select = true;
+				softPad.select_last = true;
 			else
 				softPad.select = true;
 			pressed[2] = true;
@@ -176,21 +208,21 @@ bool update_input( void )
 		if(softPad.mode)
 			softPad.mode = false;
 		else
-			softPad.last_mode = false;
+			softPad.mode_last = false;
 	}
 	if(!pressed[1])
 	{
 		if(softPad.escape)
 			softPad.escape = false;
 		else
-			softPad.last_escape = false;
+			softPad.escape_last = false;
 	}
 	if(!pressed[2])
 	{
 		if(softPad.select)
 			softPad.select = false;
 		else
-			softPad.last_select = false;
+			softPad.select_last = false;
 	}
 	if(!(softPad.button_pressed || softPad.direction_pressed))
 		return false;
@@ -253,9 +285,9 @@ void init_layout( void )
 	layout.buttons[4].name[5] = 0;
 	set_sprite(449,479,151,181,&layout.buttons[4].sprite);
 
-	layout.joystick.center.x = 136.0f;
-	layout.joystick.center.y = 60.0f;
-	set_sprite(0,120,76,196,&layout.joystick.sprite);
+	//layout.joystick.center.x = 136.0f;
+	//layout.joystick.center.y = 60.0f;
+	set_sprite(0,120,76,196,&layout.trackpad.sprite);
 }
 
 void init_input( void )
@@ -267,27 +299,28 @@ void init_input( void )
 
 	softPad.ax = 0.0f;
 	softPad.ay = 0.0f;
-	softPad.dx = 0;
-	softPad.dy = 0;
-	softPad.analog = true;
+	softPad.trackpad_last_loc.X = 0.0f,
+		softPad.trackpad_last_loc.Y = 0.0f,
+		softPad.trackpad_last_loc.Pressure = 0.0f;
+	softPad.tracking = false;
 
 	softPad.direction_pressed = false;
 	softPad.button_pressed = false;
 
-	softPad.last_up = false;
-	softPad.last_down = false;
-	softPad.last_left = false;
-	softPad.last_right = false;
+	softPad.up_last = false;
+	softPad.down_last = false;
+	softPad.left_last = false;
+	softPad.right_last = false;
 	softPad.select = false;
-	softPad.last_select = false;
+	softPad.select_last = false;
 	softPad.escape = false;
-	softPad.last_escape = false;
+	softPad.escape_last = false;
 	softPad.lKick = false;
-	softPad.last_lKick = false;
+	softPad.lKick_last = false;
 	softPad.rKick = false;
-	softPad.last_rKick = false;
+	softPad.rKick_last = false;
 	softPad.mode = false;
-	softPad.last_mode = false;
+	softPad.mode_last = false;
 }
 
 void deinit_input( void )

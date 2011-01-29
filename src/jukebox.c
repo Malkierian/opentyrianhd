@@ -117,16 +117,16 @@ void jukebox( void )
 		{
 			if(softPad.button_pressed)
 			{
-				if(softPad.select && !softPad.last_select)
+				if(softPad.select && !softPad.select_last)
 				{
 					play_song((song_playing + 1) % MUSIC_NUM);
 					stopped = false;
 				}
-				if(softPad.escape && !softPad.last_escape)
+				if(softPad.escape && !softPad.escape_last)
 				{
 					trigger_quit = true;
 				}
-				if(softPad.mode && !softPad.last_mode)
+				if(softPad.mode && !softPad.mode_last)
 				{
 					fx = !fx;
 				}
@@ -134,7 +134,7 @@ void jukebox( void )
 			else if(softPad.direction_pressed)
 			{
 				song = song_playing;
-				pos_from_input(NULL, &song, true, 0, MUSIC_NUM);
+				pos_from_input(NULL, &song, true, 0, MUSIC_NUM, false);
 				play_song(song);
 				stopped = false;
 			}

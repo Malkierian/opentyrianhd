@@ -25,19 +25,18 @@
 struct input_struct {
 	float ax;
 	float ay;
-	signed int dx;
-	signed int dy;
-	bool analog;
+	ZDK_TOUCH_LOCATION trackpad_last_loc;
+	bool tracking;
 
 	bool direction_pressed;
 	bool button_pressed;
 
-	bool last_up, last_down, last_left, last_right;
-	bool select, last_select;
-	bool escape, last_escape;
-	bool lKick, last_lKick;
-	bool rKick, last_rKick;
-	bool mode, last_mode;
+	bool up_last, down_last, left_last, right_last;
+	bool select, select_last;
+	bool escape, escape_last;
+	bool lKick, lKick_last;
+	bool rKick, rKick_last;
+	bool mode, mode_last;
 };
 
 struct coord_struct {
@@ -45,12 +44,11 @@ struct coord_struct {
 	float y;
 };
 
-struct layout_joystick_struct {
-	HTEXTURE unpressed;
-	HTEXTURE pressed;
+struct layout_trackpad_struct {
 	ZDK_SPRITE sprite;
 	ZDK_RECT hitArea;
-	coord_struct center;
+	ZDK_TOUCH_LOCATION location;
+	coord_struct origin;
 };
 
 struct layout_dpad_struct {
@@ -72,11 +70,11 @@ struct layout_button_struct {
 struct layout_struct {
 	layout_button_struct buttons[5];
 	layout_dpad_struct dpad[4];
-	layout_joystick_struct joystick;
+	layout_trackpad_struct trackpad;
 };
 
 bool update_input( void );
-void pos_from_input( int *x, int *y, bool in_menu, int min_menu, int max_menu);
+void pos_from_input( int *x, int *y, bool in_menu, int min_menu, int max_menu, bool play_sound);
 void init_input( void );
 void deinit_input( void );
 void load_layouts( void );

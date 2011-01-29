@@ -409,6 +409,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\input.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\joystick.h"
 				>
 			</File>
@@ -871,6 +875,10 @@
 						CompileAs="2"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\src\input.cpp"
+				>
 			</File>
 			<File
 				RelativePath=".\src\joystick.c"

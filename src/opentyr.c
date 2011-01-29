@@ -144,7 +144,7 @@ void opentyrian_menu( void )
 		{
 			if(softPad.button_pressed)
 			{
-				if(softPad.select && !softPad.last_select)
+				if(softPad.select && !softPad.select_last)
 				{
 					switch (sel)
 					{
@@ -176,14 +176,14 @@ void opentyrian_menu( void )
 							break;
 					}
 				}
-				if(softPad.escape && !softPad.last_escape)
+				if(softPad.escape && !softPad.escape_last)
 				{
 					quit = true;
 					JE_playSampleNum(S_SPRING);
 				}
 			}
 			else if(softPad.direction_pressed)
-				pos_from_input(NULL, &sel, true, 0, maxSel + 1);
+				pos_from_input(NULL, &sel, true, 0, maxSel + 1, true);
 		}
 	} while (!quit);
 }
@@ -306,12 +306,6 @@ int main( int argc, char *argv[] )
 	JE_tyrianHalt(0);
 
 	return 0;
-}
-
-Sint16 JE_axisPoll( int axis )
-{
-	Sint16 poll = SDL_JoystickGetAxis(joystick[0].handle, axis);
-	return(poll);
 }
 
 // kate: tab-width 4; vim: set noet:

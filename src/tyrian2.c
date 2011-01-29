@@ -732,9 +732,7 @@ start_level_first:
 	extraGame = false;
 
 	doNotSaveBackup = false;
-	printf("JE_loadmap starting\n");
 	JE_loadMap();
-	printf("JE_loadmap finished.  continuing...\n");
 
 	if (mainLevel == 0)  // if quit itemscreen
 		return;          // back to titlescreen
@@ -3654,7 +3652,7 @@ bool JE_titleScreen( JE_boolean animate )
 			{
 				if(softPad.button_pressed)
 				{
-					if(softPad.select && !softPad.last_select)
+					if(softPad.select && !softPad.select_last)
 					{
 						JE_playSampleNum(S_SELECT);
 						switch (menu)
@@ -3724,7 +3722,7 @@ bool JE_titleScreen( JE_boolean animate )
 					}
 				}
 				else if(softPad.direction_pressed)
-					pos_from_input(NULL, &menu, true, 0, menunum);
+					pos_from_input(NULL, &menu, true, 0, menunum, true);
 			}
 		}
 		while (!(quit || gameLoaded || jumpSection || play_demo || loadDestruct));

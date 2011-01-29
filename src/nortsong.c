@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 #include "file.h"
+#include "input.h"
 #include "joystick.h"
 #include "keyboard.h"
 #include "loudness.h"
@@ -83,18 +84,17 @@ void service_wait_delay( void )
 	while (SDL_GetTicks() < target)
 	{
 		SDL_Delay(SDL_GetTicks() - target > SDL_POLL_INTERVAL ? SDL_POLL_INTERVAL : SDL_GetTicks() - target);
-		service_SDL_events(false);
+		inputFound = update_input();
 	}
 }
 
 void wait_delayorinput( JE_boolean keyboard, JE_boolean mouse, JE_boolean joystick )
 {
-	service_SDL_events(true);
-	while (SDL_GetTicks() < target && !((keyboard && keydown) || (mouse && mousedown) || (joystick && joydown)))
+	inputFound = update_input();
+	while (SDL_GetTicks() < target && !inputFound)
 	{
 		SDL_Delay(SDL_GetTicks() - target > SDL_POLL_INTERVAL ? SDL_POLL_INTERVAL : SDL_GetTicks() - target);
-		push_joysticks_as_keyboard();
-		service_SDL_events(false);
+		inputFound = update_input();
 	}
 }
 

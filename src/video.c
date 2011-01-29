@@ -86,10 +86,8 @@ void init_video( void )
 	dispSprite.Vertices[3].U = 1;
 	dispSprite.Vertices[3].V = 1;
 
-	printf("Filling rectangle...\n");
 	SDL_FillRect(VGAScreen, NULL, 0);
 
-	printf("Initializing scaler...\n");
 	if (!init_scaler(scaler, fullscreen_enabled) &&  // try desired scaler and desired fullscreen state
 	    !init_any_scaler(fullscreen_enabled) &&      // try any scaler in desired fullscreen state
 	    !init_any_scaler(!fullscreen_enabled))       // try any scaler in other fullscreen state
