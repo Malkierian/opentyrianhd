@@ -19,6 +19,7 @@
 #include "config.h"
 #include "editship.h"
 #include "episodes.h"
+#include "input.h"
 #include "joystick.h"
 #include "lds_play.h"
 #include "loudness.h"
@@ -465,6 +466,7 @@ void JE_cleanup( void )
 	deinit_audio();
 	deinit_video();
 	deinit_joysticks();
+	deinit_input();
 
 	/* TODO: NETWORK */
 

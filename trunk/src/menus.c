@@ -62,14 +62,14 @@ bool select_gameplay( void )
 		{
 			if(softPad.button_pressed)
 			{
-				if(softPad.select && !softPad.last_select)
+				if(softPad.select && !softPad.select_last)
 				{
 					JE_playSampleNum(S_SELECT);
 					fade_black(10);
 					onePlayerAction = (gameplay == 2);
 					return true;
 				}
-				if(softPad.escape && !softPad.last_escape)
+				if(softPad.escape && !softPad.escape_last)
 				{
 					JE_playSampleNum(S_SPRING);
 					return false;
@@ -77,7 +77,7 @@ bool select_gameplay( void )
 			}
 			else if(softPad.direction_pressed)
 			{
-				pos_from_input(NULL, &gameplay, true, 1, gameplay_max + 1);
+				pos_from_input(NULL, &gameplay, true, 1, gameplay_max + 1, true);
 			}
 		}
 	}
@@ -113,7 +113,7 @@ bool select_episode( void )
 		{
 			if(softPad.button_pressed)
 			{
-				if(softPad.select && !softPad.last_select)
+				if(softPad.select && !softPad.select_last)
 				{
 					if (!episodeAvail[episode - 1])
 					{
@@ -127,7 +127,7 @@ bool select_episode( void )
 					initial_episode_num = episodeNum;
 					return true;
 				}
-				if(softPad.escape && !softPad.last_escape)
+				if(softPad.escape && !softPad.escape_last)
 				{
 					JE_playSampleNum(S_SPRING);
 					return false;
@@ -135,7 +135,7 @@ bool select_episode( void )
 			}
 			else if(softPad.direction_pressed)
 			{
-				pos_from_input(NULL, &episode, true, 1, episode_max + 1);
+				pos_from_input(NULL, &episode, true, 1, episode_max + 1, true);
 			}
 		}
 	}
@@ -171,7 +171,7 @@ bool select_difficulty( void )
 		{
 			if(softPad.button_pressed)
 			{
-				if(softPad.select && !softPad.last_select)
+				if(softPad.select && !softPad.select_last)
 				{
 					JE_playSampleNum(S_SELECT);
 
@@ -183,7 +183,7 @@ bool select_difficulty( void )
 					}
 					return true;
 				}
-				if(softPad.escape && !softPad.last_escape)
+				if(softPad.escape && !softPad.escape_last)
 				{
 					JE_playSampleNum(S_SPRING);
 					return false;
@@ -191,7 +191,7 @@ bool select_difficulty( void )
 			}
 			else if(softPad.direction_pressed)
 			{
-				pos_from_input(NULL, &difficultyLevel, true, 1, difficulty_max + 1);
+				pos_from_input(NULL, &difficultyLevel, true, 1, difficulty_max + 1, true);
 			}
 		}
 	}

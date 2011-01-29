@@ -16,6 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+#include "input.h"
 #include "joystick.h"
 #include "keyboard.h"
 #include "network.h"
@@ -58,35 +59,27 @@ void flush_events_buffer( void )
 
 void wait_input( JE_boolean keyboard, JE_boolean mouse, JE_boolean joystick )
 {
-	service_SDL_events(false);
-	while (!((keyboard && keydown) || (mouse && mousedown) || (joystick && joydown)))
+	inputFound = update_input();
+	while (!inputFound)
 	{
 		SDL_Delay(SDL_POLL_INTERVAL);
-		push_joysticks_as_keyboard();
-		service_SDL_events(false);
-		
-		if (isNetworkGame)
-			network_check();
+		inputFound = update_input();
 	}
 }
 
 void wait_noinput( JE_boolean keyboard, JE_boolean mouse, JE_boolean joystick )
 {
-	service_SDL_events(false);
-	while ((keyboard && keydown) || (mouse && mousedown) || (joystick && joydown))
+	inputFound = update_input();
+	while (inputFound)
 	{
 		SDL_Delay(SDL_POLL_INTERVAL);
-		poll_joysticks();
-		service_SDL_events(false);
-		
-		if (isNetworkGame)
-			network_check();
+		inputFound = update_input();
 	}
 }
 
 void init_keyboard( void )
 {
-	keysactive = SDL_GetKeyboardState(&numkeys);
+	//keysactive = SDL_GetKeyboardState(&numkeys);
 	SDL_EnableKeyRepeat(500, 60);
 
 	newkey = newmouse = false;

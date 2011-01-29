@@ -270,26 +270,24 @@ void JE_helpSystem( JE_byte startTopic )
 					{
 						if(softPad.button_pressed)
 						{
-							if(softPad.select && !softPad.last_select)
+							if(softPad.select && !softPad.select_last)
+							{
 								quit = true;
-							if(softPad.escape && !softPad.last_escape)
+								page = topicStart[menu-1];
+								JE_playSampleNum(S_CLICK);
+							}
+							if(softPad.escape && !softPad.escape_last)
 								quit = true;
 						}
 						else if(softPad.direction_pressed)
 						{
-							pos_from_input(&menu, NULL, true, 2, TOPICS);
+							pos_from_input(&menu, NULL, true, 2, TOPICS, true);
 						}
 					}
 
 				} while (!quit);
 
 				quit = false;
-
-				if (lastkey_sym == SDLK_RETURN)
-				{
-					page = topicStart[menu-1];
-					JE_playSampleNum(S_CLICK);
-				}
 
 				break;
 			case 1: /* One-Player Menu */
@@ -363,7 +361,7 @@ void JE_helpSystem( JE_byte startTopic )
 			{
 				if(softPad.button_pressed)
 				{
-					if(softPad.select && !softPad.last_select)
+					if(softPad.select && !softPad.select_last)
 					{
 						if (page == MAX_PAGE)
 						{
@@ -375,14 +373,14 @@ void JE_helpSystem( JE_byte startTopic )
 							JE_playSampleNum(S_CURSOR);
 						}
 					}
-					if(softPad.escape && !softPad.last_escape)
+					if(softPad.escape && !softPad.escape_last)
 					{
 						quit = true;
 						JE_playSampleNum(S_SPRING);
 					}
 				}
 				else if(softPad.direction_pressed)
-					pos_from_input(NULL, &page, true, 0, MAX_PAGE + 1);
+					pos_from_input(NULL, &page, true, 0, MAX_PAGE + 1, true);
 			}
 		}
 	} while (!quit);
@@ -586,7 +584,7 @@ void JE_loadScreen( void )
 		{
 			if(softPad.button_pressed)
 			{
-				if(softPad.select && !softPad.last_select)
+				if(softPad.select && !softPad.select_last)
 				{
 					if (sel < max)
 					{
@@ -607,14 +605,14 @@ void JE_loadScreen( void )
 						quit = true;
 					}
 				}
-				if(softPad.select && !softPad.last_select)
+				if(softPad.select && !softPad.select_last)
 				{
 					quit = true;
 				}
 			}
 			else if(softPad.direction_pressed)
 			{
-				pos_from_input(NULL, &sel, true, 1, max + 1);
+				pos_from_input(NULL, &sel, true, 1, max + 1, true);
 			}
 		}
 	} while (!quit);
@@ -898,9 +896,6 @@ void JE_highScoreScreen( void )
 			/* {Dstring(fontcenter(misctext[57],_SmallFontShapes),190,misctext[57],_SmallFontShapes);} */
 
 			JE_showVGA();
-
-			
-
 		}
 		else
 		{
@@ -914,18 +909,18 @@ void JE_highScoreScreen( void )
 		{
 			if(softPad.button_pressed)
 			{
-				if(softPad.select && !softPad.last_select)
+				if(softPad.select && !softPad.select_last)
 				{
 					quit = true;
 				}
-				if(softPad.escape && !softPad.last_escape)
+				if(softPad.escape && !softPad.escape_last)
 				{
 					quit = true;
 				}
 			}
 			else if(softPad.direction_pressed)
 			{
-				pos_from_input(&x, NULL, true, 1, max + 1);
+				pos_from_input(&x, NULL, true, 1, max + 1, true);
 			}
 		}
 
@@ -958,10 +953,10 @@ void JE_gammaCorrect( Palette *colorBuffer, JE_byte gamma )
 
 JE_boolean JE_gammaCheck( void )
 {
-	bool temp = keysactive[SDLK_F11] != 0;
+	bool temp = 0;
 	if (temp)
 	{
-		keysactive[SDLK_F11] = false;
+		//keysactive[SDLK_F11] = false;
 		newkey = false;
 		gammaCorrection = (gammaCorrection + 1) % 4;
 		memcpy(colors, palettes[pcxpal[3-1]], sizeof(colors));
@@ -1006,7 +1001,7 @@ void JE_doInGameSetup( void )
 		}
 		quitRequested = false;
 
-		keysactive[SDLK_ESCAPE] = false;
+		//keysactive[SDLK_ESCAPE] = false;
 
 		if (isNetworkGame)
 		{
@@ -2493,14 +2488,14 @@ void JE_mainKeyboardInput( void )
 	if (!isNetworkGame)
 	{
 		/* { Edited Ships } for Player 1 */
-		if (extraAvail && keysactive[SDLK_TAB] && !isNetworkGame && !superTyrian)
+		if (extraAvail && /*keysactive[SDLK_TAB] &&*/ !isNetworkGame && !superTyrian)
 		{
 			for (x = SDLK_0; x <= SDLK_9; x++)
 			{
-				if (keysactive[x])
+				/*if (keysactive[x])
 				{
 					int z = x == SDLK_0 ? 10 : x - SDLK_0;
-					player[0].items.ship = 90 + z;                     /*Ships*/
+					player[0].items.ship = 90 + z;                     //Ships
 					z = (z - 1) * 15;
 					player[0].items.weapon[FRONT_WEAPON].id = extraShips[z + 1];
 					player[0].items.weapon[REAR_WEAPON].id = extraShips[z + 2];
@@ -2508,7 +2503,7 @@ void JE_mainKeyboardInput( void )
 					player[0].items.sidekick[LEFT_SIDEKICK] = extraShips[z + 4];
 					player[0].items.sidekick[RIGHT_SIDEKICK] = extraShips[z + 5];
 					player[0].items.generator = extraShips[z + 6];
-					/*Armor*/
+					//Armor
 					player[0].items.shield = extraShips[z + 8];
 					memset(shotMultiPos, 0, sizeof(shotMultiPos));
 
@@ -2531,16 +2526,16 @@ void JE_mainKeyboardInput( void )
 					JE_drawOptions();
 
 					keysactive[x] = false;
-				}
+				}*/
 			}
 		}
 
 		/* for Player 2 */
-		if (extraAvail && keysactive[SDLK_CAPSLOCK] && !isNetworkGame && !superTyrian)
+		if (extraAvail && /*keysactive[SDLK_CAPSLOCK] &&*/ !isNetworkGame && !superTyrian)
 		{
 			for (x = SDLK_0; x <= SDLK_9; x++)
 			{
-				if (keysactive[x])
+				/*if (keysactive[x])
 				{
 					int z = x == SDLK_0 ? 10 : x - SDLK_0;
 					player[1].items.ship = 90 + z;
@@ -2551,7 +2546,7 @@ void JE_mainKeyboardInput( void )
 					player[1].items.sidekick[LEFT_SIDEKICK] = extraShips[z + 4];
 					player[1].items.sidekick[RIGHT_SIDEKICK] = extraShips[z + 5];
 					player[1].items.generator = extraShips[z + 6];
-					/*Armor*/
+					//Armor
 					player[1].items.shield = extraShips[z + 8];
 					memset(shotMultiPos, 0, sizeof(shotMultiPos));
 
@@ -2574,13 +2569,13 @@ void JE_mainKeyboardInput( void )
 					JE_drawOptions();
 
 					keysactive[x] = false;
-				}
+				}*/
 			}
 		}
 	}
 
 	/* { In-Game Help } */
-	if (keysactive[SDLK_F1])
+	/*if (keysactive[SDLK_F1])
 	{
 		if (isNetworkGame)
 		{
@@ -2589,10 +2584,10 @@ void JE_mainKeyboardInput( void )
 			JE_inGameHelp();
 			skipStarShowVGA = true;
 		}
-	}
+	}*/
 
 	/* {!Activate Nort Ship!} */
-	if (keysactive[SDLK_F2] && keysactive[SDLK_F4] && keysactive[SDLK_F6] && keysactive[SDLK_F7] &&
+	/*if (keysactive[SDLK_F2] && keysactive[SDLK_F4] && keysactive[SDLK_F6] && keysactive[SDLK_F7] &&
 	    keysactive[SDLK_F9] && keysactive[SDLK_BACKSLASH] && keysactive[SDLK_SLASH])
 	{
 		if (isNetworkGame)
@@ -2604,10 +2599,10 @@ void JE_mainKeyboardInput( void )
 			player[0].items.weapon[REAR_WEAPON].id = 36;
 			shipGr = 1;
 		}
-	}
+	}*/
 
 	/* {Cheating} */
-	if (!isNetworkGame && !twoPlayerMode && !superTyrian && superArcadeMode == SA_NONE)
+	/*if (!isNetworkGame && !twoPlayerMode && !superTyrian && superArcadeMode == SA_NONE)
 	{
 		if (keysactive[SDLK_F2] && keysactive[SDLK_F3] && keysactive[SDLK_F6])
 		{
@@ -2629,7 +2624,7 @@ void JE_mainKeyboardInput( void )
 			youAreCheating = !youAreCheating;
 			keysactive[SDLK_c] = false;
 		}
-	}
+	}*/
 
 	if (superTyrian)
 	{
@@ -2639,7 +2634,7 @@ void JE_mainKeyboardInput( void )
 	/* {Personal Commands} */
 
 	/* {DEBUG} */
-	if (keysactive[SDLK_F10] && keysactive[SDLK_BACKSPACE])
+	/*if (keysactive[SDLK_F10] && keysactive[SDLK_BACKSPACE])
 	{
 		keysactive[SDLK_F10] = false;
 		debug = !debug;
@@ -2647,12 +2642,12 @@ void JE_mainKeyboardInput( void )
 		debugHist = 1;
 		debugHistCount = 1;
 
-		/* YKS: clock ticks since midnight replaced by SDL_GetTicks */
+		// YKS: clock ticks since midnight replaced by SDL_GetTicks 
 		lastDebugTime = SDL_GetTicks();
-	}
+	}*/
 
 	/* {CHEAT-SKIP LEVEL} */
-	if (keysactive[SDLK_F2] && keysactive[SDLK_F6] && (keysactive[SDLK_F7] || keysactive[SDLK_F8]) && !keysactive[SDLK_F9]
+	/*if (keysactive[SDLK_F2] && keysactive[SDLK_F6] && (keysactive[SDLK_F7] || keysactive[SDLK_F8]) && !keysactive[SDLK_F9]
 	    && !superTyrian && superArcadeMode == SA_NONE)
 	{
 		if (isNetworkGame)
@@ -2664,26 +2659,26 @@ void JE_mainKeyboardInput( void )
 			endLevel = true;
 			levelEnd = 40;
 		}
-	}
+	}*/
 
 	/* pause game */
-	pause_pressed = pause_pressed || keysactive[SDLK_p];
+	pause_pressed = pause_pressed /*|| keysactive[SDLK_p]*/;
 
 	/* in-game setup */
-	ingamemenu_pressed = ingamemenu_pressed || keysactive[SDLK_ESCAPE];
+	ingamemenu_pressed = ingamemenu_pressed /*|| keysactive[SDLK_ESCAPE]*/;
 
 	/* {MUTE SOUND} */
-	if (keysactive[SDLK_s])
+	/*if (keysactive[SDLK_s])
 	{
 		keysactive[SDLK_s] = false;
 
 		samples_disabled = !samples_disabled;
 
 		JE_drawTextWindow(samples_disabled ? miscText[17] : miscText[18]);
-	}
+	}*/
 
 	/* {MUTE MUSIC} */
-	if (keysactive[SDLK_m])
+	/*if (keysactive[SDLK_m])
 	{
 		keysactive[SDLK_m] = false;
 
@@ -2695,15 +2690,15 @@ void JE_mainKeyboardInput( void )
 	}
 
 	if (keysactive[SDLK_BACKSPACE])
-	{
+	{*/
 		/* toggle screenshot pause */
-		if (keysactive[SDLK_NUMLOCK])
+		/*if (keysactive[SDLK_NUMLOCK])
 		{
 			superPause = !superPause;
-		}
+		}*/
 
 		/* {SMOOTHIES} */
-		if (keysactive[SDLK_F12] && keysactive[SDLK_SCROLLOCK])
+		/*if (keysactive[SDLK_F12] && keysactive[SDLK_SCROLLOCK])
 		{
 			for (temp = SDLK_2; temp <= SDLK_9; temp++)
 			{
@@ -2718,7 +2713,7 @@ void JE_mainKeyboardInput( void )
 			}
 		} else
 
-		/* {CYCLE THROUGH FILTER COLORS} */
+		// {CYCLE THROUGH FILTER COLORS} 
 		if (keysactive[SDLK_MINUS])
 		{
 			if (levelFilter == -99)
@@ -2733,7 +2728,7 @@ void JE_mainKeyboardInput( void )
 			}
 		} else
 
-		/* {HYPER-SPEED} */
+		// {HYPER-SPEED} 
 		if (keysactive[SDLK_1])
 		{
 			fastPlay++;
@@ -2745,12 +2740,12 @@ void JE_mainKeyboardInput( void )
 			JE_setNewGameSpeed();
 		}
 
-		/* {IN-GAME RANDOM MUSIC SELECTION} */
+		// {IN-GAME RANDOM MUSIC SELECTION} 
 		if (keysactive[SDLK_SCROLLOCK])
 		{
 			play_song(mt_rand() % MUSIC_NUM);
-		}
-	}
+		}*/
+	//}
 }
 
 void JE_pauseGame( void )

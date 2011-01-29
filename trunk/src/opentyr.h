@@ -58,8 +58,6 @@ void opentyrian_menu( void );
 
 inline float ot_round(float x) { return (float)((long)(x + .5f)); };
 
-Sint16 JE_axisPoll( int axis );
-
 #endif /* OPENTYR_H */
 
 // kate: tab-width 4; vim: set noet:
