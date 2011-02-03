@@ -833,6 +833,10 @@ start_level_first:
 	warningSoundDelay = 0;
 	armorShipDelay = 50;
 
+	set_layout_buttons(1, 1, 1, 1, 1, 1, 1);
+
+	buttons_in_menu = false;
+
 	bonusLevel = false;
 	readyToEndLevel = false;
 	firstGameOver = true;
@@ -2365,10 +2369,8 @@ draw_player_shot_loop_end:
 
 	if (play_demo) // input kills demo
 	{
-		push_joysticks_as_keyboard();
-		service_SDL_events(false);
-
-		if (newkey || newmouse)
+		inputFound = update_input();
+		if (inputFound)
 		{
 			reallyEndLevel = true;
 
@@ -2377,12 +2379,13 @@ draw_player_shot_loop_end:
 	}
 	else // input handling for pausing, menu, cheats
 	{
-		service_SDL_events(false);
+		//service_SDL_events(false);
+		inputFound = update_input();
 
-		if (newkey)
+		if (inputFound)
 		{
 			skipStarShowVGA = false;
-			JE_mainKeyboardInput();
+			//JE_mainKeyboardInput();
 			newkey = false;
 			if (skipStarShowVGA)
 				goto level_loop;
@@ -2782,7 +2785,9 @@ new_game:
 								itemAvail[i][j++] = temp;
 							itemAvailMax[i] = j;
 						}
-
+						
+						set_layout_buttons(0, 1, 1, 0, 0, 0, 0);
+						buttons_in_menu = true;
 						JE_itemScreen();
 						break;
 
@@ -3357,6 +3362,8 @@ bool JE_titleScreen( JE_boolean animate )
 
 	unsigned int arcade_code_i[SA_ENGAGE] = { 0 };
 
+	WCHAR keyTemp[10];
+
 	JE_word waitForDemo;
 	int menu = 0;
 	JE_boolean redraw = true,
@@ -3454,11 +3461,14 @@ bool JE_titleScreen( JE_boolean animate )
 	{
 		do
 		{
+			buttons[1] = false;
+			buttons[6] = true;
 			defaultBrightness = -3;
 
 			/* Animate instead of quickly fading in */
 			if (redraw)
 			{
+				set_layout_buttons(0, 0, 1, 0, 0, 0, 1);
 				play_song(SONG_TITLE);
 
 				menu = 0;
@@ -3543,6 +3553,91 @@ bool JE_titleScreen( JE_boolean animate )
 			if (waitForDemo == 1)
 				play_demo = true;
 
+			if (inputFound)
+			{
+				if(softPad.button_pressed)
+				{
+					if(softPad.select && !softPad.select_last)
+					{
+						JE_playSampleNum(S_SELECT);
+						switch (menu)
+						{
+						case 0: /* New game */
+							fade_black(10);
+							if (select_gameplay() && select_episode() && select_difficulty())
+							{
+								gameLoaded = true;
+
+								initialDifficulty = difficultyLevel;
+
+								if (onePlayerAction)
+								{
+									player[0].cash = 0;
+
+									player[0].items.ship = 8;
+								}
+								else if (twoPlayerMode)
+								{
+									for (uint i = 0; i < COUNTOF(player); ++i)
+										player[i].cash = 0;
+
+									player[0].items.ship = 11;
+									difficultyLevel++;
+									inputDevice[0] = 1;
+									inputDevice[1] = 2;
+								}
+								else if (richMode)
+								{
+									player[0].cash = 1000000;
+								}
+								else
+								{
+									ulong initial_cash[] = { 10000, 15000, 20000, 30000 };
+
+									assert(episodeNum >= 1 && episodeNum <= 4);
+									player[0].cash = initial_cash[episodeNum-1];
+								}
+							}
+							fadeIn = true;
+							break;
+						case 1: /* Load game */
+							JE_loadScreen();
+							fadeIn = true;
+							break;
+						case 2: /* High scores */
+							JE_highScoreScreen();
+							fadeIn = true;
+							break;
+						case 3: /* Instructions */
+							JE_helpSystem(1);
+							fadeIn = true;
+							break;
+						case 4: /* Ordering info, now OpenTyrian menu */
+							opentyrian_menu();
+							fadeIn = true;
+							break;
+						case 5: /* Demo */
+							set_layout_buttons(0, 0, 1, 0, 0, 0, 0);
+							play_demo = true;
+							break;
+						case 6: /* Quit */
+							quit = true;
+							break;
+						}
+						redraw = true;
+					}
+					/*if(softPad.key && !softPad.key_last)
+					{
+						while(true)
+						{
+
+						}
+					}*/
+						
+				}
+				else if(softPad.direction_pressed)
+					pos_from_input(NULL, &menu, true, 0, menunum, true);
+			}
 			/*for (unsigned int i = 0; i < SA_ENGAGE; i++)
 			{
 				if (toupper(lastkey_char) == specialName[i][arcade_code_i[i]])
@@ -3647,83 +3742,6 @@ bool JE_titleScreen( JE_boolean animate )
 				}
 			}
 			lastkey_char = '\0';*/
-
-			if (inputFound)
-			{
-				if(softPad.button_pressed)
-				{
-					if(softPad.select && !softPad.select_last)
-					{
-						JE_playSampleNum(S_SELECT);
-						switch (menu)
-						{
-						case 0: /* New game */
-							fade_black(10);
-							if (select_gameplay() && select_episode() && select_difficulty())
-							{
-								gameLoaded = true;
-
-								initialDifficulty = difficultyLevel;
-
-								if (onePlayerAction)
-								{
-									player[0].cash = 0;
-
-									player[0].items.ship = 8;
-								}
-								else if (twoPlayerMode)
-								{
-									for (uint i = 0; i < COUNTOF(player); ++i)
-										player[i].cash = 0;
-
-									player[0].items.ship = 11;
-									difficultyLevel++;
-									inputDevice[0] = 1;
-									inputDevice[1] = 2;
-								}
-								else if (richMode)
-								{
-									player[0].cash = 1000000;
-								}
-								else
-								{
-									ulong initial_cash[] = { 10000, 15000, 20000, 30000 };
-
-									assert(episodeNum >= 1 && episodeNum <= 4);
-									player[0].cash = initial_cash[episodeNum-1];
-								}
-							}
-							fadeIn = true;
-							break;
-						case 1: /* Load game */
-							JE_loadScreen();
-							fadeIn = true;
-							break;
-						case 2: /* High scores */
-							JE_highScoreScreen();
-							fadeIn = true;
-							break;
-						case 3: /* Instructions */
-							JE_helpSystem(1);
-							fadeIn = true;
-							break;
-						case 4: /* Ordering info, now OpenTyrian menu */
-							opentyrian_menu();
-							fadeIn = true;
-							break;
-						case 5: /* Demo */
-							play_demo = true;
-							break;
-						case 6: /* Quit */
-							quit = true;
-							break;
-						}
-						redraw = true;
-					}
-				}
-				else if(softPad.direction_pressed)
-					pos_from_input(NULL, &menu, true, 0, menunum, true);
-			}
 		}
 		while (!(quit || gameLoaded || jumpSection || play_demo || loadDestruct));
 

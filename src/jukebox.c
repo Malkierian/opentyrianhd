@@ -34,6 +34,8 @@
 
 void jukebox( void )
 {
+	set_layout_buttons(1, 1, 1, 0, 0, 0, 1);
+
 	bool trigger_quit = false,  // true when user wants to quit
 	     quitting = false;
 	

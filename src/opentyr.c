@@ -94,6 +94,7 @@ void SuppressReboot()
 
 void opentyrian_menu( void )
 {
+	set_layout_buttons(0, 1, 1, 0, 0, 0, 0);
 	int sel = 0;
 	const int maxSel = COUNTOF(opentyrian_menu_items) - 1;
 	bool quit = false, fade_in = true;
@@ -279,6 +280,7 @@ int main( int argc, char *argv[] )
 			network_tyrian_halt(3, false);
 		}
 	}
+	set_layout_buttons(0, 0, 1, 0, 0, 0, 0);
 
 #ifdef NDEBUG
 	if (!isNetworkGame)
@@ -288,7 +290,7 @@ int main( int argc, char *argv[] )
 	{
 		JE_initPlayerData();
 		JE_sortHighScores();
-
+		
 		if (JE_titleScreen(true))
 			break;  // user quit from title screen
 

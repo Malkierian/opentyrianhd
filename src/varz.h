@@ -24,8 +24,6 @@
 #include "player.h"
 #include "sprite.h"
 
-
-
 #define SA 7
 
 enum
@@ -382,6 +380,8 @@ void JE_drawSP( void );
 void JE_drawOptionLevel( void );
 
 void JE_cleanup( void );
+
+extern bool keyboardOpen;
 
 
 #endif /* VARZ_H */

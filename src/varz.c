@@ -37,6 +37,8 @@
 
 JE_integer tempDat, tempDat2, tempDat3;
 
+bool keyboardOpen = false;
+
 Sint16 stickX = 0, stickY = 0, stickZ = 0;
 
 const JE_byte SANextShip[SA + 2] /* [0..SA + 1] */ = { 3, 9, 6, 2, 5, 1, 4, 3, 7 }; // 0 -> 3 -> 2 -> 6 -> 4 -> 5 -> 1 -> 9 -> 7
@@ -467,6 +469,7 @@ void JE_cleanup( void )
 	deinit_video();
 	deinit_joysticks();
 	deinit_input();
+	deinit_layout();
 
 	/* TODO: NETWORK */
 
