@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 #include "file.h"
+#include "input.h"
 #include "joystick.h"
 #include "keyboard.h"
 #include "nortvars.h"
@@ -31,9 +32,7 @@ JE_boolean inputDetected;
 
 JE_boolean JE_anyButton( void )
 {
-	poll_joysticks();
-	service_SDL_events(true);
-	return newkey || mousedown || joydown;
+	return(update_input());
 }
 
 void JE_dBar3( SDL_Surface *surface, JE_integer x,  JE_integer y,  JE_integer num,  JE_integer col )

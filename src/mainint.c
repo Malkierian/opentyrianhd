@@ -1490,6 +1490,7 @@ void JE_highScoreCheck( void )
 				JE_boolean fadein = true;
 				JE_boolean quit = false, cancel = false;
 				char stemp[30], tempstr[30];
+				WCHAR wtemp[30], lastBuffer[30];
 				char buffer[256];
 
 				strcpy(stemp, "                             ");
@@ -1497,32 +1498,37 @@ void JE_highScoreCheck( void )
 
 				JE_barShade(VGAScreen, 65, 55, 255, 155);
 
-				do
-				{
-					service_SDL_events(true);
+				DWORD keyboardState;
+				ZDKSystem_ShowKeyboard(L"High Score!  Enter your name:", L"enter", NULL);
+				ZDKSystem_SetKeyboardBufferText(L"");
+				swprintf(wtemp, L"");
 
-					JE_dString(VGAScreen, JE_fontCenter(miscText[51], FONT_SHAPES), 3, miscText[51], FONT_SHAPES);
+				//do
+				//{
+					//service_SDL_events(true);
 
-					temp3 = twoPlayerMode ? 58 + p : 53;
+				//JE_dString(VGAScreen, JE_fontCenter(miscText[51], FONT_SHAPES), 3, miscText[51], FONT_SHAPES);
 
-					JE_dString(VGAScreen, JE_fontCenter(miscText[temp3-1], SMALL_FONT_SHAPES), 30, miscText[temp3-1], SMALL_FONT_SHAPES);
+				//temp3 = twoPlayerMode ? 58 + p : 53;
 
-					blit_sprite(VGAScreenSeg, 50, 50, OPTION_SHAPES, 35);  // message box
+				//JE_dString(VGAScreen, JE_fontCenter(miscText[temp3-1], SMALL_FONT_SHAPES), 30, miscText[temp3-1], SMALL_FONT_SHAPES);
 
-					if (twoPlayerMode)
+				//blit_sprite(VGAScreenSeg, 50, 0, OPTION_SHAPES, 35);  // message box
+
+					/*if (twoPlayerMode)
 					{
 						sprintf(buffer, "%s %s", miscText[48 + p], miscText[53]);
 						JE_textShade(VGAScreen, 60, 55, buffer, 11, 4, FULL_SHADE);
-					}
-					else
-					{
-						JE_textShade(VGAScreen, 60, 55, miscText[53], 11, 4, FULL_SHADE);
-					}
+					}*/
+					//else
+					//{
+					//	JE_textShade(VGAScreen, 60, 55, miscText[53], 11, 4, FULL_SHADE);
+					//}
 
-					sprintf(buffer, "%s %d", miscText[37], temp_score);
-					JE_textShade(VGAScreen, 70, 70, buffer, 11, 4, FULL_SHADE);
+				//sprintf(buffer, "%s %d", miscText[37], temp_score);
+				//JE_textShade(VGAScreen, 70, 20, buffer, 11, 4, FULL_SHADE);
 
-					do
+					/*do
 					{
 						flash = (flash == 8 * 16 + 10) ? 8 * 16 + 2 : 8 * 16 + 10;
 						temp3 = (temp3 == 6) ? 2 : 6;
@@ -1554,12 +1560,44 @@ void JE_highScoreCheck( void )
 								break;
 						}
 
-					} while (!newkey && !newmouse);
+					} while (!newkey && !newmouse);*/
 
-					if (!playing)
-						play_song(31);
+				while(!quit)
+				{
+					keyboardState = ZDKSystem_GetKeyboardState();
+					if(keyboardState == KEYBOARD_STATE_EDITED)
+					{
+						size_t size;
+						wsprintf(lastBuffer, L"%s", wtemp);
+						ZDKSystem_GetKeyboardBufferText(wtemp, 30, &size);
+						if(size > 30)
+						{
+							ZDKSystem_SetKeyboardBufferText(lastBuffer);
+							JE_playSampleNum(S_CLINK);
+						}
+					}
+					if(keyboardState == KEYBOARD_STATE_DISMISSED)
+					{
+						quit = true;
+						size_t size;
+						ZDKSystem_GetKeyboardBufferText(wtemp, 30, &size);
+						sprintf(stemp, "%S", wtemp);
+						JE_playSampleNum(S_SELECT);
+					}
+					if(keyboardState == KEYBOARD_STATE_CLOSED)
+					{
+						quit = true;
+						cancel = true;
+						JE_playSampleNum(S_SPRING);
+					}
+					SDL_Delay(300);
+				}
+				ZDKSystem_CloseKeyboard();
 
-					if (mouseButton > 0)
+				if (!playing)
+					play_song(31);
+
+					/*if (mouseButton > 0)
 					{
 						if (mouseX > 56 && mouseX < 142 && mouseY > 123 && mouseY < 149)
 						{
@@ -1623,9 +1661,9 @@ void JE_highScoreCheck( void )
 								quit = true;
 								break;
 						}
-					}
-				}
-				while (!quit);
+					}*/
+				//}
+				//while (!quit);
 
 				if (!cancel)
 				{
@@ -2322,7 +2360,6 @@ bool str_pop_int( char *str, int *val )
 
 void JE_operation( JE_byte slot )
 {
-	keyboardOpen = true;
 	JE_byte flash;
 	char stemp[21];
 	WCHAR wtemp[15];
@@ -2385,6 +2422,7 @@ void JE_operation( JE_byte slot )
 				quit = true;
 				JE_playSampleNum(S_SPRING);
 			}
+			SDL_Delay(300);
 		}
 		ZDKSystem_CloseKeyboard();
 		/*while (!quit)
@@ -2500,7 +2538,6 @@ void JE_operation( JE_byte slot )
 			}
 		}*/
 	}
-	keyboardOpen = false;
 	wait_noinput(false, true, false);
 }
 
