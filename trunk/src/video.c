@@ -162,48 +162,45 @@ void JE_showVGA( void )
 
 void scale_and_flip( SDL_Surface *src_surface )
 {
-	if(!keyboardOpen)
-	{
-		HRESULT hr;
-		assert(src_surface->format->BitsPerPixel == 8);
+	HRESULT hr;
+	assert(src_surface->format->BitsPerPixel == 8);
 
-		hr = ZDKDisplay_Clear(0);
-		
-		assert(scaler_function != NULL);
-		scaler_function(src_surface, scale_surface);
-		ZDK_RECT dispRect;
-		dispRect.Left = 0;
-		dispRect.Top = 0;
-		dispRect.Right = 320;
-		dispRect.Bottom = 200;
+	hr = ZDKDisplay_Clear(0);
+	
+	assert(scaler_function != NULL);
+	scaler_function(src_surface, scale_surface);
+	ZDK_RECT dispRect;
+	dispRect.Left = 0;
+	dispRect.Top = 0;
+	dispRect.Right = 320;
+	dispRect.Bottom = 200;
 
-		hr = ZDKDisplay_BeginScene();
-		if(FAILED(hr))
-			printf("BeginScene failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
+	hr = ZDKDisplay_BeginScene();
+	if(FAILED(hr))
+		printf("BeginScene failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
 
-		hr = ZDKDisplay_SetTextureData(zdkDisplay, &dispRect, scale_surface->pixels, 4*320*200);
-		if(FAILED(hr))
-			printf("SetTextureData failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
+	hr = ZDKDisplay_SetTextureData(zdkDisplay, &dispRect, scale_surface->pixels, 4*320*200);
+	if(FAILED(hr))
+		printf("SetTextureData failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
 
-		draw_layout();
+	draw_layout();
 
-		hr = ZDKDisplay_SetTexture(zdkDisplay);
-		if(FAILED(hr))
-			printf("SetTexture failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
+	hr = ZDKDisplay_SetTexture(zdkDisplay);
+	if(FAILED(hr))
+		printf("SetTexture failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
 
-		hr = ZDKDisplay_DrawSprites(&dispSprite, 1);
-		if(FAILED(hr))
-			printf("DrawSprites failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
+	hr = ZDKDisplay_DrawSprites(&dispSprite, 1);
+	if(FAILED(hr))
+		printf("DrawSprites failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
 
-		hr = ZDKDisplay_EndScene();
-		if(FAILED(hr))
-			printf("EndScene failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
+	hr = ZDKDisplay_EndScene();
+	if(FAILED(hr))
+		printf("EndScene failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
 
-		hr = ZDKDisplay_Present();
-		if(FAILED(hr))
-			printf("Present failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
-		scaleFlipCounter++;
-	}
+	hr = ZDKDisplay_Present();
+	if(FAILED(hr))
+		printf("Present failed: Try %d.  Error: %08x\n",scaleFlipCounter,hr);
+	scaleFlipCounter++;
 }
 
 void load_texture( int button, WCHAR *name, bool menu )

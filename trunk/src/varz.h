@@ -381,9 +381,6 @@ void JE_drawOptionLevel( void );
 
 void JE_cleanup( void );
 
-extern bool keyboardOpen;
-
-
 #endif /* VARZ_H */
 
 // kate: tab-width 4; vim: set noet:
