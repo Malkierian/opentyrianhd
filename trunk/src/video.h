@@ -23,6 +23,8 @@
 
 #include "SDL.h"
 
+#include <zdkdisplay.h>
+
 #define vga_width 320
 #define vga_height 200
 
@@ -41,6 +43,7 @@ void deinit_video( void );
 void JE_clr256( SDL_Surface * );
 void JE_showVGA( void );
 void scale_and_flip( SDL_Surface * );
+void load_texture( int button, WCHAR *name, bool menu );
 
 #endif /* VIDEO_H */
 

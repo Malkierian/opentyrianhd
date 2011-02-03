@@ -52,6 +52,9 @@
 #include <assert.h>
 #include <ctype.h>
 
+#include <string.h>
+#include <zdksystem.h>
+
 bool button[4];
 
 #define MAX_PAGE 8
@@ -186,6 +189,7 @@ void JE_drawPortConfigButtons( void ) // rear weapon pattern indicator
 
 void JE_helpSystem( JE_byte startTopic )
 {
+	set_layout_buttons(0, 1, 1, 0, 0, 0, 0);
 	int page, lastPage = 0;
 	int menu;
 
@@ -193,7 +197,7 @@ void JE_helpSystem( JE_byte startTopic )
 
 	fade_black(10);
 	JE_loadPic(VGAScreen, 2, false);
-	bool quit = true;
+	bool quit = false, menuQuit = false;
 
 	play_song(SONG_MAPVIEW);
 
@@ -272,22 +276,21 @@ void JE_helpSystem( JE_byte startTopic )
 						{
 							if(softPad.select && !softPad.select_last)
 							{
-								quit = true;
-								page = topicStart[menu-1];
-								JE_playSampleNum(S_CLICK);
+								if(menu == TOPICS)
+								{
+									menuQuit = true;
+								}
 							}
 							if(softPad.escape && !softPad.escape_last)
-								quit = true;
+								menuQuit = true;
 						}
 						else if(softPad.direction_pressed)
 						{
-							pos_from_input(&menu, NULL, true, 2, TOPICS, true);
+							pos_from_input(NULL, &menu, true, 2, TOPICS + 1, true);
 						}
 					}
 
-				} while (!quit);
-
-				quit = false;
+				} while (!menuQuit);
 
 				break;
 			case 1: /* One-Player Menu */
@@ -365,7 +368,7 @@ void JE_helpSystem( JE_byte startTopic )
 					{
 						if (page == MAX_PAGE)
 						{
-							quit = true;
+							page = 0;
 						}
 						else
 						{
@@ -375,7 +378,7 @@ void JE_helpSystem( JE_byte startTopic )
 					}
 					if(softPad.escape && !softPad.escape_last)
 					{
-						quit = true;
+						menuQuit = true;
 						JE_playSampleNum(S_SPRING);
 					}
 				}
@@ -383,7 +386,7 @@ void JE_helpSystem( JE_byte startTopic )
 					pos_from_input(NULL, &page, true, 0, MAX_PAGE + 1, true);
 			}
 		}
-	} while (!quit);
+	} while (!menuQuit);
 }
 
 // cost to upgrade a weapon power from power-1 (where power == 0 indicates an unupgraded weapon)
@@ -437,6 +440,7 @@ ulong JE_getCost( JE_byte itemType, JE_word itemNum )
 
 void JE_loadScreen( void )
 {
+	set_layout_buttons(0, 1, 1, 0, 0, 0, 0);
 	JE_boolean quit;
 	int sel, screen, min = 0, max = 0;
 	char *tempstr;
@@ -808,6 +812,7 @@ void JE_sortHighScores( void )
 
 void JE_highScoreScreen( void )
 {
+	set_layout_buttons(0, 1, 1, 0, 0, 0, 0);
 	int min = 1;
 	int max = 3;
 
@@ -1132,11 +1137,12 @@ JE_boolean JE_inGameSetup( void )
 		tempW = 0;
 		JE_textMenuWait(&tempW, true);
 
-		if (inputDetected)
+		if (inputFound)
 		{
-			switch (lastkey_sym)
+			if(softPad.button_pressed)
 			{
-				case SDLK_RETURN:
+				if(softPad.select && !softPad.select_last)
+				{
 					JE_playSampleNum(S_SELECT);
 					switch (sel)
 					{
@@ -1164,26 +1170,78 @@ JE_boolean JE_inGameSetup( void )
 							}
 							break;
 					}
-					break;
-				case SDLK_ESCAPE:
+				}
+				if(softPad.escape && !softPad.escape_last)
+				{
 					quit = true;
 					JE_playSampleNum(S_SPRING);
-					break;
-				case SDLK_UP:
+				}
+			}
+			else if(softPad.direction_pressed)
+			{
+				if(abs(softPad.ax) > abs(softPad.ay))
+				{
+					if (softPad.ax > 0)
+					{
+						stickX += softPad.ax;
+						if(stickX > 40)
+						{
+							stickX = 0;
+							softPad.right_last = true;
+						}
+					}
+					if (softPad.ax < 0)
+					{
+						stickX += softPad.ax;
+						if(stickX < -40)
+						{
+							stickX = 0;
+							softPad.left_last = true;
+						}
+					}
+				}
+				else if(abs(softPad.ay) > abs(softPad.ax))
+				{
+					if (softPad.ay > 0)
+					{
+						stickY += softPad.ay;
+						if(stickY > 40)
+						{
+							stickY = 0;
+							softPad.down_last = true;
+						}
+					}
+					if (softPad.ay < 0)
+					{
+						stickY +=softPad.ay;
+						if(stickY < -40)
+						{
+							stickY = 0;
+							softPad.up_last = true;
+						}
+					}
+				}
+				if(softPad.up_last)
+				{
+					softPad.up_last = false;
 					if (--sel < 1)
 					{
 						sel = 6;
 					}
 					JE_playSampleNum(S_CURSOR);
-					break;
-				case SDLK_DOWN:
+				}
+				if(softPad.down_last)
+				{
+					softPad.down_last = false;
 					if (++sel > 6)
 					{
 						sel = 1;
 					}
 					JE_playSampleNum(S_CURSOR);
-					break;
-				case SDLK_LEFT:
+				}
+				if(softPad.left_last)
+				{
+					softPad.left_last = false;
 					switch (sel)
 					{
 						case 1:
@@ -1219,8 +1277,10 @@ JE_boolean JE_inGameSetup( void )
 					{
 						JE_playSampleNum(S_CURSOR);
 					}
-					break;
-				case SDLK_RIGHT:
+				}
+				if(softPad.right_last)
+				{
+					softPad.right_last = false;
 					switch (sel)
 					{
 						case 1:
@@ -1256,15 +1316,13 @@ JE_boolean JE_inGameSetup( void )
 					{
 						JE_playSampleNum(S_CURSOR);
 					}
-					break;
-				case SDLK_w:
+				}
+				/*case SDLK_w:
 					if (sel == 3)
 					{
 						processorType = 6;
 						JE_initProcessorType();
-					}
-				default:
-					break;
+					}*/
 			}
 		}
 
@@ -2264,9 +2322,13 @@ bool str_pop_int( char *str, int *val )
 
 void JE_operation( JE_byte slot )
 {
+	keyboardOpen = true;
 	JE_byte flash;
 	char stemp[21];
-	char tempStr[51];
+	WCHAR wtemp[15];
+	WCHAR lastBuffer[14];
+	WCHAR tempStr[51];
+	bool save = false;
 
 	if (!performSave)
 	{
@@ -2279,21 +2341,55 @@ void JE_operation( JE_byte slot )
 	}
 	else if (slot % 11 != 0)
 	{
-		strcpy(stemp, "              ");
-		memcpy(stemp, saveFiles[slot-1].name, strlen(saveFiles[slot-1].name));
-		temp = strlen(stemp);
-		while (stemp[temp-1] == ' ' && --temp);
+		wsprintf(wtemp, L"%S", saveFiles[slot-1].name);
+		temp = wcslen(wtemp);
+		while (wtemp[temp-1] == L' ' && --temp);
+		wtemp[temp] = 0;
 
-		flash = 8 * 16 + 10;
+		//flash = 8 * 16 + 10;
 
-		wait_noinput(false, true, false);
+		//wait_noinput(false, true, false);
 
 		JE_barShade(VGAScreen, 65, 55, 255, 155);
+		ZDKSystem_ShowKeyboard(L"", L"Save", NULL);
+		ZDKSystem_SetKeyboardBufferText(wtemp);
 
 		bool quit = false;
-		while (!quit)
+
+		DWORD keyboardState;
+		while(!quit)
 		{
-			service_SDL_events(true);
+			keyboardState = ZDKSystem_GetKeyboardState();
+			if(keyboardState == KEYBOARD_STATE_EDITED)
+			{
+				size_t size;
+				wsprintf(lastBuffer, L"%s", wtemp);
+				ZDKSystem_GetKeyboardBufferText(wtemp, 14, &size);
+				if(size > 14)
+				{
+					ZDKSystem_SetKeyboardBufferText(lastBuffer);
+					JE_playSampleNum(S_CLINK);
+				}
+			}
+			if(keyboardState == KEYBOARD_STATE_DISMISSED)
+			{
+				quit = true;
+				size_t size;
+				ZDKSystem_GetKeyboardBufferText(wtemp, 14, &size);
+				sprintf(stemp, "%S", wtemp);
+				JE_saveGame(slot, stemp);
+				JE_playSampleNum(S_SELECT);
+			}
+			if(keyboardState == KEYBOARD_STATE_CLOSED)
+			{
+				quit = true;
+				JE_playSampleNum(S_SPRING);
+			}
+		}
+		ZDKSystem_CloseKeyboard();
+		/*while (!quit)
+		{
+			//service_SDL_events(true);
 
 			blit_sprite(VGAScreen, 50, 50, OPTION_SHAPES, 35);  // message box
 
@@ -2402,9 +2498,9 @@ void JE_operation( JE_byte slot )
 				}
 
 			}
-		}
+		}*/
 	}
-
+	keyboardOpen = false;
 	wait_noinput(false, true, false);
 }
 
@@ -2846,6 +2942,7 @@ void JE_playerMovement( Player *this_player,
 {
 	JE_integer mouseXC, mouseYC;
 	JE_integer accelXC, accelYC;
+	float diminish = 1.0f;
 
 	if (playerNum_ == 2 || !twoPlayerMode)
 	{
@@ -3018,116 +3115,116 @@ redo:
 					}
 				}
 
+				inputFound = update_input();
+
 				/* joystick input */
-				if ((inputDevice == 0 || inputDevice >= 3) && joysticks > 0)
+				if(inputFound)
 				{
-					int j = inputDevice  == 0 ? 0 : inputDevice - 3;
-					int j_max = inputDevice == 0 ? joysticks : inputDevice - 3 + 1;
-					for (; j < j_max; j++)
+					if(softPad.direction_pressed)
 					{
-						poll_joystick(j);
+						mouseXC += softPad.ax;
+						mouseYC += softPad.ay;
 
-						if (joystick[j].analog)
+						link_gun_analog = joystick_analog_angle(0, &link_gun_angle);
+					}
+					if(softPad.button_pressed)
+					{
+						if(softPad.select)
+							button[0] = true;
+						if(softPad.lKick)
+							button[1] = true;
+						if(softPad.rKick)
+							button[2] = true;
+						if(softPad.mode && !softPad.mode_last)
+							button[3] = true;
+
+						if(softPad.menu && !softPad.menu_last)
+							ingamemenu_pressed = true;
+						if(softPad.escape && !softPad.escape_last)
+							pause_pressed = true;
+					}
+						//}
+					//}
+
+					//service_SDL_events(false);
+
+					/* mouse input */
+					/*if ((inputDevice == 0 || inputDevice == 2) && has_mouse)
+					{
+						button[0] |= mouse_pressed[0];
+						button[1] |= mouse_pressed[1];
+						button[2] |= mouse_has_three_buttons ? mouse_pressed[2] : mouse_pressed[1];
+
+						if (input_grabbed)
 						{
-							mouseXC += joystick_axis_reduce(j, joystick[j].x);
-							mouseYC += joystick_axis_reduce(j, joystick[j].y);
-
-							link_gun_analog = joystick_analog_angle(j, &link_gun_angle);
-						}
-						else
-						{
-							this_player->x += joystick[j].direction[3] ? -CURRENT_KEY_SPEED : 0 + joystick[j].direction[1] ? CURRENT_KEY_SPEED : 0;
-							this_player->y += joystick[j].direction[0] ? -CURRENT_KEY_SPEED : 0 + joystick[j].direction[2] ? CURRENT_KEY_SPEED : 0;
-						}
-
-						button[0] |= joystick[j].action[0];
-						button[1] |= joystick[j].action[2];
-						button[2] |= joystick[j].action[3];
-						button[3] |= joystick[j].action_pressed[1];
-
-						ingamemenu_pressed |= joystick[j].action_pressed[4];
-						pause_pressed |= joystick[j].action_pressed[5];
-					}
-				}
-
-				service_SDL_events(false);
-
-				/* mouse input */
-				if ((inputDevice == 0 || inputDevice == 2) && has_mouse)
-				{
-					button[0] |= mouse_pressed[0];
-					button[1] |= mouse_pressed[1];
-					button[2] |= mouse_has_three_buttons ? mouse_pressed[2] : mouse_pressed[1];
-
-					if (input_grabbed)
-					{
-						mouseXC += mouse_x - 159;
-						mouseYC += mouse_y - 100;
-					}
-
-					if ((!isNetworkGame || playerNum_ == thisPlayerNum)
-					    && (!galagaMode || (playerNum_ == 2 || !twoPlayerMode || player[1].exploding_ticks > 0)))
-					{
-						set_mouse_position(159, 100);
-					}
-				}
-
-				/* keyboard input */
-				/*if ((inputDevice == 0 || inputDevice == 1) && !play_demo)
-				{
-					if (keysactive[keySettings[0]])
-						this_player->y -= CURRENT_KEY_SPEED;
-					if (keysactive[keySettings[1]])
-						this_player->y += CURRENT_KEY_SPEED;
-
-					if (keysactive[keySettings[2]])
-						this_player->x -= CURRENT_KEY_SPEED;
-					if (keysactive[keySettings[3]])
-						this_player->x += CURRENT_KEY_SPEED;
-
-					button[0] = button[0] || keysactive[keySettings[4]];
-					button[3] = button[3] || keysactive[keySettings[5]];
-					button[1] = button[1] || keysactive[keySettings[6]];
-					button[2] = button[2] || keysactive[keySettings[7]];
-
-					if (constantPlay)
-					{
-						for (unsigned int i = 0; i < 4; i++)
-							button[i] = true;
-
-						++this_player->y;
-						this_player->x += constantLastX;
-					}
-
-					// TODO: check if demo recording still works
-					if (record_demo)
-					{
-						bool new_input = false;
-
-						for (unsigned int i = 0; i < 8; i++)
-						{
-							bool temp = demo_keys & (1 << i);
-							if (temp != keysactive[keySettings[i]])
-								new_input = true;
+							mouseXC += mouse_x - 159;
+							mouseYC += mouse_y - 100;
 						}
 
-						demo_keys_wait++;
-
-						if (new_input)
+						if ((!isNetworkGame || playerNum_ == thisPlayerNum)
+							&& (!galagaMode || (playerNum_ == 2 || !twoPlayerMode || player[1].exploding_ticks > 0)))
 						{
-							demo_keys_wait = SDL_Swap16(demo_keys_wait);
-							efwrite(&demo_keys_wait, sizeof(Uint16), 1, demo_file);
+							set_mouse_position(159, 100);
+						}
+					}*/
 
-							demo_keys = 0;
+					/* keyboard input */
+					/*if ((inputDevice == 0 || inputDevice == 1) && !play_demo)
+					{
+						if (keysactive[keySettings[0]])
+							this_player->y -= CURRENT_KEY_SPEED;
+						if (keysactive[keySettings[1]])
+							this_player->y += CURRENT_KEY_SPEED;
+
+						if (keysactive[keySettings[2]])
+							this_player->x -= CURRENT_KEY_SPEED;
+						if (keysactive[keySettings[3]])
+							this_player->x += CURRENT_KEY_SPEED;
+
+						button[0] = button[0] || keysactive[keySettings[4]];
+						button[3] = button[3] || keysactive[keySettings[5]];
+						button[1] = button[1] || keysactive[keySettings[6]];
+						button[2] = button[2] || keysactive[keySettings[7]];
+
+						if (constantPlay)
+						{
+							for (unsigned int i = 0; i < 4; i++)
+								button[i] = true;
+
+							++this_player->y;
+							this_player->x += constantLastX;
+						}
+
+						// TODO: check if demo recording still works
+						if (record_demo)
+						{
+							bool new_input = false;
+
 							for (unsigned int i = 0; i < 8; i++)
-								demo_keys |= keysactive[keySettings[i]] ? (1 << i) : 0;
+							{
+								bool temp = demo_keys & (1 << i);
+								if (temp != keysactive[keySettings[i]])
+									new_input = true;
+							}
 
-							fputc(demo_keys, demo_file);
+							demo_keys_wait++;
 
-							demo_keys_wait = 0;
+							if (new_input)
+							{
+								demo_keys_wait = SDL_Swap16(demo_keys_wait);
+								efwrite(&demo_keys_wait, sizeof(Uint16), 1, demo_file);
+
+								demo_keys = 0;
+								for (unsigned int i = 0; i < 8; i++)
+									demo_keys |= keysactive[keySettings[i]] ? (1 << i) : 0;
+
+								fputc(demo_keys, demo_file);
+
+								demo_keys_wait = 0;
+							}
 						}
-					}
-				}*/
+					}*/
+				}
 
 				if (smoothies[9-1])
 				{
@@ -3135,8 +3232,8 @@ redo:
 					mouseYC = -mouseYC;
 				}
 
-				accelXC += this_player->x - *mouseX_;
-				accelYC += this_player->y - *mouseY_;
+				accelXC = this_player->x - *mouseX_;
+				accelYC = this_player->y - *mouseY_;
 
 				if (mouseXC > 30)
 					mouseXC = 30;
@@ -3148,13 +3245,13 @@ redo:
 					mouseYC = -30;
 
 				if (mouseXC > 0)
-					this_player->x += (mouseXC + 3) / 4;
+					this_player->x += mouseXC;
 				else if (mouseXC < 0)
-					this_player->x += (mouseXC - 3) / 4;
+					this_player->x += mouseXC;
 				if (mouseYC > 0)
-					this_player->y += (mouseYC + 3) / 4;
+					this_player->y += mouseYC;
 				else if (mouseYC < 0)
-					this_player->y += (mouseYC - 3) / 4;
+					this_player->y += mouseYC;
 
 				if (mouseXC > 3)
 					accelXC++;
@@ -3199,7 +3296,7 @@ redo:
 
 		moveOk = true;
 
-		if (isNetworkGame && !network_state_is_reset())
+		/*if (isNetworkGame && !network_state_is_reset())
 		{
 			if (playerNum_ != thisPlayerNum)
 			{
@@ -3232,7 +3329,7 @@ redo:
 				accelXC = (Sint16)SDLNet_Read16(&packet_state_out[network_delay]->data[8]);
 				accelYC = (Sint16)SDLNet_Read16(&packet_state_out[network_delay]->data[10]);
 			}
-		}
+		}*/
 
 		/*Street-Fighter codes*/
 		JE_SFCodes(playerNum_, this_player->x, this_player->y, *mouseX_, *mouseY_);

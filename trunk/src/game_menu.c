@@ -382,6 +382,7 @@ void JE_itemScreen( void )
 		if (curMenu == 5)
 		{
 			curMenu = 0;
+			continue;
 			/*for (int x = 2; x <= 11; x++)
 			{
 				if (x == curSel[curMenu])
@@ -411,6 +412,7 @@ void JE_itemScreen( void )
 		if (curMenu == 12)
 		{
 			curMenu = 0;
+			continue;
 			/*const char *menu_item[] =
 			{
 				"JOYSTICK",
@@ -799,6 +801,10 @@ void JE_itemScreen( void )
 		{
 			do
 			{
+				if ((curMenu == 4) && (curSel[1] == 4))
+					set_layout_buttons(1, 1, 1, 0, 0, 0, 0);
+				else
+					set_layout_buttons(0, 1, 1, 0, 0, 0, 0);
 			/* Inner loop -- this handles animations on menus that need them and handles
 			   some keyboard events. Events it can't handle end the loop and fall through
 			   to the main keyboard handler below.
@@ -2130,7 +2136,6 @@ void JE_doShipSpecs( void )
 	 * an oddly designed, unreusable, global sharing hierarchy. */
 
 	//create the image we want
-	wait_noinput(true, true, true);
 	JE_drawShipSpecs(game_screen, VGAScreen2);
 
 	//reset VGAScreen2, which we clobbered
@@ -2139,7 +2144,11 @@ void JE_doShipSpecs( void )
 	//draw it
 	JE_playSampleNum(16);
 	JE_scaleInPicture(VGAScreen, game_screen);
-	wait_input(true, true, true);
+	do
+	{
+		inputFound = update_input();
+		SDL_Delay(SDL_POLL_INTERVAL);
+	} while(!inputFound);
 }
 
 void JE_drawMainMenuHelpText( void )
@@ -2179,6 +2188,8 @@ JE_boolean JE_quitRequest( void )
 {
 	bool quit_selected = true, done = false;
 
+	int tempX = 4;
+
 	JE_clearKeyboard();
 	JE_wipeKey();
 	wait_noinput(true, true, true);
@@ -2192,7 +2203,7 @@ JE_boolean JE_quitRequest( void )
 
 		do
 		{
-			service_SDL_events(true);
+			//service_SDL_events(true);
 			setjasondelay(4);
 
 			blit_sprite(VGAScreen, 50, 50, OPTION_SHAPES, 35);  // message box
@@ -2217,9 +2228,9 @@ JE_boolean JE_quitRequest( void )
 
 			if (has_mouse)
 			{
-				JE_mouseStart();
+				//JE_mouseStart();
 				JE_showVGA();
-				JE_mouseReplace();
+				//JE_mouseReplace();
 			}
 			else
 			{
@@ -2228,48 +2239,52 @@ JE_boolean JE_quitRequest( void )
 
 			wait_delay();
 
-			push_joysticks_as_keyboard();
-			service_SDL_events(false);
+			inputFound = update_input();
 
-		} while (!newkey && !mousedown);
+		} while (!inputFound);
 
-		if (mousedown)
+		if (inputFound)
 		{
-			if (lastmouse_y > 123 && lastmouse_y < 149)
+			if(softPad.button_pressed)
 			{
-				if (lastmouse_x > 56 && lastmouse_x < 142)
+				if(softPad.select && !softPad.select_last)
 				{
-					quit_selected = true;
 					done = true;
 				}
-				else if (lastmouse_x > 151 && lastmouse_x < 237)
+				if(softPad.escape && !softPad.escape_last)
 				{
 					quit_selected = false;
 					done = true;
 				}
 			}
-			mousedown = false;
-		}
-		else if (newkey)
-		{
-			switch (lastkey_sym)
+			else if(softPad.direction_pressed)
 			{
-				case SDLK_LEFT:
-				case SDLK_RIGHT:
-				case SDLK_TAB:
+				if(abs(softPad.ax) > abs(softPad.ay))
+				{
+					if (softPad.ax > 0)
+					{
+						stickX += softPad.ax;
+						if(stickX > 40)
+						{
+							stickX = 0;
+							softPad.right_last = true;
+						}
+					}
+					if (softPad.ax < 0)
+					{
+						stickX += softPad.ax;
+						if(stickX < -40)
+						{
+							stickX = 0;
+							softPad.left_last = true;
+						}
+					}
+				}
+				if(softPad.left_last || softPad.right_last)
+				{
 					quit_selected = !quit_selected;
 					JE_playSampleNum(S_CURSOR);
-					break;
-				case SDLK_RETURN:
-				case SDLK_SPACE:
-					done = true;
-					break;
-				case SDLK_ESCAPE:
-					quit_selected = false;
-					done = true;
-					break;
-				default:
-					break;
+				}
 			}
 		}
 	}

@@ -19,6 +19,7 @@
 #include "cJSON.h"
 #include "config.h"
 #include "file.h"
+#include "input.h"
 #include "joystick.h"
 #include "keyboard.h"
 #include "nortsong.h"
@@ -79,9 +80,9 @@ int joystick_axis_reduce( int j, int value )
 // returns false if axes are centered (there is no angle)
 bool joystick_analog_angle( int j, float *angle )
 {
-	assert(j < joysticks);
+	//assert(j < joysticks);
 	
-	float x = joystick_axis_threshold(j, joystick[j].x), y = joystick_axis_threshold(j, joystick[j].y);
+	float x = softPad.ax, y = softPad.ay;
 	
 	if (x != 0)
 	{

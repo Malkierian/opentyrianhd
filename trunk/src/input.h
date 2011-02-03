@@ -9,15 +9,9 @@
 #define PAD_BUTTON_SELECT	2
 #define PAD_BUTTON_LKICK	3
 #define PAD_BUTTON_RKICK	4
-
-#define PAD_JOY 5
-
-#define PAD_DPAD 5
-
-#define PAD_DPAD_UP		6
-#define PAD_DPAD_DOWN	7
-#define PAD_DPAD_LEFT	8
-#define PAD_DPAD_RIGHT	9
+#define PAD_BUTTON_MENU		5
+#define PAD_BUTTON_KEY		6
+#define PAD_LAYOUT			7
 
 #include <zdkinput.h>
 #include <zdkdisplay.h>
@@ -37,6 +31,8 @@ struct input_struct {
 	bool lKick, lKick_last;
 	bool rKick, rKick_last;
 	bool mode, mode_last;
+	bool menu, menu_last;
+	bool key, key_last;
 };
 
 struct coord_struct {
@@ -46,40 +42,41 @@ struct coord_struct {
 
 struct layout_trackpad_struct {
 	ZDK_SPRITE sprite;
-	ZDK_RECT hitArea;
+	ZDK_RECT rect;
 	ZDK_TOUCH_LOCATION location;
 	coord_struct origin;
 };
 
-struct layout_dpad_struct {
-	HTEXTURE unpressed;
-	HTEXTURE pressed;
-	ZDK_SPRITE sprite;
-	ZDK_RECT hitArea;
-	int direction;
-};
-
 struct layout_button_struct {
-	HTEXTURE unpressed;
-	HTEXTURE pressed;
+	HTEXTURE menuTex;
+	HTEXTURE gameTex;
 	ZDK_SPRITE sprite;
-	ZDK_RECT hitArea;
-	char name[8];
+	ZDK_RECT rect;
+	char name[9];
 };
 
 struct layout_struct {
-	layout_button_struct buttons[5];
-	layout_dpad_struct dpad[4];
+	layout_button_struct buttons[7]; // mode, cancel/pause, select/fire, lKick/pgUp, rKick/pgDn, [none]/menu, keyboard
 	layout_trackpad_struct trackpad;
+	
+	HTEXTURE texture;
+	ZDK_SPRITE sprite;
+	ZDK_RECT rect;
 };
 
 bool update_input( void );
 void pos_from_input( int *x, int *y, bool in_menu, int min_menu, int max_menu, bool play_sound);
 void init_input( void );
 void deinit_input( void );
-void load_layouts( void );
+void init_layout( void );
+void deinit_layout( void );
+void draw_layout( void );
+void set_layout_buttons( bool mode, bool escape, bool select, bool lKick, bool rKick, bool menu, bool key);
 
+extern layout_struct layout;
 extern input_struct softPad;
 extern bool inputFound;
+extern bool buttons[7];
+extern bool buttons_in_menu;
 
 #endif

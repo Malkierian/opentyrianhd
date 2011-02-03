@@ -34,8 +34,11 @@ char episode_name[6][31], difficulty_name[7][21], gameplay_name[5][26];
 
 bool select_gameplay( void )
 {
+	set_layout_buttons(0, 1, 1, 0, 0, 0, 0);
 	JE_loadPic(VGAScreen, 2, false);
 	JE_dString(VGAScreen, JE_fontCenter(gameplay_name[0], FONT_SHAPES), 20, gameplay_name[0], FONT_SHAPES);
+
+	set_layout_buttons(0, 1, 1, 0, 0, 0, 0);
 
 	int gameplay = 1,
 	    gameplay_max = 2;
@@ -85,8 +88,11 @@ bool select_gameplay( void )
 
 bool select_episode( void )
 {
+	set_layout_buttons(0, 1, 1, 0, 0, 0, 0);
 	JE_loadPic(VGAScreen, 2, false);
 	JE_dString(VGAScreen, JE_fontCenter(episode_name[0], FONT_SHAPES), 20, episode_name[0], FONT_SHAPES);
+
+	set_layout_buttons(0, 1, 1, 0, 0, 0, 0);
 
 	int episode = 1,
 	    episode_max = EPISODE_MAX - 1;
@@ -143,11 +149,14 @@ bool select_episode( void )
 
 bool select_difficulty( void )
 {
+	set_layout_buttons(0, 1, 1, 0, 0, 0, 1);
 	JE_loadPic(VGAScreen, 2, false);
 	JE_dString(VGAScreen, JE_fontCenter(difficulty_name[0], FONT_SHAPES), 20, difficulty_name[0], FONT_SHAPES);
 
+	set_layout_buttons(0, 1, 1, 0, 0, 0, 1);
+
 	difficultyLevel = 2;
-	int difficulty_max = 6;
+	int difficulty_max = 3;
 
 	bool fade_in = true;
 	for (; ; )
