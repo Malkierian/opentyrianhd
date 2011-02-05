@@ -405,8 +405,8 @@ void init_layout( void )
 	set_sprite(390, 479, 91, 180, &layout.buttons[PAD_BUTTON_SELECT].sprite);
 	set_sprite(390, 479, 182, 271, &layout.buttons[PAD_BUTTON_LKICK].sprite);
 	set_sprite(390, 479, 0, 89, &layout.buttons[PAD_BUTTON_RKICK].sprite);
-	set_sprite(121, 210, 232, 271, &layout.buttons[PAD_BUTTON_MENU].sprite);
-	set_sprite(121, 210, 0, 39, &layout.buttons[PAD_BUTTON_KEY].sprite);
+	set_sprite(208, 297, 232, 271, &layout.buttons[PAD_BUTTON_MENU].sprite);
+	set_sprite(208, 297, 0, 39, &layout.buttons[PAD_BUTTON_KEY].sprite);
 
 	swprintf(path, L"%s\\%s", layoutPath, L"mode.png");
 	load_texture(PAD_BUTTON_MODE, path, false);
@@ -444,7 +444,7 @@ void init_layout( void )
 	load_texture(PAD_LAYOUT, path, false);
 	set_sprite(0, 479, 0, 271, &layout.sprite);
 
-	set_sprite(0,120,76,196,&layout.trackpad.sprite);
+	set_sprite(0,207,36,247,&layout.trackpad.sprite);
 }
 
 void init_input( void )
