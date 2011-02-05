@@ -30,6 +30,8 @@
 #include "sprite.h"
 #include "video.h"
 
+#include <zdksystem.h>
+
 char episode_name[6][31], difficulty_name[7][21], gameplay_name[5][26];
 
 bool select_gameplay( void )
@@ -155,6 +157,11 @@ bool select_difficulty( void )
 
 	set_layout_buttons(0, 1, 1, 0, 0, 0, 1);
 
+	WCHAR keyTemp[9] = L"", lastBuffer[9];
+	DWORD keyboardState;
+	char code[9];
+	code[0] = 0;
+
 	difficultyLevel = 2;
 	int difficulty_max = 3;
 
@@ -175,7 +182,7 @@ bool select_difficulty( void )
 
 		JE_word temp = 0;
 		JE_textMenuWait(&temp, false);
-
+		
 		if (inputFound)
 		{
 			if(softPad.button_pressed)
@@ -196,6 +203,55 @@ bool select_difficulty( void )
 				{
 					JE_playSampleNum(S_SPRING);
 					return false;
+				}
+				if(softPad.key && !softPad.key_last)
+				{
+					bool quit = false;
+					ZDKSystem_ShowKeyboard(L"", L"Close", NULL);
+					while(!quit)
+					{
+						keyboardState = ZDKSystem_GetKeyboardState();
+						if(keyboardState == KEYBOARD_STATE_EDITED)
+						{
+							size_t size;
+							wsprintf(lastBuffer, L"%s", keyTemp);
+							ZDKSystem_GetKeyboardBufferText(keyTemp, 8, &size);
+							if(size > 8)
+							{
+								ZDKSystem_SetKeyboardBufferText(lastBuffer);
+								JE_playSampleNum(S_CLINK);
+							}
+						}
+						if(keyboardState == KEYBOARD_STATE_DISMISSED)
+						{
+							quit = true;
+							size_t size;
+							ZDKSystem_GetKeyboardBufferText(keyTemp, 8, &size);
+							//JE_saveGame(slot, code);
+							JE_playSampleNum(S_SELECT);
+						}
+						if(keyboardState == KEYBOARD_STATE_CLOSED)
+						{
+							quit = true;
+							//JE_playSampleNum(S_SPRING);
+						}
+						SDL_Delay(250);
+					}
+					ZDKSystem_CloseKeyboard();
+					if(wcslen(keyTemp) == 1)
+					{
+						if(difficulty_max < 4 && towupper(keyTemp[0]) == L'G')
+							difficulty_max++;
+						if(difficulty_max == 4 && wcscmp(keyTemp, L"]") == 0)
+							difficulty_max++;
+					}
+					else if(wcslen(keyTemp) == 4)
+					{
+						if(difficulty_max == 5)
+							if(towupper(keyTemp[0]) == L'L' && towupper(keyTemp[1]) == L'O' &&
+								towupper(keyTemp[2]) == L'R' && towupper(keyTemp[3]) == L'D')
+								difficulty_max++;
+					}
 				}
 			}
 			else if(softPad.direction_pressed)
