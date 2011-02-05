@@ -1490,7 +1490,7 @@ void JE_highScoreCheck( void )
 				JE_boolean fadein = true;
 				JE_boolean quit = false, cancel = false;
 				char stemp[30], tempstr[30];
-				WCHAR wtemp[30], lastBuffer[30];
+				WCHAR wtemp[30];
 				char buffer[256];
 
 				strcpy(stemp, "                             ");
@@ -1565,17 +1565,6 @@ void JE_highScoreCheck( void )
 				while(!quit)
 				{
 					keyboardState = ZDKSystem_GetKeyboardState();
-					if(keyboardState == KEYBOARD_STATE_EDITED)
-					{
-						size_t size;
-						wsprintf(lastBuffer, L"%s", wtemp);
-						ZDKSystem_GetKeyboardBufferText(wtemp, 30, &size);
-						if(size > 30)
-						{
-							ZDKSystem_SetKeyboardBufferText(lastBuffer);
-							JE_playSampleNum(S_CLINK);
-						}
-					}
 					if(keyboardState == KEYBOARD_STATE_DISMISSED)
 					{
 						quit = true;
@@ -2362,8 +2351,7 @@ void JE_operation( JE_byte slot )
 {
 	JE_byte flash;
 	char stemp[21];
-	WCHAR wtemp[15];
-	WCHAR lastBuffer[14];
+	WCHAR wtemp[14];
 	WCHAR tempStr[51];
 	bool save = false;
 
@@ -2397,17 +2385,6 @@ void JE_operation( JE_byte slot )
 		while(!quit)
 		{
 			keyboardState = ZDKSystem_GetKeyboardState();
-			if(keyboardState == KEYBOARD_STATE_EDITED)
-			{
-				size_t size;
-				wsprintf(lastBuffer, L"%s", wtemp);
-				ZDKSystem_GetKeyboardBufferText(wtemp, 14, &size);
-				if(size > 14)
-				{
-					ZDKSystem_SetKeyboardBufferText(lastBuffer);
-					JE_playSampleNum(S_CLINK);
-				}
-			}
 			if(keyboardState == KEYBOARD_STATE_DISMISSED)
 			{
 				quit = true;

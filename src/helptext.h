@@ -46,7 +46,7 @@ extern char networkText[4][22];         /* [1..4] of string [20] */
 extern char difficultyNameB[11][21];    /* [0..9] of string [20] */
 extern char joyButtonNames[5][21];      /* [1..5] of string [20] */
 extern char superShips[11][26];         /* [0..10] of string [25] */
-extern char specialName[9][10];         /* [1..9] of string [9] */
+extern char specialName[10][10];         /* [1..9] of string [9] */
 extern char destructHelp[25][22];
 extern char weaponNames[17][17];        /* [1..17] of string [16] */
 extern char destructModeName[DESTRUCT_MODES][13]; /* [1..destructmodes] of string [12] */

@@ -69,7 +69,7 @@ char networkText[4][22];           /* [1..4] of string [20] */
 char difficultyNameB[11][21];      /* [0..9] of string [20] */
 char joyButtonNames[5][21];        /* [1..5] of string [20] */
 char superShips[11][26];           /* [0..10] of string [25] */
-char specialName[9][10];           /* [1..9] of string [9] */
+char specialName[10][10];           /* [1..9] of string [9] */
 char destructHelp[25][22];
 char weaponNames[17][17];          /* [1..17] of string [16] */
 char destructModeName[DESTRUCT_MODES][13]; /* [1..destructmodes] of string [12] */
@@ -344,6 +344,7 @@ void JE_loadHelpText( void )
 	for (int i = 0; i < 9; ++i)
 		read_encrypted_pascal_string(specialName[i], sizeof(specialName[i]), f);
 	skip_pascal_string(f);
+	sprintf(specialName[9], "ENGAGES");
 
 	/*Secret DESTRUCT game*/
 	skip_pascal_string(f);
