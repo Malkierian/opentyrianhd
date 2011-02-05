@@ -790,7 +790,7 @@ void JE_itemScreen( void )
 		   any user input (and do a few other things) */
 
 		/* SYN: Let's start by getting fresh events from SDL */
-		service_SDL_events(true);
+		//service_SDL_events(true);
 
 		if (constantPlay)
 		{
@@ -824,6 +824,7 @@ void JE_itemScreen( void )
 				// data cube reading
 				if (curMenu == 8)
 				{
+					set_layout_buttons(0, 1, 1, 1, 1, 0, 0);
 					fill_rectangle_xy(VGAScreen, 160, 49, 310, 158, 228);
 					if (yLoc + yChg < 0)
 					{
@@ -1135,47 +1136,6 @@ void JE_itemScreen( void )
 				}
 			}
 		}*/
-		if (curMenu == 8)
-		{
-			/*if (keysactive[SDLK_PAGEUP])
-			{
-				yChg = -2;
-				inputDetected = false;
-			}
-			if (keysactive[SDLK_PAGEDOWN])
-			{
-				yChg = 2;
-				inputDetected = false;
-			}*/
-
-			/*bool joystick_up = false, joystick_down = false;
-			for (int j = 0; j < joysticks; j++)
-			{
-				joystick_up |= joystick[j].direction[0];
-				joystick_down |= joystick[j].direction[2];
-			}*/
-
-			/*if (keysactive[SDLK_UP] || joystick_up)
-			{
-				yChg = -1;
-				inputDetected = false;
-			}
-
-			if (keysactive[SDLK_DOWN] || joystick_down)
-			{
-				yChg = 1;
-				inputDetected = false;
-			}*/
-
-			/*if (yChg < 0 && yLoc == 0)
-			{
-				yChg = 0;
-			}
-			if (yChg  > 0 && (yLoc / 12) > cube[currentCube].last_line - 10)
-			{
-				yChg = 0;
-			}*/
-		}
 
 		if (inputFound)
 		{
@@ -1199,6 +1159,12 @@ void JE_itemScreen( void )
 
 					JE_menuFunction(curSel[curMenu]);
 				}
+				if(softPad.rKick && !softPad.rKick_last)
+					if(curMenu == 8)
+						yChg = 2;
+				if(softPad.lKick && !softPad.lKick_last)
+					if(curMenu == 8)
+						yChg = -2;
 				if(softPad.escape && !softPad.escape_last)
 				{
 					JE_playSampleNum(S_SPRING);
@@ -1282,6 +1248,8 @@ void JE_itemScreen( void )
 
 					if (curMenu != 8) // not data cube
 						JE_playSampleNum(S_CURSOR);
+					else
+						yChg = -1;
 
 					curSel[curMenu]--;
 					if (curSel[curMenu] < 2)
@@ -1306,6 +1274,8 @@ void JE_itemScreen( void )
 
 					if (curMenu != 8) // not data cube
 						JE_playSampleNum(S_CURSOR);
+					else
+						yChg = 1;
 
 					curSel[curMenu]++;
 					if (curSel[curMenu] > menuChoices[curMenu])
@@ -1409,6 +1379,14 @@ void JE_itemScreen( void )
 					}
 				}
 			}
+		}
+		if (yChg < 0 && yLoc == 0)
+		{
+			yChg = 0;
+		}
+		if (yChg  > 0 && (yLoc / 12) > cube[currentCube].last_line - 10)
+		{
+			yChg = 0;
 		}
 
 	} while (!(quit || gameLoaded || jumpSection));
@@ -2597,6 +2575,7 @@ void JE_menuFunction( JE_byte select )
 		break;
 
 	case 7: //cubes
+		set_layout_buttons(0, 1, 1, 0, 0, 0, 0);
 		if (curSelect == menuChoices[curMenu])
 		{
 			curMenu = 0;
