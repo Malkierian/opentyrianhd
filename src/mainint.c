@@ -1590,7 +1590,7 @@ void JE_highScoreCheck( void )
 						cancel = true;
 						JE_playSampleNum(S_SPRING);
 					}
-					SDL_Delay(300);
+					SDL_Delay(250);
 				}
 				ZDKSystem_CloseKeyboard();
 
@@ -2422,7 +2422,7 @@ void JE_operation( JE_byte slot )
 				quit = true;
 				JE_playSampleNum(S_SPRING);
 			}
-			SDL_Delay(300);
+			SDL_Delay(250);
 		}
 		ZDKSystem_CloseKeyboard();
 		/*while (!quit)
@@ -3282,13 +3282,13 @@ redo:
 					mouseYC = -30;
 
 				if (mouseXC > 0)
-					this_player->x += mouseXC;
+					this_player->x += mouseXC / 2;
 				else if (mouseXC < 0)
-					this_player->x += mouseXC;
+					this_player->x += mouseXC / 2;
 				if (mouseYC > 0)
-					this_player->y += mouseYC;
+					this_player->y += mouseYC / 2;
 				else if (mouseYC < 0)
-					this_player->y += mouseYC;
+					this_player->y += mouseYC / 2;
 
 				if (mouseXC > 3)
 					accelXC++;
