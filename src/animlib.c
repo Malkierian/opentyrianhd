@@ -18,6 +18,7 @@
  */
 #include "animlib.h"
 #include "file.h"
+#include "input.h"
 #include "keyboard.h"
 #include "network.h"
 #include "nortsong.h"
@@ -208,8 +209,8 @@ void JE_playAnim( const char *animfile, JE_byte startingframe, JE_byte speed )
 
 
 		/* Return early if user presses a key */
-		service_SDL_events(true);
-		if (newkey)
+		inputFound = update_input();
+		if (inputFound)
 		{
 			break;
 		}

@@ -824,8 +824,6 @@ start_level_first:
 		player[i].invulnerable_ticks = 100;
 	}
 
-	newkey = newmouse = false;
-
 	/* Initialize Level Data and Debug Mode */
 	levelEnd = 255;
 	levelEndWarp = -4;
@@ -923,8 +921,6 @@ start_level_first:
 	JE_drawPortConfigButtons();
 
 	/* --- MAIN LOOP --- */
-
-	newkey = false;
 
 	if (isNetworkGame)
 	{
@@ -2355,9 +2351,8 @@ draw_player_shot_loop_end:
 
 				if (!play_demo)
 				{
-					push_joysticks_as_keyboard();
-					service_SDL_events(true);
-					if ((newkey || button[0] || button[1] || button[2]) || newmouse)
+					inputFound = update_input();
+					if (inputFound || button[0] || button[1] || button[2])
 					{
 						reallyEndLevel = true;
 					}
@@ -2381,14 +2376,13 @@ draw_player_shot_loop_end:
 	}
 	else // input handling for pausing, menu, cheats
 	{
-		//service_SDL_events(false);
 		inputFound = update_input();
 
 		if (inputFound)
 		{
 			skipStarShowVGA = false;
 			//JE_mainKeyboardInput();
-			newkey = false;
+			inputFound = false;
 			if (skipStarShowVGA)
 				goto level_loop;
 		}
@@ -2947,11 +2941,11 @@ new_game:
 							JE_loadPic(VGAScreen, tempX, false);
 							memcpy(pic_buffer, VGAScreen->pixels, sizeof(pic_buffer));
 
-							service_SDL_events(true);
+							inputFound = update_input();
 
 							for (int z = 0; z <= 199; z++)
 							{
-								if (!newkey)
+								if (!inputFound)
 								{
 									vga = (Uint8 *)VGAScreen->pixels;
 									vga2 = (Uint8 *)VGAScreen2->pixels;
@@ -2999,10 +2993,10 @@ new_game:
 							JE_loadPic(VGAScreen, tempX, false);
 							memcpy(pic_buffer, VGAScreen->pixels, sizeof(pic_buffer));
 
-							service_SDL_events(true);
+							inputFound = update_input();
 							for (int z = 0; z <= 199; z++)
 							{
-								if (!newkey)
+								if (!inputFound)
 								{
 									vga = (Uint8 *)VGAScreen->pixels;
 									vga2 = (Uint8 *)VGAScreen2->pixels;
@@ -3050,11 +3044,11 @@ new_game:
 							JE_loadPic(VGAScreen, tempX, false);
 							memcpy(pic_buffer, VGAScreen->pixels, sizeof(pic_buffer));
 
-							service_SDL_events(true);
+							inputFound = update_input();
 
 							for (int z = 0; z <= 318; z++)
 							{
-								if (!newkey)
+								if (!inputFound)
 								{
 									vga = (Uint8 *)VGAScreen->pixels;
 									vga2 = (Uint8 *)VGAScreen2->pixels;
@@ -3143,7 +3137,6 @@ new_game:
 								while (!(s[0] == '#'));
 
 								JE_displayText();
-								newkey = false;
 							}
 						}
 						break;
@@ -3433,7 +3426,6 @@ bool JE_titleScreen( JE_boolean animate )
 			// until opponent sends details packet
 			while (true)
 			{
-				service_SDL_events(false);
 				JE_showVGA();
 
 				if (packet_in[0] && SDLNet_Read16(&packet_in[0]->data[0]) == PACKET_DETAILS)
@@ -3460,7 +3452,6 @@ bool JE_titleScreen( JE_boolean animate )
 
 		while (!network_is_sync())
 		{
-			service_SDL_events(false);
 			JE_showVGA();
 
 			network_check();
@@ -3698,7 +3689,7 @@ bool JE_titleScreen( JE_boolean animate )
 									JE_outText(VGAScreen, 10, 20, "Difficulty level has been set to Suicide.", 15, 4);
 								JE_outText(VGAScreen, 10, 30, "It is imperative that you discover the special codes.", 15, 4);
 								if (initialDifficulty == 8)
-									JE_outText(VGAScreen, 10, 40, "(Next time, for an easier challenge hold down SCROLL LOCK.)", 15, 4);
+									JE_outText(VGAScreen, 10, 40, "(Next time, for an easier challenge enter ENGAGES.)", 15, 4);
 								JE_outText(VGAScreen, 10, 60, "Prepare to play...", 15, 4);
 
 								char buf[10+1+15+1];
@@ -3769,7 +3760,6 @@ bool JE_titleScreen( JE_boolean animate )
 									fadeIn = true;
 								}
 							}
-							newkey = false;
 							
 						}
 					}
@@ -5240,8 +5230,6 @@ void JE_whoa( void )
 	memset(TempScreen1, 0, screenSize);
 	memcpy(TempScreen2, VGAScreenSeg->pixels, VGAScreenSeg->h * VGAScreenSeg->pitch);
 
-
-	service_SDL_events(true);
 	timer = 300; /* About 300 rounds is enough to make the screen mostly black */
 
 	do
