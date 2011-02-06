@@ -466,13 +466,6 @@ void JE_loadScreen( void )
 
 	do
 	{
-		while (mousedown)
-		{
-			service_SDL_events(false);
-			tempX = mouse_x;
-			tempY = mouse_y;
-		}
-
 		memcpy(VGAScreen->pixels, VGAScreen2->pixels, VGAScreen->pitch * VGAScreen->h);
 
 		JE_dString(VGAScreen, JE_fontCenter(miscText[38 + screen - 1], FONT_SHAPES), 5, miscText[38 + screen - 1], FONT_SHAPES);
@@ -961,8 +954,6 @@ JE_boolean JE_gammaCheck( void )
 	bool temp = 0;
 	if (temp)
 	{
-		//keysactive[SDLK_F11] = false;
-		newkey = false;
 		gammaCorrection = (gammaCorrection + 1) % 4;
 		memcpy(colors, palettes[pcxpal[3-1]], sizeof(colors));
 		JE_gammaCorrect(&colors, gammaCorrection);
@@ -982,8 +973,6 @@ void JE_doInGameSetup( void )
 
 		while (true)
 		{
-			service_SDL_events(false);
-
 			if (packet_in[0] && SDLNet_Read16(&packet_in[0]->data[0]) == PACKET_GAME_MENU)
 			{
 				network_update();
@@ -1035,7 +1024,6 @@ void JE_doInGameSetup( void )
 
 			while (true)
 			{
-				service_SDL_events(false);
 				JE_showVGA();
 
 				if (packet_in[0])
@@ -1070,8 +1058,6 @@ void JE_doInGameSetup( void )
 
 		while (!network_is_sync())
 		{
-			service_SDL_events(false);
-
 			network_check();
 			SDL_Delay(16);
 		}
@@ -1503,65 +1489,6 @@ void JE_highScoreCheck( void )
 				ZDKSystem_SetKeyboardBufferText(L"");
 				swprintf(wtemp, L"");
 
-				//do
-				//{
-					//service_SDL_events(true);
-
-				//JE_dString(VGAScreen, JE_fontCenter(miscText[51], FONT_SHAPES), 3, miscText[51], FONT_SHAPES);
-
-				//temp3 = twoPlayerMode ? 58 + p : 53;
-
-				//JE_dString(VGAScreen, JE_fontCenter(miscText[temp3-1], SMALL_FONT_SHAPES), 30, miscText[temp3-1], SMALL_FONT_SHAPES);
-
-				//blit_sprite(VGAScreenSeg, 50, 0, OPTION_SHAPES, 35);  // message box
-
-					/*if (twoPlayerMode)
-					{
-						sprintf(buffer, "%s %s", miscText[48 + p], miscText[53]);
-						JE_textShade(VGAScreen, 60, 55, buffer, 11, 4, FULL_SHADE);
-					}*/
-					//else
-					//{
-					//	JE_textShade(VGAScreen, 60, 55, miscText[53], 11, 4, FULL_SHADE);
-					//}
-
-				//sprintf(buffer, "%s %d", miscText[37], temp_score);
-				//JE_textShade(VGAScreen, 70, 20, buffer, 11, 4, FULL_SHADE);
-
-					/*do
-					{
-						flash = (flash == 8 * 16 + 10) ? 8 * 16 + 2 : 8 * 16 + 10;
-						temp3 = (temp3 == 6) ? 2 : 6;
-
-						strncpy(tempstr, stemp, temp);
-						tempstr[temp] = '\0';
-						JE_outText(VGAScreen, 65, 89, tempstr, 8, 3);
-						tempW = 65 + JE_textWidth(tempstr, TINY_FONT);
-						JE_barShade(VGAScreen, tempW + 2, 90, tempW + 6, 95);
-						fill_rectangle_xy(VGAScreen, tempW + 1, 89, tempW + 5, 94, flash);
-
-						for (int i = 0; i < 14; i++)
-						{
-							setjasondelay(1);
-
-							JE_mouseStart();
-							JE_showVGA();
-							if (fadein)
-							{
-								fade_palette(colors, 15, 0, 255);
-								fadein = false;
-							}
-							JE_mouseReplace();
-
-							push_joysticks_as_keyboard();
-							service_wait_delay();
-
-							if (newkey || newmouse)
-								break;
-						}
-
-					} while (!newkey && !newmouse);*/
-
 				while(!quit)
 				{
 					keyboardState = ZDKSystem_GetKeyboardState();
@@ -1585,74 +1512,6 @@ void JE_highScoreCheck( void )
 
 				if (!playing)
 					play_song(31);
-
-					/*if (mouseButton > 0)
-					{
-						if (mouseX > 56 && mouseX < 142 && mouseY > 123 && mouseY < 149)
-						{
-							quit = true;
-						}
-						else if (mouseX > 151 && mouseX < 237 && mouseY > 123 && mouseY < 149)
-						{
-							quit = true;
-							cancel = true;
-						}
-					}
-					else if (newkey)
-					{
-						bool validkey = false;
-						lastkey_char = toupper(lastkey_char);
-						switch(lastkey_char)
-						{
-							case ' ':
-							case '-':
-							case '.':
-							case ',':
-							case ':':
-							case '!':
-							case '?':
-							case '#':
-							case '@':
-							case '$':
-							case '%':
-							case '*':
-							case '(':
-							case ')':
-							case '/':
-							case '=':
-							case '+':
-							case '<':
-							case '>':
-							case ';':
-							case '"':
-							case '\'':
-								validkey = true;
-							default:
-								if (temp < 28 && (validkey || (lastkey_char >= 'A' && lastkey_char <= 'Z') || (lastkey_char >= '0' && lastkey_char <= '9')))
-								{
-									stemp[temp] = lastkey_char;
-									temp++;
-								}
-								break;
-							case SDLK_BACKSPACE:
-							case SDLK_DELETE:
-								if (temp)
-								{
-									temp--;
-									stemp[temp] = ' ';
-								}
-								break;
-							case SDLK_ESCAPE:
-								quit = true;
-								cancel = true;
-								break;
-							case SDLK_RETURN:
-								quit = true;
-								break;
-						}
-					}*/
-				//}
-				//while (!quit);
 
 				if (!cancel)
 				{
@@ -2402,118 +2261,6 @@ void JE_operation( JE_byte slot )
 			SDL_Delay(250);
 		}
 		ZDKSystem_CloseKeyboard();
-		/*while (!quit)
-		{
-			//service_SDL_events(true);
-
-			blit_sprite(VGAScreen, 50, 50, OPTION_SHAPES, 35);  // message box
-
-			JE_textShade(VGAScreen, 60, 55, miscText[1-1], 11, 4, DARKEN);
-			JE_textShade(VGAScreen, 70, 70, levelName, 11, 4, DARKEN);
-
-			do
-			{
-				flash = (flash == 8 * 16 + 10) ? 8 * 16 + 2 : 8 * 16 + 10;
-				temp3 = (temp3 == 6) ? 2 : 6;
-
-				strcpy(tempStr, miscText[2-1]);
-				strncat(tempStr, stemp, temp);
-				JE_outText(VGAScreen, 65, 89, tempStr, 8, 3);
-				tempW = 65 + JE_textWidth(tempStr, TINY_FONT);
-				JE_barShade(VGAScreen, tempW + 2, 90, tempW + 6, 95);
-				fill_rectangle_xy(VGAScreen, tempW + 1, 89, tempW + 5, 94, flash);
-
-				for (int i = 0; i < 14; i++)
-				{
-					setjasondelay(1);
-
-					JE_mouseStart();
-					JE_showVGA();
-					JE_mouseReplace();
-
-					push_joysticks_as_keyboard();
-					service_wait_delay();
-
-					if (newkey || newmouse)
-						break;
-				}
-
-			}
-			while (!newkey && !newmouse);
-
-			if (mouseButton > 0)
-			{
-				if (mouseX > 56 && mouseX < 142 && mouseY > 123 && mouseY < 149)
-				{
-					quit = true;
-					JE_saveGame(slot, stemp);
-					JE_playSampleNum(S_SELECT);
-				}
-				else if (mouseX > 151 && mouseX < 237 && mouseY > 123 && mouseY < 149)
-				{
-					quit = true;
-					JE_playSampleNum(S_SPRING);
-				}
-			}
-			else if (newkey)
-			{
-				bool validkey = false;
-				lastkey_char = toupper(lastkey_char);
-				switch (lastkey_char)
-				{
-					case ' ':
-					case '-':
-					case '.':
-					case ',':
-					case ':':
-					case '!':
-					case '?':
-					case '#':
-					case '@':
-					case '$':
-					case '%':
-					case '*':
-					case '(':
-					case ')':
-					case '/':
-					case '=':
-					case '+':
-					case '<':
-					case '>':
-					case ';':
-					case '"':
-					case '\'':
-						validkey = true;
-					default:
-						if (temp < 14 && (validkey || (lastkey_char >= 'A' && lastkey_char <= 'Z') || (lastkey_char >= '0' && lastkey_char <= '9')))
-						{
-							JE_playSampleNum(S_CURSOR);
-							stemp[temp] = lastkey_char;
-							temp++;
-						}
-						break;
-					case SDLK_BACKSPACE:
-					case SDLK_DELETE:
-						if (temp)
-						{
-							temp--;
-							stemp[temp] = ' ';
-							JE_playSampleNum(S_CLICK);
-						}
-						break;
-					case SDLK_ESCAPE:
-						quit = true;
-						JE_playSampleNum(S_SPRING);
-						break;
-					case SDLK_RETURN:
-						quit = true;
-						JE_saveGame(slot, stemp);
-						JE_playSampleNum(S_SELECT);
-						break;
-				}
-
-			}
-		}*/
 	}
 	wait_noinput(false, true, false);
 }
@@ -2902,45 +2649,15 @@ void JE_pauseGame( void )
 	{
 		setjasondelay(2);
 
-		push_joysticks_as_keyboard();
-		service_SDL_events(true);
+		inputFound = update_input();
 
-		if ((newkey && lastkey_sym != SDLK_LCTRL && lastkey_sym != SDLK_RCTRL && lastkey_sym != SDLK_LALT && lastkey_sym != SDLK_RALT)
-		    || JE_mousePosition(&mouseX, &mouseY) > 0)
+		if (inputFound && (softPad.escape && !softPad.escape_last))
 		{
-			if (isNetworkGame)
-			{
-				network_prepare(PACKET_WAITING);
-				network_send(4);  // PACKET_WAITING
-			}
 			done = true;
-		}
-
-		if (isNetworkGame)
-		{
-			network_check();
-
-			if (packet_in[0] && SDLNet_Read16(&packet_in[0]->data[0]) == PACKET_WAITING)
-			{
-				network_check();
-
-				done = true;
-			}
 		}
 
 		wait_delay();
 	} while (!done);
-
-	if (isNetworkGame)
-	{
-		while (!network_is_sync())
-		{
-			service_SDL_events(false);
-
-			network_check();
-			SDL_Delay(16);
-		}
-	}
 
 	set_volume(tyrMusicVolume, fxVolume);
 
@@ -3157,87 +2874,6 @@ redo:
 						if(softPad.escape && !softPad.escape_last)
 							pause_pressed = true;
 					}
-						//}
-					//}
-
-					//service_SDL_events(false);
-
-					/* mouse input */
-					/*if ((inputDevice == 0 || inputDevice == 2) && has_mouse)
-					{
-						button[0] |= mouse_pressed[0];
-						button[1] |= mouse_pressed[1];
-						button[2] |= mouse_has_three_buttons ? mouse_pressed[2] : mouse_pressed[1];
-
-						if (input_grabbed)
-						{
-							mouseXC += mouse_x - 159;
-							mouseYC += mouse_y - 100;
-						}
-
-						if ((!isNetworkGame || playerNum_ == thisPlayerNum)
-							&& (!galagaMode || (playerNum_ == 2 || !twoPlayerMode || player[1].exploding_ticks > 0)))
-						{
-							set_mouse_position(159, 100);
-						}
-					}*/
-
-					/* keyboard input */
-					/*if ((inputDevice == 0 || inputDevice == 1) && !play_demo)
-					{
-						if (keysactive[keySettings[0]])
-							this_player->y -= CURRENT_KEY_SPEED;
-						if (keysactive[keySettings[1]])
-							this_player->y += CURRENT_KEY_SPEED;
-
-						if (keysactive[keySettings[2]])
-							this_player->x -= CURRENT_KEY_SPEED;
-						if (keysactive[keySettings[3]])
-							this_player->x += CURRENT_KEY_SPEED;
-
-						button[0] = button[0] || keysactive[keySettings[4]];
-						button[3] = button[3] || keysactive[keySettings[5]];
-						button[1] = button[1] || keysactive[keySettings[6]];
-						button[2] = button[2] || keysactive[keySettings[7]];
-
-						if (constantPlay)
-						{
-							for (unsigned int i = 0; i < 4; i++)
-								button[i] = true;
-
-							++this_player->y;
-							this_player->x += constantLastX;
-						}
-
-						// TODO: check if demo recording still works
-						if (record_demo)
-						{
-							bool new_input = false;
-
-							for (unsigned int i = 0; i < 8; i++)
-							{
-								bool temp = demo_keys & (1 << i);
-								if (temp != keysactive[keySettings[i]])
-									new_input = true;
-							}
-
-							demo_keys_wait++;
-
-							if (new_input)
-							{
-								demo_keys_wait = SDL_Swap16(demo_keys_wait);
-								efwrite(&demo_keys_wait, sizeof(Uint16), 1, demo_file);
-
-								demo_keys = 0;
-								for (unsigned int i = 0; i < 8; i++)
-									demo_keys |= keysactive[keySettings[i]] ? (1 << i) : 0;
-
-								fputc(demo_keys, demo_file);
-
-								demo_keys_wait = 0;
-							}
-						}
-					}*/
 				}
 
 				if (smoothies[9-1])

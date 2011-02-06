@@ -789,9 +789,6 @@ void JE_itemScreen( void )
 		/* SYN: Everything above was just drawing the screen. In the rest of it, we process
 		   any user input (and do a few other things) */
 
-		/* SYN: Let's start by getting fresh events from SDL */
-		//service_SDL_events(true);
-
 		if (constantPlay)
 		{
 			mainLevel = mapSection[mapPNum-1];
@@ -899,7 +896,6 @@ void JE_itemScreen( void )
 						setjasondelay(3);
 						JE_weaponSimUpdate();
 						JE_drawScore();
-						//service_SDL_events(false);
 
 						if (newPal > 0)
 						{
@@ -907,8 +903,6 @@ void JE_itemScreen( void )
 							set_palette(palettes[newPal - 1], 0, 255);
 							newPal = 0;
 						}
-
-						//JE_mouseStart();
 
 						if (paletteChanged)
 						{
@@ -923,10 +917,10 @@ void JE_itemScreen( void )
 							fade_palette(colors, 10, 0, 255);
 							backFromHelp = false;
 						}
-
-						//JE_mouseReplace();
-
-					} else { /* current menu is anything but weapon sim or datacube */
+					}
+					else
+					{
+						/* current menu is anything but weapon sim or datacube */
 
 						setjasondelay(2);
 
@@ -940,8 +934,6 @@ void JE_itemScreen( void )
 							newPal = 0;
 						}
 
-						//JE_mouseStart();
-
 						if (paletteChanged)
 						{
 							set_palette(colors, 0, 255);
@@ -949,8 +941,6 @@ void JE_itemScreen( void )
 						}
 
 						JE_showVGA(); /* SYN: This is the where the screen updates for most menus */
-
-						//JE_mouseReplace();
 
 						if (backFromHelp)
 						{
@@ -963,9 +953,6 @@ void JE_itemScreen( void )
 
 				wait_delay();
 
-				//push_joysticks_as_keyboard();
-				//service_SDL_events(false);
-				//mouseButton = JE_mousePosition(&mouseX, &mouseY);
 				inputFound = update_input();				
 
 			} while (!inputFound);
@@ -974,168 +961,6 @@ void JE_itemScreen( void )
 		//keyboardUsed = false;
 
 		/* The rest of this just grabs input events, handles them, then proceeds on. */
-
-		/*if (mouseButton > 0)
-		{
-			lastDirection = 1;
-
-			mouseButton = JE_mousePosition(&mouseX, &mouseY);
-
-			if (curMenu == 7 && cubeMax == 0)
-			{
-				curMenu = 0;
-				JE_playSampleNum(S_SPRING);
-				newPal = 1;
-				JE_wipeKey();
-			}
-
-			if (curMenu == 8)
-			{
-				if ((mouseX > 258) && (mouseX < 290) && (mouseY > 159) && (mouseY < 171))
-				{
-					curMenu = 7;
-					JE_playSampleNum(S_SPRING);
-				}
-			}
-
-			if (curMenu == 2 || curMenu == 11)
-			{
-				if ((mouseX >= (225 - 4)) && (mouseY >= 70) && (mouseY <= 82))
-				{
-					if (music_disabled)
-					{
-						music_disabled = false;
-						restart_song();
-					}
-
-					curSel[2] = 4;
-
-					tyrMusicVolume = (mouseX - (225 - 4)) / 4 * 12;
-					if (tyrMusicVolume > 255)
-						tyrMusicVolume = 255;
-				}
-
-				if ((mouseX >= (225 - 4)) && (mouseY >= 86) && (mouseY <= 98))
-				{
-					samples_disabled = false;
-
-					curSel[2] = 5;
-
-					fxVolume = (mouseX - (225 - 4)) / 4 * 12;
-					if (fxVolume > 255)
-						fxVolume = 255;
-				}
-
-				JE_calcFXVol();
-
-				set_volume(tyrMusicVolume, fxVolume);
-
-				JE_playSampleNum(S_CURSOR);
-			}
-
-			if ((mouseY > 20) && (mouseX > 170) && (mouseX < 308) && (curMenu != 8))
-			{
-				const JE_byte mouseSelectionY[MAX_MENU] = { 16, 16, 16, 16, 26, 12, 11, 28, 0, 16, 16, 16, 8, 16 };
-
-				tempI = (mouseY - 38) / mouseSelectionY[curMenu]+2;
-
-				if (curMenu == 9)
-				{
-					if (tempI > 5)
-						tempI--;
-					if (tempI > 3)
-						tempI--;
-				}
-
-				if (curMenu == 0)
-				{
-					if (tempI > 7)
-						tempI = 7;
-				}
-
-				// is play next level screen?
-				if (curMenu == 3)
-				{
-					if (tempI == menuChoices[curMenu] + 1)
-						tempI = menuChoices[curMenu];
-				}
-
-				if (tempI <= menuChoices[curMenu])
-				{
-					if ((curMenu == 4) && (tempI == menuChoices[4]))
-					{
-						player[0].cash = JE_cashLeft();
-						curMenu = 1;
-						JE_playSampleNum(S_ITEM);
-					}
-					else
-					{
-						JE_playSampleNum(S_CLICK);
-						if (curSel[curMenu] == tempI)
-						{
-							JE_menuFunction(curSel[curMenu]);
-						}
-						else
-						{
-							if ((curMenu == 5) && (JE_getCost(curSel[1], itemAvail[itemAvailMap[curSel[2]-1]][tempI-1]) > player[0].cash))
-							{
-								JE_playSampleNum(S_CLINK);
-							}
-							else
-							{
-								if (curSel[1] == 4)
-									player[0].weapon_mode = 1;
-
-								curSel[curMenu] = tempI;
-							}
-
-							// in front or rear weapon upgrade screen?
-							if ((curMenu == 4) && ((curSel[1] == 3) || (curSel[1] == 4)))
-								player[0].items.weapon[curSel[1]-3].power = temp_weapon_power[curSel[4]-2];
-						}
-					}
-				}
-
-				wait_noinput(false, true, false);
-			}
-
-			if ((curMenu == 4) && ((curSel[1] == 3) || (curSel[1] == 4)))
-			{
-				if ((mouseX >= 23) && (mouseX <= 36) && (mouseY >= 149) && (mouseY <= 168))
-				{
-					JE_playSampleNum(S_CURSOR);
-					switch (curSel[1])
-					{
-					case 3:
-					case 4:
-						if (leftPower)
-							player[0].items.weapon[curSel[1]-3].power = --temp_weapon_power[curSel[4]-2];
-						else
-							JE_playSampleNum(S_CLINK);
-
-						break;
-					}
-					wait_noinput(false, true, false);
-				}
-
-				if ((mouseX >= 119) && (mouseX <= 131) && (mouseY >= 149) && (mouseY <= 168))
-				{
-					JE_playSampleNum(S_CURSOR);
-					switch (curSel[1])
-					{
-					case 3:
-					case 4:
-						if (rightPower && rightPowerAfford)
-							player[0].items.weapon[curSel[1]-3].power = ++temp_weapon_power[curSel[4]-2];
-						else
-							JE_playSampleNum(S_CLINK);
-
-						break;
-					}
-					wait_noinput(false, true, false);
-				}
-			}
-		}*/
 
 		if (inputFound)
 		{
@@ -2181,7 +2006,6 @@ JE_boolean JE_quitRequest( void )
 
 		do
 		{
-			//service_SDL_events(true);
 			setjasondelay(4);
 
 			blit_sprite(VGAScreen, 50, 50, OPTION_SHAPES, 35);  // message box
@@ -2204,16 +2028,7 @@ JE_boolean JE_quitRequest( void )
 
 			JE_outTextAdjust(VGAScreen, temp_x, 128, miscText[10], 15, temp_c, FONT_SHAPES, true);
 
-			if (has_mouse)
-			{
-				//JE_mouseStart();
-				JE_showVGA();
-				//JE_mouseReplace();
-			}
-			else
-			{
-				JE_showVGA();
-			}
+			JE_showVGA();
 
 			wait_delay();
 
@@ -2476,76 +2291,6 @@ void JE_menuFunction( JE_byte select )
 		break;
 
 	case 5: /* keyboard settings */
-		break;
-		if (curSelect == 10) /* reset to defaults */
-		{
-			memcpy(keySettings, defaultKeySettings, sizeof(keySettings));
-		}
-		else if (curSelect == 11) /* done */
-		{
-			if (isNetworkGame || onePlayerAction)
-			{
-				curMenu = 11;
-			} else {
-				curMenu = 2;
-			}
-		}
-		else /* change key */
-		{
-			temp2 = 254;
-			int tempY = 38 + (curSelect - 2) * 12;
-			JE_textShade(VGAScreen, 236, tempY, SDL_GetKeyName(keySettings[curSelect-2]), (temp2 / 16), (temp2 % 16) - 8, DARKEN);
-			JE_showVGA();
-
-			wait_noinput(true, true, true);
-
-			col = 248;
-			colC = 1;
-
-			do {
-				setjasondelay(1);
-
-				col += colC;
-				if (col < 243 || col > 248)
-				{
-					colC *= -1;
-				}
-				JE_rectangle(VGAScreen, 230, tempY - 2, 300, tempY + 7, col);
-
-				poll_joysticks();
-				service_SDL_events(true);
-
-				JE_showVGA();
-
-				wait_delay();
-			} while (!newkey && !mousedown && !joydown);
-			
-			if (newkey)
-			{
-				// already used? then swap
-				for (uint i = 0; i < COUNTOF(keySettings); ++i)
-				{
-					if (keySettings[i] == lastkey_sym)
-					{
-						keySettings[i] = keySettings[curSelect-2];
-						break;
-					}
-				}
-				
-				if (lastkey_sym != SDLK_ESCAPE && // reserved for menu
-				    lastkey_sym != SDLK_F11 &&    // reserved for gamma
-				    lastkey_sym != SDLK_s &&      // reserved for sample mute
-				    lastkey_sym != SDLK_m &&      // reserved for music mute
-				    lastkey_sym != SDLK_p)        // reserved for pause
-				{
-					JE_playSampleNum(S_CLICK);
-					keySettings[curSelect-2] = lastkey_sym;
-					++curSelect;
-				}
-				
-				JE_wipeKey();
-			}
-		}
 		break;
 
 	case 6: //save
