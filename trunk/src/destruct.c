@@ -51,7 +51,6 @@
 #include "config.h"
 #include "fonthand.h"
 #include "helptext.h"
-#include "input.h"
 #include "keyboard.h"
 #include "loudness.h"
 #include "mtrand.h"
@@ -770,10 +769,10 @@ void JE_introScreen( void )
 	JE_showVGA();
 	fade_palette(colors, 15, 0, 255);
 
-	inputFound = false;
-	while (!inputFound)
+	newkey = false;
+	while (!newkey)
 	{
-		inputFound = update_input();
+		service_SDL_events(false);
 		SDL_Delay(16);
 	}
 
@@ -823,76 +822,49 @@ enum de_mode_t JE_modeSelect( void )
 		DrawModeSelectMenu(mode);
 		JE_showVGA();
 
-		/* Grab input */
-		do
-		{
-			inputFound = update_input();
+		/* Grab keys */
+		newkey = false;
+		do {
+			service_SDL_events(false);
 			SDL_Delay(16);
-		} while(!inputFound);
+		} while(!newkey);
 
 		/* See what was pressed */
-		if(softPad.button_pressed)
+		if (keysactive[SDLK_ESCAPE])
 		{
-			if(softPad.escape && !softPad.escape_last)
+			mode = MODE_NONE; /* User is quitting, return failure */
+			break;
+		}
+		if (keysactive[SDLK_RETURN])
+		{
+			break; /* User has selected, return choice */
+		}
+		if (keysactive[SDLK_UP])
+		{
+			if(mode == MODE_FIRST)
 			{
-				mode = MODE_NONE; /* User is quitting, return failure */
-				break;
-			}
-			if(softPad.select && !softPad.select_last)
-			{
-				break; /* User has selected, return choice */
+				if (config.allow_custom == true)
+				{
+					mode = MODE_LAST;
+				} else {
+					mode = (de_mode_t)(MODE_LAST-1);
+				}
+			} else {
+				mode = (de_mode_t)(mode-1);
 			}
 		}
-		else if(softPad.direction_pressed)
+		if (keysactive[SDLK_DOWN])
 		{
-			if(abs(softPad.ay) > abs(softPad.ax))
+			if(mode >= MODE_LAST-1)
 			{
-				if (softPad.ay > 0)
+				if (config.allow_custom == true && mode == MODE_LAST-1)
 				{
-					stickY += softPad.ay;
-					if(stickY > 40)
-					{
-						stickY = 0;
-						softPad.down_last = true;
-					}
-				}
-				if (softPad.ay < 0)
-				{
-					stickY +=softPad.ay;
-					if(stickY < -40)
-					{
-						stickY = 0;
-						softPad.up_last = true;
-					}
-				}
-			}
-			if(softPad.up_last)
-			{
-				if(mode == MODE_FIRST)
-				{
-					if (config.allow_custom == true)
-					{
-						mode = MODE_LAST;
-					} else {
-						mode = (de_mode_t)(MODE_LAST-1);
-					}
-				} else {
-					mode = (de_mode_t)(mode-1);
-				}
-			}
-			if(softPad.down_last)
-			{
-				if(mode >= MODE_LAST-1)
-				{
-					if (config.allow_custom == true && mode == MODE_LAST-1)
-					{
-						mode = (de_mode_t)(mode+1);
-					} else {
-						mode = MODE_FIRST;
-					}
-				} else {
 					mode = (de_mode_t)(mode+1);
+				} else {
+					mode = MODE_FIRST;
 				}
+			} else {
+				mode = (de_mode_t)(mode+1);
 			}
 		}
 	}
@@ -1466,10 +1438,10 @@ void JE_helpScreen( void )
 
 	do  /* wait until user hits a key */
 	{
-		inputFound = update_input();
+		service_SDL_events(true);
 		SDL_Delay(16);
 	}
-	while (!inputFound);
+	while (!newkey);
 
 	fade_black(15);
 	memcpy(VGAScreen->pixels, VGAScreen2->pixels, VGAScreen->h * VGAScreen->pitch);
@@ -1489,10 +1461,10 @@ void JE_pauseScreen( void )
 
 	do  /* wait until user hits a key */
 	{
-		inputFound = update_input();
+		service_SDL_events(true);
 		SDL_Delay(16);
 	}
-	while (!inputFound);
+	while (!newkey);
 
 	/* Restore current screen & volume*/
 	memcpy(VGAScreen->pixels, VGAScreen2->pixels, VGAScreen->h * VGAScreen->pitch);
