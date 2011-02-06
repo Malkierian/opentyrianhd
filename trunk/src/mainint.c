@@ -450,8 +450,8 @@ void JE_loadScreen( void )
 
 	tempstr = NULL;
 
-	free_sprite2s(&shapes6);
-	JE_loadCompShapes(&shapes6, '1');  // need arrow sprites
+	//free_sprite2s(&shapes6);
+	//JE_loadCompShapes(&shapes6, '1');  // need arrow sprites
 
 	fade_black(10);
 	JE_loadPic(VGAScreen, 2, false);
@@ -542,7 +542,9 @@ void JE_loadScreen( void )
 					tempstr = (char *)malloc(7);
 					mal_str = true;
 					strcpy(tempstr, "-----"); /* Unused save slot */
-				} else {
+				}
+				else
+				{
 					tempstr = saveFiles[x - 1].levelName;
 					tempstr2 = (char *)malloc(5 + strlen(miscTextB[2-1]));
 					sprintf(tempstr2, "%s %d", miscTextB[2-1], saveFiles[x - 1].episode);
@@ -558,18 +560,6 @@ void JE_loadScreen( void )
 			}
 
 		}
-
-		if (screen == 2)
-		{
-			blit_sprite2x2(VGAScreen, 90, 180, shapes6, 279);
-		}
-		if (screen == 1)
-		{
-			blit_sprite2x2(VGAScreen, 220, 180, shapes6, 281);
-		}
-
-		helpBoxColor = 15;
-		JE_helpBox(VGAScreen, 110, 182, miscText[56-1], 25);
 
 		JE_showVGA();
 
@@ -602,7 +592,7 @@ void JE_loadScreen( void )
 						quit = true;
 					}
 				}
-				if(softPad.select && !softPad.select_last)
+				if(softPad.escape && !softPad.escape_last)
 				{
 					quit = true;
 				}
