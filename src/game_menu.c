@@ -1993,8 +1993,6 @@ JE_boolean JE_quitRequest( void )
 
 	int tempX = 4;
 
-	JE_clearKeyboard();
-	JE_wipeKey();
 	wait_noinput(true, true, true);
 
 	JE_barShade(VGAScreen, 65, 55, 255, 155);
@@ -2075,6 +2073,7 @@ JE_boolean JE_quitRequest( void )
 				}
 				if(softPad.left_last || softPad.right_last)
 				{
+					softPad.left_last = softPad.right_last = false;
 					quit_selected = !quit_selected;
 					JE_playSampleNum(S_CURSOR);
 				}
