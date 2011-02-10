@@ -450,9 +450,6 @@ void JE_loadScreen( void )
 
 	tempstr = NULL;
 
-	//free_sprite2s(&shapes6);
-	//JE_loadCompShapes(&shapes6, '1');  // need arrow sprites
-
 	fade_black(10);
 	JE_loadPic(VGAScreen, 2, false);
 	JE_showVGA();
@@ -1397,7 +1394,7 @@ void JE_inGameHelp( void )
 		tempW = 0;
 		JE_textMenuWait(&tempW, true);
 	}
-	while (!inputDetected);
+	while (!inputFound);
 
 	textErase = 1;
 
