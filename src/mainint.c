@@ -71,6 +71,17 @@ JE_boolean useLastBank; /* See if I want to use the last 16 colors for DisplayTe
 
 bool pause_pressed = false, ingamemenu_pressed = false;
 
+char smoothieString[8][2] = {
+	"2",
+	"3",
+	"4",
+	"5",
+	"6",
+	"7",
+	"8",
+	"9"
+};
+
 /* Draws a message at the bottom text window on the playing screen */
 void JE_drawTextWindow( const char *text )
 {
@@ -2662,6 +2673,10 @@ void JE_playerMovement( Player *this_player,
 	JE_integer accelXC, accelYC;
 	float diminish = 1.0f;
 
+	WCHAR keyTemp[15];
+	char code[15];
+	bool codeEntered = false;
+
 	if (playerNum_ == 2 || !twoPlayerMode)
 	{
 		tempW = weaponPort[this_player->items.weapon[REAR_WEAPON].id].opnum;
@@ -2860,6 +2875,178 @@ redo:
 							ingamemenu_pressed = true;
 						if(softPad.escape && !softPad.escape_last)
 							pause_pressed = true;
+						if(softPad.key && !softPad.key_last)
+						{
+							ZDK_KEYBOARD_STATE keyboardState;
+							bool quitKey = false;
+							ZDKSystem_ShowKeyboard(L"", L"Close", NULL);
+							while(!quitKey)
+							{
+								keyboardState = ZDKSystem_GetKeyboardState();
+								if(keyboardState == KEYBOARD_STATE_DISMISSED)
+								{
+									quitKey = true;
+									codeEntered = true;
+									size_t size;
+									ZDKSystem_GetKeyboardBufferText(keyTemp, 15, &size);
+									JE_playSampleNum(S_SELECT);
+								}
+								if(keyboardState == KEYBOARD_STATE_CLOSED)
+								{
+									quitKey = true;
+									JE_playSampleNum(S_SPRING);
+								}
+								SDL_Delay(250);
+							}
+							ZDKSystem_CloseKeyboard();
+						}
+					}
+				}
+
+				if(codeEntered)
+				{
+					sprintf(code, "%S", keyTemp);
+					if (_stricmp(code, "F1") == 0)
+					{
+						if (isNetworkGame)
+						{
+							helpRequest = true;
+						} else {
+							JE_inGameHelp();
+							skipStarShowVGA = true;
+						}
+					}
+
+					/* {!Activate Nort Ship!} */
+					else if (_stricmp(code, "F2F4F6F7F9\\/") == 0)
+					{
+						if (isNetworkGame)
+						{
+							nortShipRequest = true;
+						} else {
+							player[0].items.ship = 12;
+							player[0].items.special = 13;
+							player[0].items.weapon[REAR_WEAPON].id = 36;
+							shipGr = 1;
+						}
+					}
+
+					/* {Cheating} */
+					else if (!isNetworkGame && !twoPlayerMode && !superTyrian && superArcadeMode == SA_NONE)
+					{
+						if(_stricmp(code, "F2F3F6") == 0)
+						{
+							youAreCheating = !youAreCheating;
+						}
+						else if ((_stricmp(code, "F2F3F4") == 0 || _stricmp(code, "F2F3F5") == 0) && !superTyrian)
+						{
+							for (uint i = 0; i < COUNTOF(player); ++i)
+								player[i].armor = 0;
+
+							youAreCheating = !youAreCheating;
+							JE_drawTextWindow(miscText[63-1]);
+						}
+
+						//if (constantPlay &&  && !superTyrian && superArcadeMode == SA_NONE)
+						//{
+						//	youAreCheating = !youAreCheating;
+						//	keysactive[SDLK_c] = false;
+						//}
+					}
+
+					/* {CHEAT-SKIP LEVEL} */
+					else if ((_stricmp(code, "F2F6F7") == 0 || _stricmp(code, "F2F6F8") == 0) &&
+						!superTyrian && superArcadeMode == SA_NONE)
+					{
+						if (isNetworkGame)
+						{
+							skipLevelRequest = true;
+						} else {
+							levelTimer = true;
+							levelTimerCountdown = 0;
+							endLevel = true;
+							levelEnd = 40;
+						}
+					}
+
+					/* toggle screenshot pause */
+					/*if (keysactive[SDLK_NUMLOCK])
+					{
+						superPause = !superPause;
+					}*/
+
+					/* {SMOOTHIES} */
+					if(strlen(code) == 1)
+					{
+						/* {MUTE SOUND} */
+						if (_stricmp(code, "S") == 0)
+						{
+							samples_disabled = !samples_disabled;
+
+							JE_drawTextWindow(samples_disabled ? miscText[17] : miscText[18]);
+						}
+
+						// {IN-GAME RANDOM MUSIC SELECTION} 
+						else if (_stricmp(code, "F") == 0)
+						{
+							play_song(mt_rand() % MUSIC_NUM);
+						}
+
+						/* {MUTE MUSIC} */
+						else if (_stricmp(code, "M") == 0)
+						{
+							music_disabled = !music_disabled;
+							if (!music_disabled)
+								restart_song();
+
+							JE_drawTextWindow(music_disabled ? miscText[35] : miscText[36]);
+						}
+
+						// {CYCLE THROUGH FILTER COLORS} 
+						else if (strcmp(code, "-") == 0)
+						{
+							if (levelFilter == -99)
+							{
+								levelFilter = 0;
+							} else {
+								levelFilter++;
+								if (levelFilter == 16)
+								{
+									levelFilter = -99;
+								}
+							}
+						}
+
+						// {HYPER-SPEED} 
+						else if (strcmp(code, "+") == 0)
+						{
+							fastPlay++;
+							if (fastPlay > 2)
+							{
+								fastPlay = 0;
+							}
+							keysactive[SDLK_1] = false;
+							JE_setNewGameSpeed();
+						}
+
+						else if (strcmp(code, "0") == 0)
+						{
+							smoothies[8] = !smoothies[8];
+						}
+						
+						else 
+							for (int i = 0; i <= 7; i++)
+							{
+								if (strcmp(code, smoothieString[i]) == 0)
+								{
+									smoothies[i] = !smoothies[i];
+								}
+							}
+					}
+
+					if (superTyrian)
+					{
+						youAreCheating = false;
 					}
 				}
 
