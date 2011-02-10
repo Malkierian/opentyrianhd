@@ -71,15 +71,15 @@ JE_boolean useLastBank; /* See if I want to use the last 16 colors for DisplayTe
 
 bool pause_pressed = false, ingamemenu_pressed = false;
 
-char smoothieString[8][2] = {
-	"2",
-	"3",
-	"4",
-	"5",
-	"6",
-	"7",
-	"8",
-	"9"
+WCHAR smoothieString[8][2] = {
+	L"2",
+	L"3",
+	L"4",
+	L"5",
+	L"6",
+	L"7",
+	L"8",
+	L"9"
 };
 
 /* Draws a message at the bottom text window on the playing screen */
@@ -2674,7 +2674,6 @@ void JE_playerMovement( Player *this_player,
 	float diminish = 1.0f;
 
 	WCHAR keyTemp[15];
-	char code[15];
 	bool codeEntered = false;
 
 	if (playerNum_ == 2 || !twoPlayerMode)
@@ -2905,8 +2904,7 @@ redo:
 
 				if(codeEntered)
 				{
-					sprintf(code, "%S", keyTemp);
-					if (_stricmp(code, "F1") == 0)
+					if (_wcsicmp(keyTemp, L"F1") == 0)
 					{
 						if (isNetworkGame)
 						{
@@ -2918,7 +2916,7 @@ redo:
 					}
 
 					/* {!Activate Nort Ship!} */
-					else if (_stricmp(code, "F2F4F6F7F9\\/") == 0)
+					else if (_wcsicmp(keyTemp, L"F2F4F6F7F9\\/") == 0)
 					{
 						if (isNetworkGame)
 						{
@@ -2934,11 +2932,11 @@ redo:
 					/* {Cheating} */
 					else if (!isNetworkGame && !twoPlayerMode && !superTyrian && superArcadeMode == SA_NONE)
 					{
-						if(_stricmp(code, "F2F3F6") == 0)
+						if(_wcsicmp(keyTemp, L"F2F3F6") == 0)
 						{
 							youAreCheating = !youAreCheating;
 						}
-						else if ((_stricmp(code, "F2F3F4") == 0 || _stricmp(code, "F2F3F5") == 0) && !superTyrian)
+						else if ((_wcsicmp(keyTemp, L"F2F3F4") == 0 || _wcsicmp(keyTemp, L"F2F3F5") == 0) && !superTyrian)
 						{
 							for (uint i = 0; i < COUNTOF(player); ++i)
 								player[i].armor = 0;
@@ -2955,7 +2953,7 @@ redo:
 					}
 
 					/* {CHEAT-SKIP LEVEL} */
-					else if ((_stricmp(code, "F2F6F7") == 0 || _stricmp(code, "F2F6F8") == 0) &&
+					else if ((_wcsicmp(keyTemp, L"F2F6F7") == 0 || _wcsicmp(keyTemp, L"F2F6F8") == 0) &&
 						!superTyrian && superArcadeMode == SA_NONE)
 					{
 						if (isNetworkGame)
@@ -2976,10 +2974,10 @@ redo:
 					}*/
 
 					/* {SMOOTHIES} */
-					if(strlen(code) == 1)
+					if(wcslen(keyTemp) == 1)
 					{
 						/* {MUTE SOUND} */
-						if (_stricmp(code, "S") == 0)
+						if (_wcsicmp(keyTemp, L"S") == 0)
 						{
 							samples_disabled = !samples_disabled;
 
@@ -2987,13 +2985,13 @@ redo:
 						}
 
 						// {IN-GAME RANDOM MUSIC SELECTION} 
-						else if (_stricmp(code, "F") == 0)
+						else if (_wcsicmp(keyTemp, L"F") == 0)
 						{
 							play_song(mt_rand() % MUSIC_NUM);
 						}
 
 						/* {MUTE MUSIC} */
-						else if (_stricmp(code, "M") == 0)
+						else if (_wcsicmp(keyTemp, L"M") == 0)
 						{
 							music_disabled = !music_disabled;
 							if (!music_disabled)
@@ -3003,7 +3001,7 @@ redo:
 						}
 
 						// {CYCLE THROUGH FILTER COLORS} 
-						else if (strcmp(code, "-") == 0)
+						else if (wcscmp(keyTemp, L"-") == 0)
 						{
 							if (levelFilter == -99)
 							{
@@ -3018,26 +3016,33 @@ redo:
 						}
 
 						// {HYPER-SPEED} 
-						else if (strcmp(code, "+") == 0)
+						/*else if (keyTemp[0] == L'+')
 						{
 							fastPlay++;
 							if (fastPlay > 2)
 							{
 								fastPlay = 0;
 							}
-							keysactive[SDLK_1] = false;
 							JE_setNewGameSpeed();
-						}
+						}*/
 
-						else if (strcmp(code, "0") == 0)
+						else if (wcscmp(keyTemp, L"1") == 0)
 						{
 							smoothies[8] = !smoothies[8];
+						}
+						
+						else if(wcscmp(keyTemp, L"0") == 0)
+						{
+							for(int i = 0; i < 8; i++)
+							{
+								smoothies[i] = false;
+							}
 						}
 						
 						else 
 							for (int i = 0; i <= 7; i++)
 							{
-								if (strcmp(code, smoothieString[i]) == 0)
+								if (wcscmp(keyTemp, smoothieString[i]) == 0)
 								{
 									smoothies[i] = !smoothies[i];
 								}
