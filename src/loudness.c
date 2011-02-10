@@ -87,6 +87,7 @@ bool init_audio( void )
 void audio_cb( void *user_data, unsigned char *sdl_buffer, int howmuch )
 {
 	(void)user_data;
+	memset(sdl_buffer, 0, howmuch);
 	
 	// prepare for conversion
 	howmuch /= audio_cvt.len_mult;
