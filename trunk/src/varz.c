@@ -465,7 +465,6 @@ void JE_cleanup( void )
 {
 	deinit_audio();
 	deinit_video();
-	deinit_joysticks();
 	deinit_input();
 	deinit_layout();
 
