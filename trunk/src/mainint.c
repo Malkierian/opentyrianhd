@@ -2857,7 +2857,7 @@ redo:
 						mouseXC += softPad.ax;
 						mouseYC += softPad.ay;
 
-						link_gun_analog = joystick_analog_angle(0, &link_gun_angle);
+						link_gun_analog = false;//joystick_analog_angle(0, &link_gun_angle);
 					}
 					if(softPad.button_pressed)
 					{
