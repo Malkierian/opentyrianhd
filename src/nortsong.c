@@ -18,7 +18,6 @@
  */
 #include "file.h"
 #include "input.h"
-#include "joystick.h"
 #include "keyboard.h"
 #include "loudness.h"
 #include "musmast.h"

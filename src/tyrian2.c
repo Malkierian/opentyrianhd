@@ -24,7 +24,6 @@
 #include "fonthand.h"
 #include "game_menu.h"
 #include "input.h"
-#include "joystick.h"
 #include "keyboard.h"
 #include "lds_play.h"
 #include "loudness.h"

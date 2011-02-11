@@ -18,7 +18,6 @@
  */
 #include "font.h"
 #include "input.h"
-#include "joystick.h"
 #include "jukebox.h"
 #include "keyboard.h"
 #include "lds_play.h"

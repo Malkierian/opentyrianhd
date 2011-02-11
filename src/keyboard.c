@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 #include "input.h"
-#include "joystick.h"
 #include "keyboard.h"
 #include "network.h"
 #include "opentyr.h"

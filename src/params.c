@@ -18,7 +18,6 @@
  */
 #include "arg_parse.h"
 #include "file.h"
-#include "joystick.h"
 #include "loudness.h"
 #include "network.h"
 #include "opentyr.h"
