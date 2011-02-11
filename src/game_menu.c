@@ -749,7 +749,7 @@ void JE_itemScreen( void )
 		/* 2 player input devices */
 		if (curMenu == 9)
 		{
-			for (uint i = 0; i < COUNTOF(inputDevice); i++)
+			/*for (uint i = 0; i < COUNTOF(inputDevice); i++)
 			{
 				if (inputDevice[i] > 2 + joysticks)
 					inputDevice[i] = inputDevice[i == 0 ? 1 : 0] == 1 ? 2 : 1;
@@ -760,7 +760,7 @@ void JE_itemScreen( void )
 				else
 					sprintf(temp, "%s", inputDevices[inputDevice[i] - 1]);
 				JE_dString(VGAScreen, 186, 38 + 2 * (i + 1) * 16, temp, SMALL_FONT_SHAPES);
-			}
+			}*/
 		}
 
 		/* JE: { - Step VI - Help text for current cursor location } */
@@ -1087,10 +1087,7 @@ void JE_itemScreen( void )
 						if (curSel[curMenu] == 4)
 							player[0].weapon_mode = 1;
 					}
-
 					// if joystick config, skip disabled items when digital
-					if (curMenu == 12 && joysticks > 0 && !joystick[joystick_config].analog && curSel[curMenu] == 5)
-						curSel[curMenu] = 3;
 				}
 				if(softPad.down_last)
 				{
@@ -1115,8 +1112,6 @@ void JE_itemScreen( void )
 					}
 
 					// if in joystick config, skip disabled items when digital
-					if (curMenu == 12 && joysticks > 0 && !joystick[joystick_config].analog && curSel[curMenu] == 4)
-						curSel[curMenu] = 6;
 				}
 				if(softPad.left_last)
 				{
@@ -2344,41 +2339,6 @@ void JE_menuFunction( JE_byte select )
 		break;
 
 	case 9: //2player
-		switch (curSel[curMenu])
-		{
-		case 2:
-			mainLevel = mapSection[mapPNum-1];
-			jumpSection = true;
-			break;
-		case 3:
-		case 4:
-			JE_playSampleNum(S_CURSOR);
-
-			temp = curSel[curMenu] - 3;
-			do {
-				if (joysticks == 0)
-				{
-					inputDevice[temp == 0 ? 1 : 0] = inputDevice[temp]; // swap controllers
-				}
-				if (inputDevice[temp] >= 2 + joysticks)
-				{
-					inputDevice[temp] = 1;
-				} else {
-					inputDevice[temp]++;
-				}
-			} while (inputDevice[temp] == inputDevice[temp == 0 ? 1 : 0]);
-			break;
-		case 5:
-			curMenu = 2;
-			break;
-		case 6:
-			if (JE_quitRequest())
-			{
-				gameLoaded = true;
-				mainLevel = 0;
-			}
-			break;
-		}
 		break;
 
 	case 10: //arcade
@@ -2417,91 +2377,6 @@ void JE_menuFunction( JE_byte select )
 		break;
 
 	case 12: //joy
-		break;
-		if (joysticks == 0 && select != 17)
-			break;
-
-		switch (select)
-		{
-		case 2:
-			joystick_config++;
-			joystick_config %= joysticks;
-			break;
-		case 3:
-			joystick[joystick_config].analog = !joystick[joystick_config].analog;
-			break;
-		case 4:
-			if (joystick[joystick_config].analog)
-			{
-				joystick[joystick_config].sensitivity++;
-				joystick[joystick_config].sensitivity %= 11;
-			}
-			break;
-		case 5:
-			if (joystick[joystick_config].analog)
-			{
-				joystick[joystick_config].threshold++;
-				joystick[joystick_config].threshold %= 11;
-			}
-			break;
-		case 16:
-			reset_joystick_assignments(joystick_config);
-			break;
-		case 17:
-			if (isNetworkGame || onePlayerAction)
-			{
-				curMenu = 11;
-			} else {
-				curMenu = 2;
-			}
-			break;
-		default:
-			if (joysticks == 0)
-				break;
-
-			// int temp = 254;
-			// JE_textShade(VGAScreen, 236, 38 + i * 8, value, temp / 16, temp % 16 - 8, DARKEN);
-
-			JE_rectangle(VGAScreen, 235, 21 + select * 8, 310, 30 + select * 8, 248);
-
-			Joystick_assignment temp;
-			if (detect_joystick_assignment(joystick_config, &temp))
-			{
-				// if the detected assignment was already set, unset it
-				for (uint i = 0; i < COUNTOF(*joystick->assignment); i++)
-				{
-					if (joystick_assignment_cmp(&temp, &joystick[joystick_config].assignment[select - 6][i]))
-					{
-						joystick[joystick_config].assignment[select - 6][i].type = NONE;
-						goto joystick_assign_done;
-					}
-				}
-
-				// if there is an empty assignment, set it
-				for (uint i = 0; i < COUNTOF(*joystick->assignment); i++)
-				{
-					if (joystick[joystick_config].assignment[select - 6][i].type == NONE)
-					{
-						joystick[joystick_config].assignment[select - 6][i] = temp;
-						goto joystick_assign_done;
-					}
-				}
-
-				// if no assignments are empty, shift them all forward and set the last one
-				for (uint i = 0; i < COUNTOF(*joystick->assignment); i++)
-				{
-					if (i == COUNTOF(*joystick->assignment) - 1)
-						joystick[joystick_config].assignment[select - 6][i] = temp;
-					else
-						joystick[joystick_config].assignment[select - 6][i] = joystick[joystick_config].assignment[select - 6][i + 1];
-				}
-
-joystick_assign_done:
-				curSelect++;
-
-				poll_joysticks();
-			}
-		}
 		break;
 
 	case 13: //engage
