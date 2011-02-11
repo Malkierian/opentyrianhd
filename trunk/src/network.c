@@ -573,7 +573,6 @@ connect_reset:
 	// until opponent sends connect packet
 	while (true)
 	{
-		push_joysticks_as_keyboard();
 		service_SDL_events(false);
 
 		if (newkey && lastkey_sym == SDLK_ESCAPE)
