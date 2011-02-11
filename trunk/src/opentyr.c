@@ -163,7 +163,7 @@ void opentyrian_menu( void )
 
 							fade_black(10);
 							jukebox();
-
+							set_layout_buttons(0, 1, 1, 0, 0, 0, 0);
 							memcpy(VGAScreen->pixels, VGAScreen2->pixels, VGAScreen->pitch * VGAScreen->h);
 							JE_showVGA();
 							fade_in = true;
