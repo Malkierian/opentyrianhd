@@ -71,7 +71,7 @@ JE_boolean useLastBank; /* See if I want to use the last 16 colors for DisplayTe
 
 bool pause_pressed = false, ingamemenu_pressed = false;
 
-WCHAR smoothieString[8][2] = {
+WCHAR smoothieString[6][2] = {
 	L"2",
 	L"3",
 	L"4",
