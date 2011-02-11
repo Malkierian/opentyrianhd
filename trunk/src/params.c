@@ -108,7 +108,6 @@ void JE_paramCheck( int argc, char *argv[] )
 			
 		case 'j':
 			// Disables joystick detection
-			ignore_joystick = true;
 			break;
 			
 		case 'x':
@@ -237,7 +236,6 @@ void JE_paramCheck( int argc, char *argv[] )
 					record_demo = true;
 					break;
 				case 2:
-					ignore_joystick = true;
 					break;
 				case 3:
 					constantPlay = true;
