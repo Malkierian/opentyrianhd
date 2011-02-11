@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 #include "config.h"
-#include "destruct.h"
 #include "editship.h"
 #include "episodes.h"
 #include "file.h"
@@ -25,7 +24,6 @@
 #include "helptext.h"
 #include "hg_revision.h"
 #include "input.h"
-#include "joystick.h"
 #include "jukebox.h"
 #include "keyboard.h"
 #include "loudness.h"
@@ -63,7 +61,6 @@ const char *opentyrian_str = "OpenTyrian",
 const char *opentyrian_menu_items[] =
 {
 	"About OpenTyrian",
-	/* "Play Destruct", */
 	"Jukebox",
 	"Rich Mode: Off",
 	"Return to Main Menu"
@@ -294,7 +291,6 @@ int main( int argc, char *argv[] )
 
 		if (loadDestruct)
 		{
-			JE_destructGame();
 			loadDestruct = false;
 		}
 		else

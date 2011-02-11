@@ -21,7 +21,6 @@
 #include "fonthand.h"
 #include "game_menu.h"
 #include "input.h"
-#include "joystick.h"
 #include "keyboard.h"
 #include "loudness.h"
 #include "mainint.h"
@@ -1933,6 +1932,7 @@ void JE_doShipSpecs( void )
 	 * and doFunkyScreen ties everything together.  Before it was more like
 	 * an oddly designed, unreusable, global sharing hierarchy. */
 
+	bool quit = false;
 	//create the image we want
 	JE_drawShipSpecs(game_screen, VGAScreen2);
 
@@ -1944,9 +1944,14 @@ void JE_doShipSpecs( void )
 	JE_scaleInPicture(VGAScreen, game_screen);
 	do
 	{
-		inputFound = update_input();
 		SDL_Delay(SDL_POLL_INTERVAL);
-	} while(!inputFound);
+		inputFound = update_input();
+		if(inputFound && softPad.button_pressed)
+		{
+			if(softPad.select && !softPad.select_last)
+				quit = true;
+		}
+	} while(!quit);
 }
 
 void JE_drawMainMenuHelpText( void )

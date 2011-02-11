@@ -25,7 +25,6 @@
 #include "helptext.h"
 #include "helptext.h"
 #include "input.h"
-#include "joystick.h"
 #include "keyboard.h"
 #include "lds_play.h"
 #include "loudness.h"
@@ -2934,7 +2933,7 @@ redo:
 						{
 							youAreCheating = !youAreCheating;
 						}
-						else if ((_wcsicmp(keyTemp, L"F2F3F4") == 0 || _wcsicmp(keyTemp, L"F2F3F5") == 0) && !superTyrian)
+						else if ((_wcsicmp(keyTemp, L"F2F3F4") == 0) && !superTyrian)
 						{
 							for (uint i = 0; i < COUNTOF(player); ++i)
 								player[i].armor = 0;
@@ -2951,7 +2950,7 @@ redo:
 					}
 
 					/* {CHEAT-SKIP LEVEL} */
-					else if ((_wcsicmp(keyTemp, L"F2F6F7") == 0 || _wcsicmp(keyTemp, L"F2F6F8") == 0) &&
+					else if ((_wcsicmp(keyTemp, L"F2F6F7") == 0) &&
 						!superTyrian && superArcadeMode == SA_NONE)
 					{
 						if (isNetworkGame)

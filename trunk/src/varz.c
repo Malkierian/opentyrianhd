@@ -20,7 +20,6 @@
 #include "editship.h"
 #include "episodes.h"
 #include "input.h"
-#include "joystick.h"
 #include "lds_play.h"
 #include "loudness.h"
 #include "mainint.h"

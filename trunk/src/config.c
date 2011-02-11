@@ -19,7 +19,6 @@
 #include "config.h"
 #include "episodes.h"
 #include "file.h"
-#include "joystick.h"
 #include "loudness.h"
 #include "mtrand.h"
 #include "nortsong.h"
