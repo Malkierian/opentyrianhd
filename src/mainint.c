@@ -77,9 +77,7 @@ WCHAR smoothieString[8][2] = {
 	L"4",
 	L"5",
 	L"6",
-	L"7",
-	L"8",
-	L"9"
+	L"7"
 };
 
 /* Draws a message at the bottom text window on the playing screen */
@@ -3040,7 +3038,7 @@ redo:
 						}
 						
 						else 
-							for (int i = 0; i <= 7; i++)
+							for (int i = 0; i <= 5; i++)
 							{
 								if (wcscmp(keyTemp, smoothieString[i]) == 0)
 								{
