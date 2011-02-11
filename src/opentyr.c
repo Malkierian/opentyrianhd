@@ -219,8 +219,6 @@ int main( int argc, char *argv[] )
 	JE_scanForEpisodes();
 
 	init_video();
-	init_keyboard();
-	init_joysticks();
 	init_input();
 	ZDKSystem_SetOrientation((ZDK_ORIENTATION)2);
 	SuppressReboot();
