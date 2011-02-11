@@ -30,7 +30,7 @@ This is a little more tricky.  Some functions were remapped to provide for ease 
   * "m" - Mutes/unmutes music
   * "s" - Mutes/unmutes sound
   * "f" - Shuffles music
-  * "-" - Changes speed
+  * "-" - Cycles through game screen color filters
   * "f1" - Shows in-game help system
 
 == Smoothies ==
